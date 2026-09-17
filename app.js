@@ -12,13 +12,13 @@ const SITE_CONFIG = {
     country: "ایران"
   },
   links: {
-    website: "/",
-    instagram: "",
-    telegram: "",
-    tisaAssistant: "",
-    phone: "",
-    whatsapp: "",
-    medicalCouncil: ""
+    website: "https://drfatemeheidari.ir",
+    instagram: "https://instagram.com/diet_tisa",
+    telegram: "https://t.me/diet_tisa",
+    tisaAssistant: "https://t.me/ai_diet_tisa_bot",
+    phone: "+989121231212",
+    whatsapp: "https://wa.me/989121231212",
+    medicalCouncil: "https://membersearch.irimc.org/member/profile?id=e5608720-3b33-42c7-a2e5-f45aec17a7ba"
   },
   appointmentEndpoint: "",
   media: {
