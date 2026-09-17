@@ -54,7 +54,6 @@ function hrefOrNull(url) {
   return url && String(url).trim() ? url : null;
 }
 
-/* ---------- Theme ---------- */
 const Theme = {
   key: "fh-theme",
   init() {
@@ -80,7 +79,6 @@ const Theme = {
   }
 };
 
-/* ---------- Loader ---------- */
 function hideLoader() {
   const loader = $("#loader");
   if (!loader) return;
@@ -88,7 +86,6 @@ function hideLoader() {
   setTimeout(() => loader.remove(), 800);
 }
 
-/* ---------- Navigation ---------- */
 function initNav() {
   const header = $(".site-header");
   const panel = $(".mobile-panel");
@@ -129,7 +126,6 @@ function initNav() {
   });
 }
 
-/* ---------- FAQ ---------- */
 function renderFaq() {
   const list = $("#faq-list");
   if (!list) return;
@@ -173,37 +169,54 @@ function renderFaq() {
   });
 }
 
-/* ---------- Asset discovery ---------- */
-function exists(url) {
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), 2500);
-  return fetch(url, { method: "HEAD", signal: ctrl.signal })
-    .then((r) => r.ok)
-    .catch(() => false)
-    .finally(() => clearTimeout(t));
+function mediaUrl(path) {
+  const clean = String(path || "").replace(/^\/+/, "");
+  return `/${clean}`;
 }
 
-async function discoverNumbered(buildUrl, max) {
+function existsImage(url) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const done = (ok) => {
+      img.onload = img.onerror = null;
+      resolve(ok);
+    };
+    const timer = setTimeout(() => done(false), 4000);
+    img.referrerPolicy = "no-referrer";
+    img.onload = () => { clearTimeout(timer); done(true); };
+    img.onerror = () => { clearTimeout(timer); done(false); };
+    img.src = url;
+  });
+}
+
+async function existsFile(url) {
+  try {
+    const res = await fetch(url, { method: "GET", cache: "no-store" });
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+const exists = existsImage;
+
+async function firstExisting(candidates) {
+  for (const url of candidates) {
+    if (await exists(url)) return url;
+  }
+  return null;
+}
+
+async function discoverNumbered(buildCandidates, max) {
   const found = [];
   for (let i = 1; i <= max; i += 1) {
-    const url = buildUrl(i);
-    /* Some static hosts reject HEAD; fall back to GET range-less check */
-    let ok = await exists(url);
-    if (!ok) {
-      try {
-        const r = await fetch(url, { method: "GET", cache: "no-store" });
-        ok = r.ok;
-      } catch (e) {
-        ok = false;
-      }
-    }
-    if (!ok) break;
+    const url = await firstExisting(buildCandidates(i));
+    if (!url) break;
     found.push(url);
   }
   return found;
 }
 
-/* ---------- Videos ---------- */
 let plyrPlayers = [];
 
 async function initVideos() {
@@ -211,10 +224,12 @@ async function initVideos() {
   const empty = $("#videos-empty");
   if (!mount) return;
 
-  const videos = await discoverNumbered(
-    (n) => `${SITE_CONFIG.media.videosPath}${n}.mp4`,
-    SITE_CONFIG.media.maxVideos
-  );
+  const videos = [];
+  for (let n = 1; n <= SITE_CONFIG.media.maxVideos; n += 1) {
+    const url = mediaUrl(`${SITE_CONFIG.media.videosPath}${n}.mp4`);
+    if (!(await existsFile(url))) break;
+    videos.push(url);
+  }
 
   if (!videos.length) {
     if (empty) empty.classList.remove("hidden");
@@ -222,7 +237,7 @@ async function initVideos() {
   }
   if (empty) empty.classList.add("hidden");
 
-  videos.forEach((src, i) => {
+  videos.forEach((src) => {
     const item = document.createElement("div");
     item.className = "item";
     item.innerHTML = `
@@ -287,7 +302,6 @@ function initPlyr() {
   });
 }
 
-/* ---------- Posts + lightbox ---------- */
 const Lightbox = {
   slides: [],
   index: 0,
@@ -335,20 +349,24 @@ const Lightbox = {
     this.render();
   },
   render() {
-    if (this.img) this.img.src = this.slides[this.index];
+    if (this.img) {
+      this.img.referrerPolicy = "no-referrer";
+      this.img.src = this.slides[this.index];
+    }
     if (this.counter) this.counter.textContent = `${this.index + 1} / ${this.slides.length}`;
   }
 };
 
+function postSlideCandidates(folder, slide) {
+  const base = `${SITE_CONFIG.media.postsPath}${folder}/${slide}`;
+  return [".jpg", ".jpeg", ".png", ".webp", ".JPG", ".JPEG", ".PNG"].map((ext) => mediaUrl(base + ext));
+}
+
 async function discoverPostSlides(folder) {
   const slides = [];
   for (let i = 1; i <= SITE_CONFIG.media.maxPostSlides; i += 1) {
-    const url = `${SITE_CONFIG.media.postsPath}${folder}/${i}.jpg`;
-    let ok = await exists(url);
-    if (!ok) {
-      try { ok = (await fetch(url, { cache: "no-store" })).ok; } catch (e) { ok = false; }
-    }
-    if (!ok) break;
+    const url = await firstExisting(postSlideCandidates(folder, i));
+    if (!url) break;
     slides.push(url);
   }
   return slides;
@@ -360,7 +378,7 @@ async function initPosts() {
   if (!grid) return;
 
   const thumbs = await discoverNumbered(
-    (n) => `${SITE_CONFIG.media.postsPath}${n}/1.jpg`,
+    (n) => postSlideCandidates(n, 1),
     SITE_CONFIG.media.maxPosts
   );
 
@@ -377,7 +395,7 @@ async function initPosts() {
     tile.className = "post-tile";
     tile.type = "button";
     tile.setAttribute("aria-label", `پست ${folder}`);
-    tile.innerHTML = `<img src="${thumb}" alt="" loading="lazy" width="400" height="400"><span class="post-count">گالری</span>`;
+    tile.innerHTML = `<img src="${thumb}" alt="" loading="lazy" width="400" height="400" referrerpolicy="no-referrer" decoding="async"><span class="post-count">گالری</span>`;
     tile.addEventListener("click", async () => {
       if (!cache[folder]) cache[folder] = await discoverPostSlides(folder);
       const slides = cache[folder].length ? cache[folder] : [thumb];
@@ -389,7 +407,6 @@ async function initPosts() {
   });
 }
 
-/* ---------- Contact links ---------- */
 function bindExternalLinks() {
   const map = {
     instagram: SITE_CONFIG.links.instagram,
@@ -418,7 +435,6 @@ function bindExternalLinks() {
   });
 }
 
-/* ---------- Appointment form ---------- */
 function initForm() {
   const form = $("#appointment-form");
   if (!form) return;
@@ -466,7 +482,6 @@ function initForm() {
   });
 }
 
-/* ---------- SEO article ---------- */
 function initArticle() {
   const art = $("#seo-article");
   const btn = $("#seo-toggle");
@@ -477,7 +492,6 @@ function initArticle() {
   });
 }
 
-/* ---------- ASAP slogan ---------- */
 async function initSlogan() {
   const el = $("#asap-slogan");
   if (!el) return;
@@ -506,7 +520,6 @@ async function initSlogan() {
   tick();
 }
 
-/* ---------- Partners ---------- */
 async function initPartners() {
   const section = $("#partners");
   const track = $("#marquee-track");
@@ -514,7 +527,7 @@ async function initPartners() {
   const names = ["1.png", "2.png", "3.png", "4.png", "5.png", "1.svg", "2.svg", "3.svg", "logo1.png", "partner1.png"];
   const found = [];
   for (const name of names) {
-    const url = `images/partners/${name}`;
+    const url = mediaUrl(`images/partners/${name}`);
     if (await exists(url)) found.push(url);
   }
   if (!found.length) {
@@ -526,7 +539,6 @@ async function initPartners() {
   track.innerHTML = html + html;
 }
 
-/* ---------- Cursor / micro interactions ---------- */
 function initCursor() {
   const glow = $(".cursor-glow");
   if (!glow || isTouch || reduceMotion) return;
@@ -568,78 +580,8 @@ function initCursor() {
   }
 }
 
-/* ---------- Optional Three.js orb ---------- */
-function initOrb() {
-  const canvas = $("#nutrition-orb");
-  if (!canvas || isTouch || reduceMotion || !window.THREE) return;
-  if (window.matchMedia("(max-width: 720px)").matches) return;
-
-  try {
-    const THREE = window.THREE;
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(35, 2, 0.1, 20);
-    camera.position.z = 3.2;
-    const geo = new THREE.IcosahedronGeometry(0.9, 1);
-    const mat = new THREE.MeshPhysicalMaterial({
-      color: 0xb0c4de,
-      roughness: 0.25,
-      transmission: 0.65,
-      thickness: 0.6,
-      transparent: true,
-      opacity: 0.85
-    });
-    const mesh = new THREE.Mesh(geo, mat);
-    scene.add(mesh);
-    const light = new THREE.DirectionalLight(0xf5b7c1, 1.2);
-    light.position.set(2, 2, 3);
-    scene.add(light);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-
-    const resize = () => {
-      const w = canvas.clientWidth || canvas.parentElement.clientWidth;
-      const h = canvas.clientHeight || 180;
-      renderer.setSize(w, h, false);
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    let raf;
-    const tick = (t) => {
-      mesh.rotation.y = t * 0.00025;
-      mesh.rotation.x = Math.sin(t * 0.0002) * 0.2;
-      renderer.render(scene, camera);
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) cancelAnimationFrame(raf);
-      else raf = requestAnimationFrame(tick);
-    });
-  } catch (err) {
-    console.warn("Three.js scene skipped", err);
-    canvas.style.display = "none";
-  }
-}
-
-/* ---------- QR page ---------- */
 function initQr() {
   bindExternalLinks();
-}
-
-/* ---------- Boot ---------- */
-function loadScript(src) {
-  return new Promise((resolve, reject) => {
-    const s = document.createElement("script");
-    s.src = src;
-    s.async = true;
-    s.onload = resolve;
-    s.onerror = reject;
-    document.head.appendChild(s);
-  });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
