@@ -1007,11 +1007,19 @@ html[data-theme="dark"] .slogan { color: var(--color-blue); }
 }
 
 @media screen  and (max-width:768px) {
-  .portrait-stage {
+  .portrait-stage .portrait-frame {
     max-width:70% !important;
     justify-content: center;
     align-items: center;
     margin: 2rem auto;
+  }
+  .float-card {
+    left: 10px;
+    bottom: -10px;
+  }
+  .badge-med {
+    top:20px;
+    right: 15px;
   }
   
 }
