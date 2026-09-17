@@ -1005,3 +1005,13 @@ html[data-theme="dark"] .slogan { color: var(--color-blue); }
 .faq-list {
   max-width: unset !important;
 }
+
+@media screen  and (max-width:768px) {
+  .portrait-stage {
+    max-width:70% !important;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem auto;
+  }
+  
+}
