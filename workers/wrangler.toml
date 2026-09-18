@@ -5,7 +5,7 @@ compatibility_date = "2024-10-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "nutrition-appointments"
-database_id = "YOUR_D1_DATABASE_ID"
+database_id = "254987de-cedc-4ebd-b24e-d7d60d9a9af8"
 
 [vars]
 ALLOWED_ORIGINS = "https://drfatemeheidari.ir,http://127.0.0.1,http://localhost"
