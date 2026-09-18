@@ -24,7 +24,7 @@
     "eitaa": ""
   },
   "domain": "drfatemeheidari.ir",
-  "workerUrl": "",
+  "workerUrl": "https://nutrition-appointments.webiro-ir.workers.dev",
   "appointmentEndpoint": "",
   "location": {
     "enabled": true,

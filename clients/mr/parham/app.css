@@ -1,0 +1,330 @@
+/* ========== Base & Animations ========== */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-18px) rotate(5deg); }
+}
+@keyframes float-delay {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(-4deg); }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 4s ease-in-out infinite;
+}
+.animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+.animate-float-delay {
+  animation: float-delay 6s ease-in-out infinite 1s;
+}
+
+/* ========== Section Header ========== */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-radius: 1.5rem 1.5rem 0 0;
+  color: white;
+  font-weight: 800;
+  font-size: 1.35rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.section-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -20%;
+  width: 60%;
+  height: 200%;
+  background: rgba(255,255,255,0.12);
+  transform: rotate(25deg);
+  pointer-events: none;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* ========== Meal Cards ========== */
+.meal-card {
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 1.25rem;
+  padding: 1rem 1.15rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.meal-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.meal-card .meal-icon {
+  font-size: 2rem;
+  line-height: 1;
+  margin-bottom: 0.4rem;
+}
+
+.meal-card h4 {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #1e293b;
+  margin: 0 0 0.35rem 0;
+}
+
+.meal-card p {
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ========== Tip Cards ========== */
+.tip-card {
+  background: linear-gradient(135deg, #fff1f2 0%, #fdf2f8 100%);
+  border: 2px solid #fecdd3;
+  border-radius: 1.25rem;
+  padding: 1rem 1.15rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+.tip-card .tip-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.tip-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: #334155;
+}
+
+/* ========== Hero photo ========== */
+.hero-photo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 60%;
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  border: 4px solid #e0f2fe;
+  object-fit: cover;
+}
+
+/* ========== Small screens ========== */
+@media (max-width: 640px) {
+  .section-header {
+    font-size: 1.15rem;
+    padding: 0.85rem 1.1rem;
+  }
+  .meal-card h4 {
+    font-size: 0.98rem;
+  }
+  .meal-card p {
+    font-size: 0.85rem;
+  }
+}
+
+/* ============================================================
+   PRINT / PDF — A4 optimized (v0.3)
+   ============================================================ */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 8mm 10mm 8mm;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  html, body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    font-size: 11pt !important;
+  }
+
+  /* Hide UI chrome */
+  .print\:hidden,
+  header,
+  footer,
+  .fixed {
+    display: none !important;
+  }
+
+  main {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    space-y: 0 !important;
+  }
+
+  /* ---------- Section blocks ---------- */
+  .print-page {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+    margin: 0 0 6mm 0 !important;
+    padding: 0 !important;
+    /* Keep header + its content together as much as possible */
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Cover always starts on its own page and forces a break after */
+  #cover {
+    page-break-after: always !important;
+    break-after: page !important;
+    page-break-inside: auto !important; /* allow cover itself to split if needed */
+    break-inside: auto !important;
+  }
+
+  /* Long sections may need to split; short ones stay together */
+  #lunch,
+  #dinner,
+  #tips,
+  #snack-afternoon {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  /* Prevent orphan titles: header must stay with following content */
+  .section-header {
+    border-radius: 0 !important;
+    padding: 8px 12px !important;
+    font-size: 13pt !important;
+    margin: 0 !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Content box under header */
+  .print-page > div:not(.section-header) {
+    page-break-before: avoid !important;
+    break-before: avoid !important;
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding: 8px 10px !important;
+  }
+
+  /* Cards never split across pages */
+  .meal-card,
+  .tip-card {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    box-shadow: none !important;
+    padding: 6px 8px !important;
+    margin: 0 !important;
+    border-radius: 6px !important;
+  }
+
+  .meal-card .meal-icon {
+    font-size: 1.3rem !important;
+    margin-bottom: 2px !important;
+  }
+
+  .meal-card h4 {
+    font-size: 10.5pt !important;
+    margin-bottom: 2px !important;
+  }
+
+  .meal-card p {
+    font-size: 9pt !important;
+    line-height: 1.4 !important;
+  }
+
+  .tip-card {
+    padding: 6px 8px !important;
+  }
+
+  .tip-card .tip-icon {
+    font-size: 1.1rem !important;
+  }
+
+  .tip-card p {
+    font-size: 9pt !important;
+    line-height: 1.45 !important;
+  }
+
+  /* Tighter grids in print */
+  .grid {
+    gap: 6px !important;
+  }
+
+  /* Photo */
+  .hero-photo {
+    max-width: 50% !important;
+    box-shadow: none !important;
+    border: 2px solid #bae6fd !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Cover internal spacing */
+  #cover .p-6,
+  #cover .md\:p-10 {
+    padding: 8px 12px !important;
+  }
+
+  #cover .mb-8,
+  #cover .mb-6 {
+    margin-bottom: 8px !important;
+  }
+
+  #cover .space-y-4 > * + * {
+    margin-top: 6px !important;
+  }
+
+  /* Message boxes in snacks */
+  .bg-lime-100,
+  .bg-pink-100 {
+    padding: 6px 10px !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Avoid huge empty gaps from Tailwind space-y */
+  main.space-y-8 > * + * {
+    margin-top: 4mm !important;
+  }
+
+  /* Last section: no forced trailing blank page */
+  .print-page:last-of-type {
+    page-break-after: auto !important;
+    break-after: auto !important;
+    margin-bottom: 0 !important;
+  }
+}
