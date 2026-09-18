@@ -1,6 +1,6 @@
 /* فاطمه حیدری نائیج — site application */
 
-const SITE_CONFIG = {
+let SITE_CONFIG = {
   doctor: {
     nameFa: "فاطمه حیدری نائیج",
     nameEn: "Fateme Heidari Naeij",
@@ -9,38 +9,56 @@ const SITE_CONFIG = {
     medicalCode: "ت-۱۱۴۴۲",
     city: "نوشهر",
     province: "مازندران",
-    country: "ایران"
+    country: "ایران",
+    intro: "",
+    footerText: ""
   },
   links: {
-    website: "https://drfatemeheidari.ir",
-    instagram: "https://instagram.com/diet_tisa",
-    telegram: "https://t.me/diet_tisa",
-    tisaAssistant: "https://t.me/ai_diet_tisa_bot",
-    phone: "+989121231212",
-    whatsapp: "https://wa.me/989121231212",
-    medicalCouncil: "https://membersearch.irimc.org/member/profile?id=e5608720-3b33-42c7-a2e5-f45aec17a7ba"
+    website: "",
+    instagram: "",
+    telegram: "",
+    tisaAssistant: "",
+    phone: "",
+    whatsapp: "",
+    medicalCouncil: "",
+    bale: "",
+    rubika: "",
+    eitaa: ""
   },
   appointmentEndpoint: "",
-  media: {
-    videosPath: "videos/",
-    postsPath: "posts/",
-    maxVideos: 50,
-    maxPosts: 50,
-    maxPostSlides: 30
+  location: { enabled: false, title: "آدرس مطب", address: "", lat: "", lng: "" },
+  colors: {
+    light: { bg: "#faf9f6", surface: "rgba(255,255,255,.58)", blue: "#b0c4de", pink: "#f5b7c1", navy: "#1b2433", text: "#1b2433", muted: "#5c6b80", line: "rgba(27,36,51,.08)" },
+    dark: { bg: "#0e141d", surface: "rgba(22,30,44,.62)", blue: "#b0c4de", pink: "#f5b7c1", navy: "#eef3f8", text: "#f6f3ee", muted: "#b7c2d0", line: "rgba(250,249,246,.08)" }
   },
-  faq: [
-    { question: "سوال اول", answer: "جواب اول" },
-    { question: "سوال اول", answer: "جواب اول" },
-    { question: "سوال اول", answer: "جواب اول" },
-    { question: "سوال اول", answer: "جواب اول" },
-    { question: "سوال اول", answer: "جواب اول" },
-    { question: "سوال اول", answer: "جواب اول" },
-    { question: "سوال اول", answer: "جواب اول" },
-    { question: "سوال اول", answer: "جواب اول" },
-    { question: "سوال اول", answer: "جواب اول" },
-    { question: "سوال اول", answer: "جواب اول" }
-  ]
+  media: { videosPath: "videos/", postsPath: "posts/", maxVideos: 50, maxPosts: 50, maxPostSlides: 30 },
+  sections: {
+    intro: true, services: true, faq: true, videos: true, posts: true,
+    contact: true, appointment: true, article: true, partners: true, location: true
+  },
+  faq: []
 };
+
+const CONTACT_CHANNELS = [
+  { key: "instagram", label: "اینستاگرام", icon: "photo_camera", desc: "پیج آموزشی و شخصی." },
+  { key: "telegram", label: "کانال تلگرام", icon: "send", desc: "کانال یا پیام تلگرام." },
+  { key: "bale", label: "کانال بله", icon: "forum", desc: "ارتباط از طریق بله." },
+  { key: "rubika", label: "کانال روبیکا", icon: "chat_bubble", desc: "ارتباط از طریق روبیکا." },
+  { key: "eitaa", label: "کانال ایتا", icon: "campaign", desc: "ارتباط از طریق ایتا." },
+  { key: "tisaAssistant", label: "دستیار هوشمند تغذیه تیسا", icon: "smart_toy", desc: "دسترسی به دستیار تیسا." },
+  { key: "phone", label: "تماس", icon: "call", desc: "گفت‌وگوی تلفنی برای هماهنگی." },
+  { key: "whatsapp", label: "واتساپ", icon: "chat", desc: "پیام‌رسانی سریع." }
+];
+
+function hasLink(value) {
+  return !!(value && String(value).trim());
+}
+
+function channelHref(key, value) {
+  if (!hasLink(value)) return "";
+  if (key === "phone") return value.startsWith("tel:") ? value : `tel:${value}`;
+  return value;
+}
 
 const FALLBACK_SLOGAN = "Small steps. Stronger habits.";
 const isTouch = window.matchMedia("(pointer: coarse)").matches;
@@ -54,6 +72,145 @@ function hrefOrNull(url) {
   return url && String(url).trim() ? url : null;
 }
 
+function mergeDeep(base, extra) {
+  if (!extra || typeof extra !== "object") return base;
+  Object.keys(extra).forEach((key) => {
+    if (extra[key] && typeof extra[key] === "object" && !Array.isArray(extra[key])) {
+      base[key] = mergeDeep(base[key] || {}, extra[key]);
+    } else {
+      base[key] = extra[key];
+    }
+  });
+  return base;
+}
+
+function applyColors() {
+  const mode = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+  const pack = (SITE_CONFIG.colors && SITE_CONFIG.colors[mode]) || {};
+  const root = document.documentElement;
+  const map = {
+    bg: ["--color-bg", "--color-warm"],
+    surface: ["--color-surface"],
+    blue: ["--color-blue"],
+    pink: ["--color-pink"],
+    navy: ["--color-navy"],
+    text: ["--color-text"],
+    muted: ["--color-muted", "--color-text-soft"],
+    line: ["--color-line"]
+  };
+  Object.keys(map).forEach((key) => {
+    if (!pack[key]) return;
+    map[key].forEach((cssVar) => root.style.setProperty(cssVar, pack[key]));
+  });
+}
+
+function applyIdentity() {
+  const d = SITE_CONFIG.doctor || {};
+  const siteUrl = (SITE_CONFIG.links && SITE_CONFIG.links.website) || "https://drfatemeheidari.ir";
+  const homeUrl = siteUrl.replace(/\/+$/, "") + "/index.html";
+  const canon = document.querySelector('link[rel="canonical"]');
+  if (canon) canon.setAttribute("href", homeUrl);
+  const ogUrl = document.querySelector('meta[property="og:url"]');
+  if (ogUrl) ogUrl.setAttribute("content", homeUrl);
+  const base = window.SITE_BASE || "";
+  $$("img").forEach((img) => {
+    const src = img.getAttribute("src") || "";
+    if (/^(images|videos|posts)\//.test(src) && base && !src.startsWith(base) && !src.startsWith("http")) {
+      img.src = base + src;
+    }
+  });
+  $$('link[rel="icon"]').forEach((l) => {
+    const href = l.getAttribute("href") || "";
+    if (href.startsWith("images/") && base) l.href = base + href;
+  });
+
+  const loc = `${d.city || ""}، ${d.province || ""}`.replace(/^، |، $/g, "");
+  document.title = `${d.nameFa || ""} | ${d.nameEn || ""} | ${d.title || ""}`.replace(/^\s\|\s|\s\|\s$/g, "");
+  $$("[data-name-fa], .brand-text strong, .loader-name").forEach((el) => {
+    if (el.classList.contains("loader-name") || el.matches(".brand-text strong")) el.textContent = d.shortNameFa || d.nameFa || el.textContent;
+  });
+  const h1 = $("h1");
+  if (h1 && !isQrPage) h1.textContent = `دکتر ${d.nameFa || ""}`.replace("دکتر دکتر", "دکتر");
+  if (h1 && isQrPage) h1.textContent = d.nameFa || h1.textContent;
+  const role = $(".hero-role, .qr-role");
+  if (role) role.textContent = d.title || role.textContent;
+  const en = $(".qr-en");
+  if (en) en.textContent = d.nameEn || "";
+  const lead = $(".hero-lead");
+  if (lead && d.intro) lead.textContent = d.intro;
+  $$(".chip").forEach((chip) => {
+    if (chip.textContent.includes("نظام پزشکی") && d.medicalCode) {
+      chip.lastChild && (chip.innerHTML = `<span class="material-symbols-rounded" style="font-size:16px">badge</span> کد نظام پزشکی: ${d.medicalCode}`);
+    }
+    if (chip.textContent.includes("نوشهر") || chip.textContent.includes("استان")) {
+      chip.innerHTML = `<span class="material-symbols-rounded" style="font-size:16px">location_on</span> ${loc}`;
+    }
+  });
+  const badge = $(".badge-med");
+  if (badge && d.medicalCode) badge.textContent = d.medicalCode;
+  const float = $(".float-card strong");
+  if (float) float.textContent = loc;
+  const footName = $(".footer-brand strong");
+  if (footName) footName.textContent = d.nameFa || footName.textContent;
+  const footCopy = $(".footer-copy");
+  if (footCopy && d.footerText) footCopy.textContent = d.footerText;
+  const yearLine = $(".copyright");
+  if (yearLine) yearLine.innerHTML = `${d.shortNameFa || d.nameFa || ""} · ${loc} · <span id="year">${new Date().getFullYear()}</span>`;
+  const contactH2 = $("#contact .section-head h2");
+  if (contactH2) contactH2.textContent = `راه‌های ارتباطی با دکتر ${d.shortNameFa || d.nameFa || ""}`;
+  const appointH2 = $("#appoint h2");
+  if (appointH2) appointH2.textContent = `رزرو وقت مشاوره تغذیه با دکتر ${d.shortNameFa || d.nameFa || ""}`;
+  const videosH2 = $("#videos .section-head h2");
+  if (videosH2) videosH2.textContent = `آخرین ویدیوهای اینستاگرام دکتر ${d.shortNameFa || d.nameFa || ""}`;
+  const postsH2 = $("#posts .section-head h2");
+  if (postsH2) postsH2.textContent = `پست‌های اینستاگرام دکتر ${d.shortNameFa || d.nameFa || ""}`;
+  const faqH2 = $("#faq .section-head h2");
+  if (faqH2) faqH2.textContent = `سوالات متداول درباره رژیم و تغذیه با دکتر ${d.shortNameFa || d.nameFa || ""}`;
+  const servicesH2 = $("#services .section-head h2");
+  if (servicesH2) servicesH2.textContent = `خدمات تغذیه و رژیم غذایی دکتر ${d.shortNameFa || d.nameFa || ""}`;
+}
+
+function applySections() {
+  const s = SITE_CONFIG.sections || {};
+  const map = {
+    intro: "#intro",
+    services: "#services",
+    faq: "#faq",
+    videos: "#videos",
+    posts: "#posts",
+    contact: "#contact",
+    appointment: "#appoint",
+    article: "#article",
+    partners: "#partners",
+    location: "#location"
+  };
+  Object.keys(map).forEach((key) => {
+    const el = $(map[key]);
+    if (!el) return;
+    if (s[key] === false) el.classList.add("hidden");
+  });
+  $$(".nav-desktop a, .mobile-panel a").forEach((a) => {
+    const href = a.getAttribute("href") || "";
+    const id = href.replace("#", "");
+    const pair = {
+      intro: "intro", services: "services", videos: "videos", posts: "posts",
+      faq: "faq", contact: "contact", appoint: "appointment", location: "location"
+    };
+    if (pair[id] && s[pair[id]] === false) a.classList.add("hidden");
+  });
+}
+
+async function loadConfig() {
+  try {
+    const res = await fetch(`${window.SITE_BASE || ""}config.json`, { cache: "no-store" });
+    if (res.ok) SITE_CONFIG = mergeDeep(SITE_CONFIG, await res.json());
+  } catch (e) { /* keep defaults */ }
+  applyColors();
+  applyIdentity();
+  applySections();
+}
+
+/* ---------- Theme ---------- */
 const Theme = {
   key: "fh-theme",
   init() {
@@ -71,6 +228,7 @@ const Theme = {
   apply(theme, persist) {
     document.documentElement.setAttribute("data-theme", theme);
     if (persist) localStorage.setItem(this.key, theme);
+    applyColors();
     $$("[data-theme-toggle]").forEach((btn) => {
       const icon = btn.querySelector(".material-symbols-rounded");
       if (icon) icon.textContent = theme === "dark" ? "light_mode" : "dark_mode";
@@ -79,6 +237,7 @@ const Theme = {
   }
 };
 
+/* ---------- Loader ---------- */
 function hideLoader() {
   const loader = $("#loader");
   if (!loader) return;
@@ -86,6 +245,7 @@ function hideLoader() {
   setTimeout(() => loader.remove(), 800);
 }
 
+/* ---------- Navigation ---------- */
 function initNav() {
   const header = $(".site-header");
   const panel = $(".mobile-panel");
@@ -123,6 +283,23 @@ function initNav() {
       e.preventDefault();
       target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
     });
+  });
+}
+
+/* ---------- FAQ ---------- */
+function renderServices() {
+  const grid = $("#services-grid");
+  if (!grid) return;
+  grid.innerHTML = "";
+  (SITE_CONFIG.services || []).forEach((item) => {
+    if (!item || !item.title) return;
+    const el = document.createElement("article");
+    el.className = "svc";
+    el.innerHTML = `
+      <div class="ico"><span class="material-symbols-rounded">${item.icon || "nutrition"}</span></div>
+      <h3>${item.title}</h3>
+      <p>${item.text || ""}</p>`;
+    grid.appendChild(el);
   });
 }
 
@@ -169,9 +346,10 @@ function renderFaq() {
   });
 }
 
+/* ---------- Asset discovery ---------- */
 function mediaUrl(path) {
   const clean = String(path || "").replace(/^\/+/, "");
-  return `/${clean}`;
+  return `${window.SITE_BASE || ""}${clean}`;
 }
 
 function existsImage(url) {
@@ -198,6 +376,25 @@ async function existsFile(url) {
   }
 }
 
+function existsVideo(url) {
+  return new Promise((resolve) => {
+    const v = document.createElement("video");
+    v.preload = "metadata";
+    v.muted = true;
+    v.setAttribute("playsinline", "");
+    const done = (ok) => {
+      v.onloadedmetadata = v.onerror = null;
+      v.removeAttribute("src");
+      try { v.load(); } catch (e) { /* ignore */ }
+      resolve(ok);
+    };
+    const timer = setTimeout(() => done(false), 5000);
+    v.onloadedmetadata = () => { clearTimeout(timer); done(true); };
+    v.onerror = () => { clearTimeout(timer); done(false); };
+    v.src = url;
+  });
+}
+
 const exists = existsImage;
 
 async function firstExisting(candidates) {
@@ -217,6 +414,7 @@ async function discoverNumbered(buildCandidates, max) {
   return found;
 }
 
+/* ---------- Videos ---------- */
 let plyrPlayers = [];
 
 async function initVideos() {
@@ -226,9 +424,17 @@ async function initVideos() {
 
   const videos = [];
   for (let n = 1; n <= SITE_CONFIG.media.maxVideos; n += 1) {
-    const url = mediaUrl(`${SITE_CONFIG.media.videosPath}${n}.mp4`);
-    if (!(await existsFile(url))) break;
-    videos.push(url);
+    const candidates = [
+      mediaUrl(`${SITE_CONFIG.media.videosPath}${n}.mp4`),
+      mediaUrl(`${SITE_CONFIG.media.videosPath}${n}.webm`),
+      mediaUrl(`${SITE_CONFIG.media.videosPath}${n}.MP4`)
+    ];
+    let found = "";
+    for (const cand of candidates) {
+      if (await existsVideo(cand) || await existsFile(cand)) { found = cand; break; }
+    }
+    if (!found) break;
+    videos.push(found);
   }
 
   if (!videos.length) {
@@ -237,7 +443,7 @@ async function initVideos() {
   }
   if (empty) empty.classList.add("hidden");
 
-  videos.forEach((src) => {
+  videos.forEach((src, i) => {
     const item = document.createElement("div");
     item.className = "item";
     item.innerHTML = `
@@ -302,6 +508,7 @@ function initPlyr() {
   });
 }
 
+/* ---------- Posts + lightbox ---------- */
 const Lightbox = {
   slides: [],
   index: 0,
@@ -407,34 +614,83 @@ async function initPosts() {
   });
 }
 
+/* ---------- Contact links ---------- */
 function bindExternalLinks() {
-  const map = {
-    instagram: SITE_CONFIG.links.instagram,
-    telegram: SITE_CONFIG.links.telegram,
-    tisa: SITE_CONFIG.links.tisaAssistant,
-    phone: SITE_CONFIG.links.phone ? `tel:${SITE_CONFIG.links.phone}` : "",
-    whatsapp: SITE_CONFIG.links.whatsapp,
-    medical: SITE_CONFIG.links.medicalCouncil,
-    website: SITE_CONFIG.links.website || "/"
-  };
-
-  $$("[data-link]").forEach((el) => {
-    const key = el.getAttribute("data-link");
-    const url = hrefOrNull(map[key]);
-    if (url) {
-      el.setAttribute("href", url);
-      if (key !== "phone" && key !== "website") {
-        el.setAttribute("target", "_blank");
-        el.setAttribute("rel", "noopener noreferrer");
-      }
+  const links = SITE_CONFIG.links || {};
+  const medical = $("[data-link=medical]");
+  if (medical) {
+    if (hasLink(links.medicalCouncil)) {
+      medical.setAttribute("href", links.medicalCouncil);
+      medical.setAttribute("target", "_blank");
+      medical.setAttribute("rel", "noopener noreferrer");
     } else {
-      el.setAttribute("href", "#");
-      el.classList.add("is-disabled");
-      el.addEventListener("click", (e) => e.preventDefault());
+      medical.classList.add("hidden");
     }
-  });
+  }
+
+  const grid = $("#contact-grid");
+  if (grid) {
+    grid.innerHTML = "";
+    CONTACT_CHANNELS.forEach((ch) => {
+      const raw = links[ch.key];
+      if (!hasLink(raw)) return;
+      const href = channelHref(ch.key, raw);
+      const a = document.createElement("a");
+      a.className = "contact-card";
+      a.href = href;
+      if (ch.key !== "phone") {
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      }
+      a.innerHTML = `<span class="material-symbols-rounded">${ch.icon}</span><h3>${ch.label}</h3><p>${ch.desc}</p>`;
+      grid.appendChild(a);
+    });
+    if (!grid.children.length && $("#contact")) $("#contact").classList.add("hidden");
+  }
 }
 
+function renderLocation() {
+  const loc = SITE_CONFIG.location || {};
+  const enabled = SITE_CONFIG.sections?.location !== false && loc.enabled !== false && loc.lat && loc.lng;
+  const section = $("#location");
+  if (section && !enabled) section.classList.add("hidden");
+  if (!enabled) {
+    const qrLoc = $("#qr-location");
+    if (qrLoc) qrLoc.hidden = true;
+    return;
+  }
+
+  const title = loc.title || "آدرس مطب";
+  const address = loc.address || "";
+  const lat = loc.lat;
+  const lng = loc.lng;
+  const maps = [
+    { label: "مسیریابی با گوگل مپ", href: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}` },
+    { label: "مسیریابی با Waze", href: `https://waze.com/ul?ll=${lat},${lng}&navigate=yes` },
+    { label: "مسیریابی با نشان", href: `https://neshan.org/maps/@${lat},${lng},16z` }
+  ];
+
+  const titleEl = $("#location-title");
+  const addrEl = $("#location-address");
+  const actions = $("#location-actions");
+  if (titleEl) titleEl.textContent = title;
+  if (addrEl) addrEl.textContent = address;
+  if (actions) {
+    actions.innerHTML = maps.map((m) => `<a class="btn btn-ghost" href="${m.href}" target="_blank" rel="noopener noreferrer">${m.label}</a>`).join("");
+  }
+  const frame = $("#map-frame");
+  if (frame) {
+    frame.innerHTML = `<iframe title="${title}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed"></iframe>`;
+  }
+
+  const qrLoc = $("#qr-location");
+  if (qrLoc) {
+    qrLoc.hidden = false;
+    qrLoc.innerHTML = `<h2>${title}</h2><p>${address}</p><div class="location-actions">${maps.map((m) => `<a class="btn btn-ghost" href="${m.href}" target="_blank" rel="noopener noreferrer">${m.label}</a>`).join("")}</div>`;
+  }
+}
+
+/* ---------- Appointment form ---------- */
 function initForm() {
   const form = $("#appointment-form");
   if (!form) return;
@@ -453,7 +709,8 @@ function initForm() {
       return;
     }
 
-    if (!SITE_CONFIG.appointmentEndpoint) {
+    const endpoint = SITE_CONFIG.appointmentEndpoint || (SITE_CONFIG.workerUrl ? `${SITE_CONFIG.workerUrl.replace(/\/+$/, "")}/api/appointments` : "");
+    if (!endpoint) {
       msg.classList.add("err");
       msg.textContent = "ارتباط با سرور برقرار نشد. لطفاً بعداً دوباره تلاش کنید.";
       return;
@@ -463,7 +720,7 @@ function initForm() {
     submit.dataset.label = submit.textContent;
     submit.textContent = "در حال ارسال...";
     try {
-      const res = await fetch(SITE_CONFIG.appointmentEndpoint, {
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -482,22 +739,31 @@ function initForm() {
   });
 }
 
-function initArticle() {
+/* ---------- SEO article ---------- */
+async function initArticle() {
   const art = $("#seo-article");
   const btn = $("#seo-toggle");
   if (!art || !btn) return;
+  try {
+    const res = await fetch(`${window.SITE_BASE || ""}content.txt`, { cache: "no-store" });
+    if (res.ok) {
+      const html = (await res.text()).trim();
+      if (html) art.innerHTML = html;
+    }
+  } catch (e) { /* keep fallback markup */ }
   btn.addEventListener("click", () => {
     const open = art.classList.toggle("is-open");
     btn.textContent = open ? "بستن" : "نمایش بیشتر";
   });
 }
 
+/* ---------- ASAP slogan ---------- */
 async function initSlogan() {
   const el = $("#asap-slogan");
   if (!el) return;
   let slogan = FALLBACK_SLOGAN;
   try {
-    const res = await fetch("asap.json", { cache: "no-store" });
+    const res = await fetch(`${window.SITE_BASE || ""}asap.json`, { cache: "no-store" });
     if (res.ok) {
       const json = await res.json();
       if (json.slogans && json.slogans.length) {
@@ -520,6 +786,7 @@ async function initSlogan() {
   tick();
 }
 
+/* ---------- Partners ---------- */
 async function initPartners() {
   const section = $("#partners");
   const track = $("#marquee-track");
@@ -539,6 +806,7 @@ async function initPartners() {
   track.innerHTML = html + html;
 }
 
+/* ---------- Cursor / micro interactions ---------- */
 function initCursor() {
   const glow = $(".cursor-glow");
   if (!glow || isTouch || reduceMotion) return;
@@ -580,29 +848,141 @@ function initCursor() {
   }
 }
 
-function initQr() {
-  bindExternalLinks();
+/* ---------- Optional Three.js orb ---------- */
+function initOrb() {
+  const canvas = $("#nutrition-orb");
+  if (!canvas || isTouch || reduceMotion || !window.THREE) return;
+  if (window.matchMedia("(max-width: 720px)").matches) return;
+
+  try {
+    const THREE = window.THREE;
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(35, 2, 0.1, 20);
+    camera.position.z = 3.2;
+    const geo = new THREE.IcosahedronGeometry(0.9, 1);
+    const mat = new THREE.MeshPhysicalMaterial({
+      color: 0xb0c4de,
+      roughness: 0.25,
+      transmission: 0.65,
+      thickness: 0.6,
+      transparent: true,
+      opacity: 0.85
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    scene.add(mesh);
+    const light = new THREE.DirectionalLight(0xf5b7c1, 1.2);
+    light.position.set(2, 2, 3);
+    scene.add(light);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+
+    const resize = () => {
+      const w = canvas.clientWidth || canvas.parentElement.clientWidth;
+      const h = canvas.clientHeight || 180;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    let raf;
+    const tick = (t) => {
+      mesh.rotation.y = t * 0.00025;
+      mesh.rotation.x = Math.sin(t * 0.0002) * 0.2;
+      renderer.render(scene, camera);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) cancelAnimationFrame(raf);
+      else raf = requestAnimationFrame(tick);
+    });
+  } catch (err) {
+    console.warn("Three.js scene skipped", err);
+    canvas.style.display = "none";
+  }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  Theme.init();
-  if (isQrPage) {
-    initQr();
-    hideLoader();
-    return;
-  }
-  initNav();
-  renderFaq();
+/* ---------- QR page ---------- */
+function initQr() {
   bindExternalLinks();
-  initForm();
-  initArticle();
-  Lightbox.init();
-  initCursor();
-  hideLoader();
-  initSlogan();
-  initVideos();
-  initPosts();
-  initPartners();
-});
+  renderLocation();
+  const box = $("#qr-actions");
+  if (!box) return;
+  const links = SITE_CONFIG.links || {};
+  const items = [
+    { href: links.website || "index.html", label: "ورود به سایت", icon: "home", key: "website" },
+    { href: links.telegram, label: "کانال تلگرام", icon: "send", key: "telegram" },
+    { href: links.instagram, label: "پیج اینستاگرام", icon: "photo_camera", key: "instagram" },
+    { href: links.bale, label: "کانال بله", icon: "forum", key: "bale" },
+    { href: links.rubika, label: "کانال روبیکا", icon: "chat_bubble", key: "rubika" },
+    { href: links.eitaa, label: "کانال ایتا", icon: "campaign", key: "eitaa" },
+    { href: "index.html#appoint", label: "رزرو وقت مشاوره رایگان", icon: "event_available", key: "appointment" },
+    { href: channelHref("phone", links.phone), label: "تماس", icon: "call", key: "phone" },
+    { href: links.whatsapp, label: "واتساپ", icon: "chat", key: "whatsapp" }
+  ];
+  box.innerHTML = "";
+  items.forEach((item) => {
+    if (item.key === "appointment" && SITE_CONFIG.sections?.appointment === false) return;
+    if (item.key !== "website" && item.key !== "appointment" && !hasLink(item.href)) return;
+    const a = document.createElement("a");
+    a.href = item.href || "#";
+    if (item.key !== "phone" && item.key !== "website" && item.key !== "appointment") {
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+    }
+    a.innerHTML = `<span class="material-symbols-rounded">${item.icon}</span> ${item.label}`;
+    box.appendChild(a);
+  });
+}
+
+/* ---------- Boot ---------- */
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = src;
+    s.async = true;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+async function boot() {
+  try {
+    Theme.init();
+    await loadConfig();
+    const qr = document.body && document.body.dataset.page === "qr";
+    if (qr) {
+      initQr();
+      return;
+    }
+    initNav();
+    renderServices();
+    renderFaq();
+    bindExternalLinks();
+    renderLocation();
+    initForm();
+    initArticle();
+    Lightbox.init();
+    initCursor();
+    initSlogan();
+    if (SITE_CONFIG.sections?.videos !== false) initVideos();
+    if (SITE_CONFIG.sections?.posts !== false) initPosts();
+    if (SITE_CONFIG.sections?.partners !== false) initPartners();
+  } catch (err) {
+    console.warn(err);
+  } finally {
+    hideLoader();
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", boot);
+} else {
+  boot();
+}
 
 window.SITE_CONFIG = SITE_CONFIG;

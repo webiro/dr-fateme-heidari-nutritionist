@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /demos/
+Disallow: /demos
+Disallow: /content.txt
+Disallow: /dashboard
+Disallow: /dashboard/
+Disallow: /workers
+Disallow: /workers/
+
+Sitemap: https://drfatemeheidari.ir/sitemap.xml

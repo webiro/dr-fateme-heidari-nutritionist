@@ -1,0 +1,101 @@
+{
+  "doctor": {
+    "nameFa": "فاطمه حیدری نائیج",
+    "nameEn": "Fateme Heidari Naeij",
+    "shortNameFa": "فاطمه حیدری",
+    "title": "متخصص و کارشناس تغذیه",
+    "medicalCode": "ت-۱۱۴۴۲",
+    "city": "نوشهر",
+    "province": "مازندران",
+    "country": "ایران",
+    "intro": "با طراحی برنامه‌های غذایی متناسب با شرایط، هدف و سبک زندگی شما، در مسیر رسیدن به تغذیه سالم و وزن پایدار همراه شما هستم.",
+    "footerText": "متخصص و کارشناس تغذیه در نوشهر. همراهی آرام برای تغذیه آگاهانه‌تر."
+  },
+  "links": {
+    "website": "https://drfatemeheidari.ir",
+    "instagram": "https://instagram.com/diet_tisa",
+    "telegram": "https://t.me/diet_tisa",
+    "tisaAssistant": "https://t.me/ai_diet_tisa_bot",
+    "phone": "+989121231212",
+    "whatsapp": "https://wa.me/989121231212",
+    "medicalCouncil": "https://membersearch.irimc.org/member/profile?id=e5608720-3b33-42c7-a2e5-f45aec17a7ba",
+    "bale": "",
+    "rubika": "",
+    "eitaa": ""
+  },
+  "domain": "drfatemeheidari.ir",
+  "workerUrl": "",
+  "appointmentEndpoint": "",
+  "location": {
+    "enabled": true,
+    "title": "آدرس مطب",
+    "address": "نوشهر، استان مازندران",
+    "lat": 36.6508,
+    "lng": 51.4962
+  },
+  "colors": {
+    "light": {
+      "bg": "#faf9f6",
+      "surface": "rgba(255, 255, 255, 0.58)",
+      "blue": "#b0c4de",
+      "pink": "#f5b7c1",
+      "navy": "#1b2433",
+      "text": "#1b2433",
+      "muted": "#5c6b80",
+      "line": "rgba(27, 36, 51, 0.08)"
+    },
+    "dark": {
+      "bg": "#0e141d",
+      "surface": "rgba(22, 30, 44, 0.62)",
+      "blue": "#b0c4de",
+      "pink": "#f5b7c1",
+      "navy": "#eef3f8",
+      "text": "#f6f3ee",
+      "muted": "#b7c2d0",
+      "line": "rgba(250, 249, 246, 0.08)"
+    }
+  },
+  "media": {
+    "videosPath": "videos/",
+    "postsPath": "posts/",
+    "maxVideos": 50,
+    "maxPosts": 50,
+    "maxPostSlides": 30
+  },
+  "sections": {
+    "intro": true,
+    "services": true,
+    "faq": true,
+    "videos": true,
+    "posts": true,
+    "contact": true,
+    "appointment": true,
+    "article": true,
+    "partners": true,
+    "location": true
+  },
+  "services": [
+    { "title": "رژیم کاهش وزن", "text": "تنظیم برنامه با تمرکز بر کاهش تدریجی و قابل نگهداری، نه فشارهای کوتاه‌مدت.", "icon": "monitor_weight" },
+    { "title": "رژیم افزایش وزن", "text": "افزایش وزن آگاهانه با توجه به اشتها، برنامه روزانه و ترکیب غذایی مناسب شما.", "icon": "restaurant" },
+    { "title": "تثبیت و پایداری وزن", "text": "بعد از تغییر وزن، کمک می‌کنم عادت‌های جدید در زندگی واقعی جا بگیرند.", "icon": "balance" },
+    { "title": "تغذیه ورزشی", "text": "هماهنگی تغذیه با تمرین، بازیابی و سطح انرژی، متناسب با نوع فعالیت شما.", "icon": "fitness_center" },
+    { "title": "رژیم غذایی شخصی‌سازی‌شده", "text": "برنامه‌ای که از روی الگوی کلی کپی نشده؛ بر اساس خود شما نوشته می‌شود.", "icon": "nutrition" },
+    { "title": "تغذیه در دیابت", "text": "همراهی برای انتخاب‌های غذایی منظم‌تر در کنار توصیه‌های تیم درمان شما.", "icon": "monitor_heart" },
+    { "title": "تغذیه در بیماری‌های مزمن", "text": "تنظیم تغذیه حمایتی با درنظر گرفتن محدودیت‌ها و نیازهای روزمره.", "icon": "medical_services" },
+    { "title": "تغذیه حمایتی در سرطان", "text": "تمرکز بر حفظ توان، تحمل تغذیه و همراهی انسانی در دوره‌ای حساس.", "icon": "favorite" },
+    { "title": "اصلاح سبک زندگی", "text": "تغییرات کوچک و پایدار در خواب، حرکت، وعده‌ها و رابطه با غذا.", "icon": "self_improvement" },
+    { "title": "مشاوره تخصصی تغذیه", "text": "گفت‌وگوی دقیق درباره وضعیت فعلی و انتخاب مسیر مناسب برای ادامه.", "icon": "ecology" }
+  ],
+  "faq": [
+    { "question": "سوال اول", "answer": "جواب اول" },
+    { "question": "سوال اول", "answer": "جواب اول" },
+    { "question": "سوال اول", "answer": "جواب اول" },
+    { "question": "سوال اول", "answer": "جواب اول" },
+    { "question": "سوال اول", "answer": "جواب اول" },
+    { "question": "سوال اول", "answer": "جواب اول" },
+    { "question": "سوال اول", "answer": "جواب اول" },
+    { "question": "سوال اول", "answer": "جواب اول" },
+    { "question": "سوال اول", "answer": "جواب اول" },
+    { "question": "سوال اول", "answer": "جواب اول" }
+  ]
+}

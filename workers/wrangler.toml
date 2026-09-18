@@ -1,0 +1,13 @@
+name = "nutrition-appointments"
+main = "index.js"
+compatibility_date = "2024-10-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nutrition-appointments"
+database_id = "YOUR_D1_DATABASE_ID"
+
+[vars]
+ALLOWED_ORIGINS = "https://drfatemeheidari.ir,http://127.0.0.1,http://localhost"
+ADMIN_USER = "admin"
+# ADMIN_PASS and AUTH_SECRET را در Cloudflare Dashboard به‌صورت Secret بگذارید.
