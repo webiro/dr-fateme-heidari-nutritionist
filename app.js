@@ -125,7 +125,7 @@ function applyIdentity() {
   });
 
   const loc = `${d.city || ""}، ${d.province || ""}`.replace(/^، |، $/g, "");
-  document.title = `${d.nameFa || ""} | ${d.nameEn || ""} | ${d.title || ""}`.replace(/^\s\|\s|\s\|\s$/g, "");
+  // document.title = `${d.nameFa || ""} | ${d.nameEn || ""} | ${d.title || ""}`.replace(/^\s\|\s|\s\|\s$/g, "");
   $$("[data-name-fa], .brand-text strong, .loader-name").forEach((el) => {
     if (el.classList.contains("loader-name") || el.matches(".brand-text strong")) el.textContent = d.shortNameFa || d.nameFa || el.textContent;
   });
