@@ -1,0 +1,17 @@
+name = "nutrition-appointments"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+preview_urls = false
+
+routes = [
+  { pattern = "api.drfatemeheidari.ir", custom_domain = true }
+]
+
+# دیتابیس D1 (از قبل موجود بود)
+[[d1_databases]]
+binding = "DB"
+database_name = "nutrition-appointments"
+database_id = "254987de-cedc-4ebd-b24e-d7d60d9a9af8"
+
+# رمز پنل ادمین به‌صورت secret ست شده است:
+# npx wrangler secret put ADMIN_TOKEN
