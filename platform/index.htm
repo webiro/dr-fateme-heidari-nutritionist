@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DIET TISA | WEBIRO!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  /* ================= Design tokens ================= */
+  :root{
+    --bg:#fafaf7;
+    --page:#ffffff;
+    --ink:#1f2a2e;
+    --muted:#5a6a70;
+    --line:#e6e2d8;
+    --soft:#f4f1ea;
+    --accent:#6f8b7a;
+    --accent-2:#8aa89a;
+    --accent-soft:#eaf1ec;
+    --gold:#b08a4a;
+    --blue-soft:#eaf1f5;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Vazirmatn',system-ui,sans-serif;font-weight:400;line-height:1.75;}
+  button{font-family:inherit;}
+  input,textarea,select{font-family:inherit;color:var(--ink);}
+
+  /* Material icons */
+  .material-symbols-outlined{
+    font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 20;
+    font-size:18px;
+    line-height:1;
+    vertical-align:middle;
+  }
+  .btn .material-symbols-outlined{font-size:16px;margin-left:4px;}
+  .btn-sm .material-symbols-outlined{font-size:15px;}
+
+  /* ================= Loading screen ================= */
+  .loading-screen{
+    position:fixed;inset:0;z-index:9999;
+    background:var(--bg);
+    display:flex;align-items:center;justify-content:center;
+    transition:opacity .6s ease, visibility .6s ease;
+  }
+  .loading-screen.hidden{opacity:0;visibility:hidden;pointer-events:none;}
+  .loading-box{
+    display:flex;flex-direction:column;align-items:center;gap:18px;
+    padding:36px 48px;border-radius:18px;
+    background:var(--page);border:1px solid var(--line);
+    box-shadow:0 12px 40px rgba(0,0,0,.05);
+  }
+  .loading-spinner{
+    width:44px;height:44px;border-radius:50%;
+    border:3px solid var(--line);
+    border-top-color:var(--accent);
+    animation:spin 1s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-text{
+    font-size:15px;font-weight:600;color:var(--ink);letter-spacing:.5px;
+  }
+
+  /* ================= Wizard shell ================= */
+  .wizard{max-width:920px;margin:24px auto;padding:0 16px;}
+  .wizard-card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(0,0,0,.04);overflow:hidden;}
+  .wizard-header{padding:22px 26px 14px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,#fff, #f7f5ef);}
+  .wizard-header .top-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;}
+  .wizard-header h1{margin:0;font-size:20px;font-weight:800;}
+  .wizard-header p{margin:4px 0 0;font-size:13px;color:var(--muted);}
+  .header-actions{display:flex;gap:6px;flex-wrap:wrap;}
+  .progress-wrap{margin-top:16px;}
+  .progress-steps{display:flex;gap:6px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);justify-content:space-between;}
+  .progress-steps .st{flex:1;min-width:70px;text-align:center;padding:6px 4px;border-radius:8px;background:var(--soft);transition:.2s;cursor:pointer;}
+  .progress-steps .st.active{background:var(--accent-soft);color:var(--accent);font-weight:700;}
+  .progress-steps .st.done{background:var(--accent);color:#fff;}
+  .progress-bar{height:6px;background:var(--soft);border-radius:99px;margin-top:10px;overflow:hidden;}
+  .progress-bar .fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0;transition:width .3s;}
+
+  .wizard-body{padding:24px 26px;}
+  .wizard-footer{padding:16px 26px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;background:#fbfaf6;flex-wrap:wrap;}
+  .btn{border:0;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:2px;}
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-primary:hover{filter:brightness(.92);}
+  .btn-ghost{background:var(--soft);color:var(--ink);}
+  .btn-ghost:hover{background:#ece7d9;}
+  .btn-gold{background:var(--gold);color:#fff;}
+  .btn-gold:hover{filter:brightness(.92);}
+  .btn-sm{padding:6px 12px;font-size:12px;border-radius:8px;}
+  .btn-danger{background:#e9d1c8;color:#8a4a2e;}
+  .btn-danger:hover{background:#e0bfb2;}
+  .btn-outline{background:#fff;border:1px solid var(--line);color:var(--ink);}
+  .btn-outline:hover{background:var(--soft);}
+
+  .step{display:none;animation:fade .25s;}
+  .step.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;}}
+  .step h2{margin:0 0 4px;font-size:17px;}
+  .step .hint{color:var(--muted);font-size:12.5px;margin-bottom:16px;}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px 14px;}
+  .grid .full{grid-column:1/-1;}
+  .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px;font-weight:500;}
+  .field input,.field textarea,.field select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:13px;outline:none;transition:.15s;}
+  .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .field textarea{resize:vertical;min-height:70px;}
+
+  /* Color/Logo panel */
+  .panel{background:#fbfaf6;border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:6px;}
+  .panel h3{margin:0 0 10px;font-size:13.5px;color:var(--accent);display:flex;align-items:center;gap:6px;}
+  .colors-row{display:flex;flex-wrap:wrap;gap:14px;}
+  .color-item{display:flex;flex-direction:column;font-size:11.5px;color:var(--muted);gap:4px;align-items:center;}
+  .color-item input[type=color]{width:44px;height:44px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:#fff;padding:2px;}
+  .logo-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+  .logo-preview{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:22px;overflow:hidden;border:1px solid var(--line);}
+  .logo-preview img{width:100%;height:100%;object-fit:cover;}
+  .meal-imgs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}
+  .meal-img-item{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;}
+  .meal-img-thumb{width:52px;height:52px;border-radius:10px;background:var(--soft);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:1px solid var(--line);}
+  .meal-img-thumb img{width:100%;height:100%;object-fit:contain;}
+  .meal-img-item .col{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;}
+  .meal-img-item .col .nm{font-size:12px;font-weight:600;color:var(--ink);}
+  .meal-img-item .col input[type=file]{font-size:11px;}
+  .meal-img-item .col .row{display:flex;gap:6px;align-items:center;}
+  .meal-img-item .col .row button{padding:3px 8px;font-size:10.5px;}
+
+  /* Option editor */
+  .option-block{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;}
+  .option-block .oh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;flex-wrap:wrap;}
+  .option-block .oh .lbl{font-weight:700;font-size:13px;color:var(--accent);}
+  .chip-editor{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+  .chips{display:contents;}
+  .chip{background:var(--soft);border-radius:6px;padding:4px 10px;font-size:12px;display:inline-flex;align-items:center;gap:6px;}
+  .chip .rm{cursor:pointer;color:var(--muted);font-weight:700;display:inline-flex;align-items:center;}
+  .chip .rm:hover{color:#8a4a2e;}
+  .chip .rm .material-symbols-outlined{font-size:14px;}
+  .chip-add{display:flex;gap:6px;flex:1;min-width:180px;}
+  .chip-add input{flex:1;padding:6px 10px;border:1px dashed var(--line);border-radius:6px;font-size:12px;background:#fff;}
+  .option-block .oh-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+  .full-toggle{font-size:11.5px;color:var(--muted);display:inline-flex;align-items:center;gap:4px;cursor:pointer;}
+
+  .add-more{width:100%;padding:10px;border:1px dashed var(--accent-2);color:var(--accent);background:var(--accent-soft);border-radius:10px;cursor:pointer;font-weight:600;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+  .add-more:hover{filter:brightness(.96);}
+
+  .snack-block, .note-block{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;background:#fbfaf6;}
+  .snack-block .sh, .note-block .nh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;flex-wrap:wrap;}
+  .snack-block .sh input, .note-block .nh input{padding:6px 10px;border:1px solid var(--line);border-radius:8px;font-size:12.5px;flex:1;min-width:140px;}
+  .snack-block .sh .lbl, .note-block .nh .lbl{font-weight:700;font-size:13px;color:var(--accent);white-space:nowrap;}
+  .note-block textarea{width:100%;min-height:60px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:12.5px;}
+  .note-block .type-row{margin-top:6px;display:flex;gap:10px;font-size:12px;color:var(--muted);}
+
+  .autosave-hint{font-size:11px;color:var(--muted);margin-top:6px;}
+
+  /* Modal */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(20,25,28,.55);z-index:1000;display:none;align-items:center;justify-content:center;padding:12px;}
+  .modal-backdrop.open{display:flex;}
+  .modal{background:#fff;border-radius:14px;max-width:960px;width:100%;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  .modal-head{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px;}
+  .modal-head h3{margin:0;font-size:15px;}
+  .modal-body{padding:12px;overflow:auto;background:var(--bg);}
+
+  /* ================= Preview ================= */
+  #previewArea{background:var(--bg);padding:12px 0;}
+  #modalPreviewArea{background:var(--bg);}
+  .page{width:210mm;min-height:297mm;padding:14mm 15mm 14mm;margin:10mm auto;background:var(--page);box-shadow:0 4px 24px rgba(0,0,0,.06);position:relative;display:flex;flex-direction:column;overflow:hidden;page-break-after:always;break-after:page;}
+  .page:last-child{page-break-after:auto;break-after:auto;}
+  .page.dense .notes{gap:5px;}
+  .page.dense .note{padding:7px 12px;font-size:11px;line-height:1.7;}
+  .page.dense .note-title{font-size:11.5px;}
+
+  .hdr{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:14px;gap:12px;}
+  .hdr .brand{display:flex;align-items:center;gap:12px;}
+  .hdr .mark{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;box-shadow:0 3px 10px rgba(111,139,122,.35);overflow:hidden;}
+  .hdr .mark img{width:100%;height:100%;object-fit:cover;}
+  .hdr h1{font-size:15px;margin:0;font-weight:700;letter-spacing:.2px;}
+  .hdr .sub{font-size:11px;color:var(--muted);margin-top:2px;}
+  .hdr .meta{text-align:left;font-size:10.5px;color:var(--muted);line-height:1.6;}
+  .hdr .meta b{color:var(--ink);font-weight:600;}
+
+  .cover-title{text-align:center;margin:30mm 0 12mm;}
+  .cover-title .eyebrow{font-size:12px;letter-spacing:6px;color:var(--gold);font-weight:500;}
+  .cover-title h2{font-size:34px;margin:14px 0 8px;font-weight:800;}
+  .cover-title p{color:var(--muted);font-size:14px;margin:0;}
+
+  .patient{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:18px 22px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px 22px;margin:12mm 0 0;}
+  .patient .row{display:flex;flex-direction:column;font-size:12px;}
+  .patient .row span{color:var(--muted);font-size:10.5px;margin-bottom:2px;}
+  .patient .row b{font-size:13px;font-weight:600;}
+  .patient .row.full{grid-column:1/-1;}
+
+  .clinician{margin-top:10mm;text-align:center;padding:16px;border:1px dashed var(--line);border-radius:12px;background:#fff;}
+  .clinician .name{font-weight:700;font-size:15px;}
+  .clinician .role{color:var(--muted);font-size:11.5px;margin-top:2px;}
+  .clinician .lic{margin-top:6px;font-size:11px;color:var(--gold);letter-spacing:1px;}
+
+  .section-title{display:flex;align-items:center;gap:12px;margin:6px 0 12px;padding:10px 14px;background:var(--accent-soft);border-right:4px solid var(--accent);border-radius:10px;}
+  .section-title .ico{flex:0 0 52px;height:52px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.05);}
+  .section-title .ico svg{width:40px;height:40px;display:block;}
+  .section-title .ico img{width:46px;height:46px;object-fit:contain;display:block;border-radius:8px;}
+  .section-title .txt{display:flex;flex-direction:column;}
+  .section-title .fa{font-size:16px;font-weight:700;}
+  .section-title .en{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+  .supp{position:relative;}
+  .supp .pill-ico{flex:0 0 40px;height:40px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.05);}
+  .supp .pill-ico svg{width:30px;height:30px;}
+
+  .options{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;}
+  .options li{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.9;}
+  .options li .num{flex:0 0 26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;}
+  .options li .items{flex:1;display:flex;flex-wrap:wrap;gap:6px 10px;}
+  .options li .items .chip{background:var(--soft);border-radius:6px;padding:2px 8px;font-size:12px;color:var(--ink);}
+  .options li.full .items .chip{background:var(--blue-soft);}
+
+  .supplements{display:flex;flex-direction:column;gap:8px;}
+  .supp{display:flex;align-items:center;gap:12px;background:var(--accent-soft);border-radius:10px;padding:12px 14px;font-size:12.5px;}
+  .supp .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+
+  .notes{display:flex;flex-direction:column;gap:9px;}
+  .note{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:12px;line-height:1.9;display:flex;gap:10px;}
+  .note::before{content:"";flex:0 0 6px;background:var(--accent-2);border-radius:3px;margin-top:6px;height:14px;}
+  .note.warn{background:#fdf6f2;border-color:#f0d9c8;}
+  .note.warn::before{background:var(--gold);}
+  .note-title{font-weight:700;color:var(--accent);display:block;margin-bottom:2px;font-size:12.5px;}
+  .note.warn .note-title{color:var(--gold);}
+
+  .footer{margin-top:auto;padding-top:12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:10.5px;color:var(--muted);gap:8px;}
+  .footer .addr{display:flex;flex-direction:column;gap:2px;}
+  .pagenum{font-variant-numeric:tabular-nums;background:var(--soft);padding:3px 10px;border-radius:20px;font-size:10.5px;}
+
+  @media (max-width:640px){
+    .grid{grid-template-columns:1fr;}
+    .page{width:100%;min-height:auto;padding:20px;margin:10px auto;}
+    .patient{grid-template-columns:1fr 1fr;}
+  }
+
+  @page{ size:A4 portrait; margin:0; }
+  @media print{
+    html,body{background:#fff;}
+    body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .wizard, .modal-backdrop{display:none !important;}
+    #previewArea{padding:0;background:#fff;}
+    .page{margin:0;box-shadow:none;width:210mm;min-height:297mm;height:auto;}
+  }
+
+  .datepicker-plot-area{font-family:'Vazirmatn',sans-serif !important;}
+
+  /* ================= Start screen (method / excel) ================= */
+  .choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 6px;}
+  .choice{background:#fff;border:2px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center;cursor:pointer;transition:.15s;display:flex;flex-direction:column;align-items:center;gap:8px;}
+  .choice .material-symbols-outlined{font-size:30px;color:var(--muted);}
+  .choice b{font-size:14px;}
+  .choice small{color:var(--muted);font-size:11.5px;line-height:1.6;}
+  .choice:hover{border-color:var(--accent-2);}
+  .choice.sel{border-color:var(--accent);background:var(--accent-soft);}
+  .choice.sel .material-symbols-outlined{color:var(--accent);}
+  .q-label{font-weight:700;font-size:13.5px;margin-top:18px;display:flex;align-items:center;gap:6px;color:var(--ink);}
+  .excel-status{font-size:12px;color:var(--muted);margin-top:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .excel-status.ok{color:var(--accent);}
+  .excel-status.err{color:#8a4a2e;}
+
+  /* ================= AI generate ================= */
+  .gen-btn{width:100%;padding:14px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;border:0;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s;margin-top:16px;}
+  .gen-btn:hover{filter:brightness(.94);}
+  .gen-btn:disabled{opacity:.6;cursor:wait;}
+  .gen-status{font-size:12.5px;margin-top:10px;min-height:18px;}
+  .gen-status.ok{color:var(--accent);font-weight:600;}
+  .gen-status.err{color:#8a4a2e;}
+
+  /* ================= Template chips ================= */
+  .tpl-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .tpl-chip{border:2px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;font-size:12.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.15s;}
+  .tpl-chip:hover{border-color:var(--accent-2);}
+  .tpl-chip.sel{border-color:var(--accent);background:var(--accent-soft);}
+  .tpl-dot{width:12px;height:12px;border-radius:50%;display:inline-block;}
+
+  /* ================= Food bank ================= */
+  .foodbank-search{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:9px;font-size:13px;margin-bottom:10px;}
+  .foodbank-grid{display:flex;flex-wrap:wrap;gap:6px;max-height:52vh;overflow:auto;}
+  .food-chip{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;transition:.12s;}
+  .food-chip:hover{background:var(--accent-soft);border-color:var(--accent);}
+  .foodbank-target{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;}
+  .foodbank-target select{padding:7px 10px;border:1px solid var(--line);border-radius:8px;font-size:12.5px;background:#fff;flex:1;min-width:160px;}
+
+  /* ================= Templates (page skins) ================= */
+  /* نوجوان: رنگی‌رنگی و شاد */
+  body[data-template="teen"] .page{
+    background:
+      radial-gradient(circle at 12% 8%, rgba(124,92,191,.16), transparent 32%),
+      radial-gradient(circle at 88% 14%, rgba(255,122,89,.14), transparent 30%),
+      radial-gradient(circle at 18% 88%, rgba(94,177,214,.14), transparent 30%),
+      radial-gradient(circle at 85% 85%, rgba(255,206,84,.16), transparent 30%),
+      #fdfbff;
+  }
+  body[data-template="teen"] .hdr{border-bottom:2px dashed #d9c8f5;}
+  body[data-template="teen"] .hdr .mark{background:linear-gradient(135deg,#7c5cbf,#e0699b);}
+  body[data-template="teen"] .section-title{background:linear-gradient(90deg,#f3edfd,#ffeef6);border-right:5px solid #7c5cbf;border-radius:14px;}
+  body[data-template="teen"] .section-title .fa::after{content:" ✨";}
+  body[data-template="teen"] .options li{border:1.5px solid #e4d9f8;border-radius:14px;}
+  body[data-template="teen"] .options li .num{background:linear-gradient(135deg,#7c5cbf,#b48be0);color:#fff;}
+  body[data-template="teen"] .options li .items .chip{background:#f6f1ff;border-radius:99px;border:1px solid #e4d9f8;}
+  body[data-template="teen"] .options li.full .items .chip{background:#fff4e8;border-color:#ffd9ad;}
+  body[data-template="teen"] .patient{background:linear-gradient(135deg,#f6f1ff,#fff0f6);border:1.5px solid #e4d9f8;}
+  body[data-template="teen"] .note{border-radius:14px;}
+  body[data-template="teen"] .supp{background:#f6f1ff;border-radius:14px;}
+  body[data-template="teen"] .cover-title .eyebrow{letter-spacing:3px;color:#7c5cbf;}
+  body[data-template="teen"] .cover-title h2{background:linear-gradient(90deg,#7c5cbf,#e0699b);-webkit-background-clip:text;background-clip:text;color:transparent;}
+
+  /* جوان: مینیمال مدرن با لهجه‌ی مرجانی */
+  body[data-template="young"] .page{background:#fffcfa;}
+  body[data-template="young"] .page::before{content:"";position:absolute;inset:0 0 auto 0;height:7px;background:linear-gradient(90deg,#e8603c,#ffb199,#ffd9ad);}
+  body[data-template="young"] .hdr{border-bottom:1px solid #f3e3dc;}
+  body[data-template="young"] .hdr .mark{border-radius:12px;background:linear-gradient(135deg,#e8603c,#ff9d7f);}
+  body[data-template="young"] .section-title{background:#fff2ec;border-right:5px solid #e8603c;border-radius:6px;}
+  body[data-template="young"] .section-title .ico{border-radius:8px;}
+  body[data-template="young"] .options li{border-radius:6px;border-color:#f0ded6;}
+  body[data-template="young"] .options li .num{border-radius:6px;background:#fff2ec;color:#e8603c;}
+  body[data-template="young"] .options li .items .chip{border-radius:6px;background:#fbf4f1;}
+  body[data-template="young"] .patient{border-radius:6px;background:#fbf4f1;}
+  body[data-template="young"] .cover-title .eyebrow{color:#e8603c;letter-spacing:4px;}
+  body[data-template="young"] .cover-title h2{letter-spacing:.5px;}
+  body[data-template="young"] .pagenum{border-radius:6px;}
+
+  /* ورزشکار: تیره و پرانرژی */
+  body[data-template="athlete"] .page{background:#17191f;color:#e8e6e1;}
+  body[data-template="athlete"] .page::before{content:"";position:absolute;inset:0 0 auto 0;height:9px;background:repeating-linear-gradient(135deg,#c0392b 0 14px,#e67e22 14px 28px);}
+  body[data-template="athlete"] .hdr{border-bottom:1px solid #2c2f38;}
+  body[data-template="athlete"] .hdr h1{color:#f4f2ee;}
+  body[data-template="athlete"] .hdr .sub, body[data-template="athlete"] .hdr .meta{color:#9aa0ac;}
+  body[data-template="athlete"] .hdr .meta b{color:#d5d9e0;}
+  body[data-template="athlete"] .section-title{background:#221d1f;border-right:5px solid #c0392b;border-radius:8px;}
+  body[data-template="athlete"] .section-title .fa{color:#f0ece7;letter-spacing:1px;}
+  body[data-template="athlete"] .section-title .en{color:#8d939f;}
+  body[data-template="athlete"] .section-title .ico{background:#2c2f38;box-shadow:none;}
+  body[data-template="athlete"] .options li{background:#1f222b;border-color:#2c2f38;border-radius:8px;color:#dcd9d4;}
+  body[data-template="athlete"] .options li .num{background:linear-gradient(135deg,#c0392b,#e67e22);color:#fff;}
+  body[data-template="athlete"] .options li .items .chip{background:#2a2e39;color:#e8e6e1;}
+  body[data-template="athlete"] .options li.full .items .chip{background:#33261f;color:#f3ded2;}
+  body[data-template="athlete"] .patient{background:#1f222b;border-color:#2c2f38;}
+  body[data-template="athlete"] .patient .row span{color:#9aa0ac;}
+  body[data-template="athlete"] .patient .row b{color:#e8e6e1;}
+  body[data-template="athlete"] .clinician{background:#1f222b;border-color:#2c2f38;}
+  body[data-template="athlete"] .clinician .name{color:#f0ece7;}
+  body[data-template="athlete"] .clinician .role{color:#9aa0ac;}
+  body[data-template="athlete"] .note{background:#1f222b;border-color:#2c2f38;color:#dcd9d4;}
+  body[data-template="athlete"] .note-title{color:#ff8a75;}
+  body[data-template="athlete"] .note.warn{background:#2a201a;border-color:#4a2f22;}
+  body[data-template="athlete"] .note.warn .note-title{color:#ffb199;}
+  body[data-template="athlete"] .supp{background:#241d1e;color:#e8e6e1;}
+  body[data-template="athlete"] .cover-title .eyebrow{color:#e67e22;letter-spacing:8px;}
+  body[data-template="athlete"] .cover-title h2{color:#f4f2ee;}
+  body[data-template="athlete"] .cover-title p{color:#9aa0ac;}
+  body[data-template="athlete"] .footer{border-top:1px solid #2c2f38;color:#9aa0ac;}
+  body[data-template="athlete"] .pagenum{background:#2a2e39;color:#e8e6e1;}
+  body[data-template="athlete"] .hdr .mark{background:linear-gradient(135deg,#c0392b,#e67e22);}
+
+  /* خانه‌دار: گرم و دنج */
+  body[data-template="home"] .page{
+    background:
+      radial-gradient(circle at 90% 6%, rgba(201,111,74,.10), transparent 26%),
+      radial-gradient(circle at 6% 94%, rgba(160,120,70,.10), transparent 26%),
+      #fdf9f4;
+  }
+  body[data-template="home"] .page{border-radius:14px;}
+  body[data-template="home"] .hdr{border-bottom:2px solid #ecdccf;}
+  body[data-template="home"] .hdr .mark{border-radius:50%;background:linear-gradient(135deg,#c96f4a,#e0a37e);}
+  body[data-template="home"] .section-title{background:#fdf1ea;border-right:5px double #c96f4a;border-radius:12px;}
+  body[data-template="home"] .options li{border-radius:12px;border-color:#eeddd1;background:#fffdfb;}
+  body[data-template="home"] .options li .num{border-radius:50%;background:#fdf1ea;color:#c96f4a;}
+  body[data-template="home"] .options li .items .chip{background:#faf0e8;border-radius:99px;}
+  body[data-template="home"] .patient{background:#faf0e8;border-color:#eeddd1;border-radius:16px;}
+  body[data-template="home"] .note{border-radius:12px;background:#fffdfb;}
+  body[data-template="home"] .supp{background:#fdf1ea;border-radius:12px;}
+  body[data-template="home"] .cover-title .eyebrow{color:#c96f4a;letter-spacing:5px;}
+  body[data-template="home"] .cover-title h2{font-weight:800;color:#5f4633;}
+
+  .cover-badge{font-size:34px;text-align:center;margin-top:4px;}
+  .empty-msg{color:var(--muted);font-size:12px;}
+  body[data-template="athlete"] .empty-msg{color:#9aa0ac;}
+
+  /* ================= Drafts ================= */
+  .draft-item{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;flex-wrap:wrap;}
+  .draft-item .d-name{font-weight:700;font-size:13.5px;}
+  .draft-item .d-meta{font-size:11.5px;color:var(--muted);margin-top:2px;}
+  .draft-item .d-actions{display:flex;gap:6px;}
+  .draft-empty{color:var(--muted);text-align:center;padding:26px;font-size:13px;}
+  .save-dlg{max-width:380px;}
+  .save-dlg .field{margin:12px 0;}
+
+</style>
+</head>
+<body>
+
+<!-- Loading screen -->
+<div id="loadingScreen" class="loading-screen">
+  <div class="loading-box">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">در حال بارگذاری</div>
+  </div>
+</div>
+
+<div class="wizard" id="wizard">
+  <div class="wizard-card">
+    <div class="wizard-header">
+      <div class="top-row">
+        <div>
+          <h1>پلتفرم برنامه غذایی | وبیرو</h1>
+          <p>مرحله به مرحله اطلاعات را وارد کنید و در پایان خروجی PDF بگیرید.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-outline btn-sm" onclick="openDrafts()" title="پیش‌نویس‌های ذخیره‌شده در این مرورگر"><span class="material-symbols-outlined">folder_open</span> پیش‌نویس‌ها</button>
+          <button class="btn btn-primary btn-sm" onclick="openSaveDraft()" title="ذخیره پیش‌نویس مراجع فعلی"><span class="material-symbols-outlined">save</span> ذخیره پیش‌نویس</button>
+          <button class="btn btn-outline btn-sm" onclick="openFoodBank()" title="بانک مواد غذایی از فایل اکسل" id="foodbankBtn" style="display:none;"><span class="material-symbols-outlined">restaurant_menu</span> بانک غذایی</button>
+          <button class="btn btn-gold btn-sm" onclick="downloadPDF()" title="خروجی PDF"><span class="material-symbols-outlined">picture_as_pdf</span> خروجی PDF</button>
+          <button class="btn btn-primary btn-sm" onclick="downloadHTML()" title="خروجی HTML قابل دانلود"><span class="material-symbols-outlined">download</span> خروجی HTML</button>
+          <button class="btn btn-outline btn-sm" onclick="openPreviewModal()" title="پیش‌نمایش سریع"><span class="material-symbols-outlined">visibility</span> پیش‌نمایش</button>
+          <button class="btn btn-danger btn-sm" onclick="resetForm()" title="ریست کردن فرم"><span class="material-symbols-outlined">delete</span> ریست فرم</button>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-steps" id="progressSteps"></div>
+        <div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+        <div class="autosave-hint" id="autosaveHint">اطلاعات به صورت خودکار در مرورگر شما ذخیره می‌شود (تا ۲۴ ساعت).</div>
+      </div>
+    </div>
+
+    <div class="wizard-body" id="wizardBody">
+
+      <!-- Step 0: Start (method + excel) -->
+      <div class="step active" data-step="0">
+        <h2>شروع ساخت رژیم</h2>
+        <p class="hint">ابتدا روش تهیه برنامه را انتخاب کنید.</p>
+        <div class="choice-grid" id="methodChoices">
+          <div class="choice" data-method="ai">
+            <span class="material-symbols-outlined">auto_awesome</span>
+            <b>با هوش مصنوعی</b>
+            <small>اطلاعات مراجع را وارد می‌کنید، هوش مصنوعی رژیم را می‌نویسد و شما فقط بازبینی و ویرایش می‌کنید.</small>
+          </div>
+          <div class="choice" data-method="manual">
+            <span class="material-symbols-outlined">edit_note</span>
+            <b>دستی</b>
+            <small>تمام وعده‌ها را خودتان از ابتدا می‌نویسید.</small>
+          </div>
+        </div>
+        <div class="q-label"><span class="material-symbols-outlined">grid_on</span> از فایل اکسل منابع غذایی استفاده شود؟</div>
+        <div class="choice-grid" id="excelChoices" style="max-width:420px;">
+          <div class="choice" data-excel="yes">
+            <span class="material-symbols-outlined">table_view</span>
+            <b>بله</b>
+            <small>فهرست مواد غذایی از فایل اکسل مرجع خوانده می‌شود.</small>
+          </div>
+          <div class="choice" data-excel="no">
+            <span class="material-symbols-outlined">table_view_off</span>
+            <b>خیر</b>
+            <small>بدون فایل مرجع ادامه می‌دهیم.</small>
+          </div>
+        </div>
+        <div class="excel-status" id="excelStatus"></div>
+      </div>
+
+      <!-- Step 1: Platform settings (persistent) -->
+      <div class="step" data-step="1">
+        <h2>اطلاعات اصلی پلتفرم</h2>
+        <p class="hint">این اطلاعات ثابت است و برای همیشه در مرورگر شما ذخیره می‌شود. تا زمانی که خودتان ادیت نکنید تغییر نمی‌کند.</p>
+        <div class="grid">
+          <div class="field"><label>نام رژیم درمانگر</label><input id="p_clinician" placeholder="مثال: فاطمه حیدری"/></div>
+          <div class="field"><label>شماره نظام پزشکی</label><input id="p_lic" placeholder="۱۱۴۴۲"/></div>
+          <div class="field full"><label>اسم مجموعه</label><input id="p_brand" placeholder="مثال: استودیو ورزشی آواتار"/></div>
+          <div class="field full"><label>آدرس</label><input id="p_addr" placeholder="سلمانشهر، خیابان باهنر، مجموعه ورزشی اوتار"/></div>
+          <div class="field"><label>شماره تماس</label><input id="p_phone" placeholder="۰۹۳۵-۱۸۹۶۶۰۲"/></div>
+          <div class="field"><label>اینستاگرام</label><input id="p_instagram" placeholder="@diet_tisa | @avatar_sportstudio"/></div>
+        </div>
+
+        <div class="panel">
+          <h3><span class="material-symbols-outlined">image</span> لوگو</h3>
+          <div class="logo-row">
+            <div class="logo-preview" id="logoPreview"><span id="logoLetter">A</span></div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <input type="file" id="p_logo_file" accept="image/*" style="font-size:12px;"/>
+              <div style="display:flex;gap:6px;">
+                <button class="btn btn-danger btn-sm" onclick="clearLogo()"><span class="material-symbols-outlined">delete</span> حذف لوگو</button>
+                <span style="font-size:11px;color:var(--muted);align-self:center;">اگر خالی باشد، از حالت پیش‌فرض استفاده می‌شود.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3><span class="material-symbols-outlined">restaurant</span> تصاویر وعده‌ها (اختیاری)</h3>
+          <p style="font-size:11.5px;color:var(--muted);margin:0 0 10px;">در صورت آپلود، از تصویر شما استفاده می‌شود؛ در غیر این صورت تصویر پیش‌فرض نمایش داده می‌شود.</p>
+          <div class="meal-imgs-grid" id="mealImgsGrid"></div>
+        </div>
+
+        <div class="panel">
+          <h3><span class="material-symbols-outlined">palette</span> تنظیمات رنگ صفحه</h3>
+          <div class="colors-row">
+            <div class="color-item"><input type="color" id="c_accent" value="#6f8b7a"/><span>اصلی</span></div>
+            <div class="color-item"><input type="color" id="c_accent2" value="#8aa89a"/><span>مکمل</span></div>
+            <div class="color-item"><input type="color" id="c_gold" value="#b08a4a"/><span>طلایی</span></div>
+            <div class="color-item"><input type="color" id="c_ink" value="#1f2a2e"/><span>متن</span></div>
+            <div class="color-item"><input type="color" id="c_bg" value="#fafaf7"/><span>پس‌زمینه</span></div>
+            <div class="color-item" style="justify-content:flex-end;">
+              <button class="btn btn-ghost btn-sm" onclick="resetColors()"><span class="material-symbols-outlined">restart_alt</span> بازگردانی</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3><span class="material-symbols-outlined">smart_toy</span> تنظیمات هوش مصنوعی (OpenRouter)</h3>
+          <div class="grid">
+            <div class="field full"><label>کلید API (فقط در مرورگر شما ذخیره می‌شود)</label><input id="ai_key" type="password" dir="ltr" placeholder="sk-or-v1-..."/></div>
+            <div class="field full">
+              <label>نام مدل (از لیست انتخاب کنید یا بنویسید)</label>
+              <input id="ai_model" dir="ltr" list="orModelsList" placeholder="openai/gpt-4o-mini"/>
+              <datalist id="orModelsList"></datalist>
+              <div class="excel-status" id="modelsStatus" style="margin-top:6px;"></div>
+            </div>
+            <div class="field full"><label>دستور ساخت رژیم (پرامپت)</label><textarea id="ai_prompt" style="min-height:130px;"></textarea></div>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="resetAIPrompt()"><span class="material-symbols-outlined">restart_alt</span> پرامپت پیش‌فرض</button>
+            <button class="btn btn-ghost btn-sm" onclick="fetchModels(true)"><span class="material-symbols-outlined">refresh</span> بارگذاری لیست مدل‌ها</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Client Info -->
+      <div class="step" data-step="2">
+        <h2>اطلاعات فردی کلاینت</h2>
+        <p class="hint">مشخصات مراجع و هدف رژیم را وارد کنید.</p>
+        <div class="grid">
+          <div class="field"><label>نام و نام خانوادگی</label><input id="f_name" placeholder="مثال: حدیث اقلیمی"/></div>
+          <div class="field"><label>تاریخ (شمسی)</label><input id="f_date" placeholder="۱۴۰۵/۰۴/۱۴" autocomplete="off"/></div>
+          <div class="field"><label>سن</label><input id="f_age" placeholder="۴۳"/></div>
+          <div class="field"><label>قد (cm)</label><input id="f_height" placeholder="۱۶۰"/></div>
+          <div class="field"><label>وزن (kg)</label><input id="f_weight" placeholder="۷۲.۳"/></div>
+          <div class="field">
+            <label>هدف رژیم</label>
+            <select id="f_goal">
+              <option>کاهش وزن</option>
+              <option>افزایش وزن</option>
+              <option>پایداری وزن</option>
+            </select>
+          </div>
+          <div class="field full"><label>سابقه بیماری</label><textarea id="f_disease" placeholder="مثال: کم‌کاری تیروئید، ..."></textarea></div>
+          <div class="field full"><label>سایر اطلاعات</label><textarea id="f_other" placeholder="مثال: تمرین فیتنس"></textarea></div>
+        </div>
+
+        <div id="aiGenBox" hidden>
+          <button class="gen-btn" id="genBtn" onclick="generateWithAI()"><span class="material-symbols-outlined">auto_awesome</span> ساخت رژیم با هوش مصنوعی</button>
+          <div class="gen-status" id="genStatus">اطلاعات را کامل کنید و دکمه را بزنید؛ همه‌ی وعده‌ها، مکمل‌ها و نکته‌ها به‌صورت پیش‌نویس ساخته می‌شود و بعد می‌توانید تک‌تک را ویرایش کنید.</div>
+        </div>
+      </div>
+
+      <!-- Step 3: Breakfast -->
+      <div class="step" data-step="3">
+        <h2>صبحانه</h2>
+        <p class="hint">برای هر گزینه چند «چیپس غذایی» بنویسید و Enter بزنید.</p>
+        <div class="field full" style="margin-bottom:12px;">
+          <label>یادداشت ناشتا (اختیاری)</label>
+          <textarea id="f_fasting" placeholder="مثال: ۱ شات زردچوبه + فلفل سیاه + لیموترش ..."></textarea>
+        </div>
+        <div id="breakfast_options"></div>
+        <button class="add-more" onclick="addOption('breakfast_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
+      </div>
+
+      <!-- Step 4: Morning snack -->
+      <div class="step" data-step="4">
+        <h2>میان‌وعده صبح</h2>
+        <p class="hint">گزینه‌های میان‌وعده صبح.</p>
+        <div id="morning_options"></div>
+        <button class="add-more" onclick="addOption('morning_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
+      </div>
+
+      <!-- Step 5: Lunch -->
+      <div class="step" data-step="5">
+        <h2>ناهار</h2>
+        <p class="hint">گزینه‌های ناهار.</p>
+        <div id="lunch_options"></div>
+        <button class="add-more" onclick="addOption('lunch_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
+      </div>
+
+      <!-- Step 6: Afternoon snack -->
+      <div class="step" data-step="6">
+        <h2>میان‌وعده عصر</h2>
+        <p class="hint">گزینه‌های میان‌وعده عصر.</p>
+        <div id="afternoon_options"></div>
+        <button class="add-more" onclick="addOption('afternoon_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
+      </div>
+
+      <!-- Step 7: Dinner -->
+      <div class="step" data-step="7">
+        <h2>شام</h2>
+        <p class="hint">گزینه‌های شام.</p>
+        <div id="dinner_options"></div>
+        <button class="add-more" onclick="addOption('dinner_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
+      </div>
+
+      <!-- Step 8: Late night -->
+      <div class="step" data-step="8">
+        <h2>وعده آخر شب</h2>
+        <p class="hint">گزینه‌های میل قبل از خواب.</p>
+        <div id="latenight_options"></div>
+        <button class="add-more" onclick="addOption('latenight_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
+      </div>
+
+      <!-- Step 9: Supplements -->
+      <div class="step" data-step="9">
+        <h2>مکمل‌های مورد نیاز</h2>
+        <p class="hint">هر مکمل را در یک ردیف وارد کنید.</p>
+        <div id="supplements_container"></div>
+        <button class="add-more" onclick="addSupplement()"><span class="material-symbols-outlined">add</span> افزودن مکمل</button>
+      </div>
+
+      <!-- Step 10: Notes -->
+      <div class="step" data-step="10">
+        <h2>توضیحات و نکات</h2>
+        <p class="hint">نکات نوع «هشدار» با رنگ متفاوت نمایش داده می‌شوند.</p>
+        <div id="notes_container"></div>
+        <button class="add-more" onclick="addNote()"><span class="material-symbols-outlined">add</span> افزودن نکته</button>
+      </div>
+
+      <!-- Step 11: Export -->
+      <div class="step" data-step="11">
+        <h2>خروجی گرفتن</h2>
+        <p class="hint">اول قالب ظاهری برنامه را انتخاب کنید، بعد خروجی بگیرید.</p>
+        <div class="q-label"><span class="material-symbols-outlined">wallpaper</span> قالب ظاهری برنامه</div>
+        <div class="tpl-row" id="tplRow"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 12px;">
+          <button class="btn btn-gold" onclick="downloadPDF()"><span class="material-symbols-outlined">picture_as_pdf</span> دانلود PDF</button>
+          <button class="btn btn-primary" onclick="downloadHTML()"><span class="material-symbols-outlined">download</span> دانلود HTML</button>
+          <button class="btn btn-ghost" onclick="renderPreview('previewArea')"><span class="material-symbols-outlined">refresh</span> به‌روزرسانی پیش‌نمایش</button>
+          <button class="btn btn-outline" onclick="window.print()"><span class="material-symbols-outlined">print</span> چاپ</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="wizard-footer">
+      <button class="btn btn-ghost" id="prevBtn" onclick="prevStep()"><span class="material-symbols-outlined">chevron_right</span> مرحله قبل</button>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-outline" onclick="openPreviewModal()"><span class="material-symbols-outlined">visibility</span> پیش‌نمایش</button>
+        <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">مرحله بعد <span class="material-symbols-outlined">chevron_left</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="previewArea"></div>
+
+<div class="modal-backdrop" id="previewModal" onclick="if(event.target===this)closePreviewModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>پیش‌نمایش برنامه غذایی</h3>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-gold btn-sm" onclick="downloadPDF()"><span class="material-symbols-outlined">picture_as_pdf</span> دانلود PDF</button>
+        <button class="btn btn-primary btn-sm" onclick="downloadHTML()"><span class="material-symbols-outlined">download</span> دانلود HTML</button>
+        <button class="btn btn-ghost btn-sm" onclick="closePreviewModal()"><span class="material-symbols-outlined">close</span> بستن</button>
+      </div>
+    </div>
+    <div class="modal-body" id="modalPreviewArea"></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="foodBankModal" onclick="if(event.target===this)closeFoodBank()">
+  <div class="modal" style="max-width:640px;">
+    <div class="modal-head">
+      <h3>بانک مواد غذایی (از فایل اکسل)</h3>
+      <button class="btn btn-ghost btn-sm" onclick="closeFoodBank()"><span class="material-symbols-outlined">close</span> بستن</button>
+    </div>
+    <div class="modal-body">
+      <div class="foodbank-target">
+        <span style="font-size:12px;color:var(--muted);white-space:nowrap;">افزودن به:</span>
+        <select id="foodbankTarget"></select>
+      </div>
+      <input class="foodbank-search" id="foodbankSearch" placeholder="جستجوی ماده غذایی..." oninput="renderFoodBankList()"/>
+      <div class="foodbank-grid" id="foodbankList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="draftsModal" onclick="if(event.target===this)closeDrafts()">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-head">
+      <h3>پیش‌نویس‌های ذخیره‌شده (فقط روی همین مرورگر)</h3>
+      <button class="btn btn-ghost btn-sm" onclick="closeDrafts()"><span class="material-symbols-outlined">close</span> بستن</button>
+    </div>
+    <div class="modal-body" id="draftsList"></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="saveDraftModal" onclick="if(event.target===this)closeSaveDraft()">
+  <div class="modal save-dlg">
+    <div class="modal-head">
+      <h3>ذخیره پیش‌نویس</h3>
+      <button class="btn btn-ghost btn-sm" onclick="closeSaveDraft()"><span class="material-symbols-outlined">close</span> بستن</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>عنوان پیش‌نویس</label>
+        <input id="draftName" placeholder="مثلاً: پیش‌نویس مراجع پرهام رضایی"/>
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="saveDraft()"><span class="material-symbols-outlined">save</span> ذخیره در این مرورگر</button>
+      <p style="font-size:11px;color:var(--muted);margin-top:8px;">پیش‌نویس‌ها کاملاً آفلاین و فقط در حافظه‌ی همین مرورگر ذخیره می‌شوند.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   Constants / State
+============================================================ */
+const STEP_LABELS = [
+  "شروع","پلتفرم","مراجع","صبحانه","میان‌وعده صبح","ناهار","میان‌وعده عصر","شام","آخر شب","مکمل‌ها","توضیحات","خروجی"
+];
+const totalSteps = STEP_LABELS.length;
+let currentStep = 0;
+
+const LS_PLATFORM = 'dw_platform_v2';
+const LS_LOGO     = 'dw_logo_v1';
+const LS_COLORS   = 'dw_colors_v1';
+const LS_FORM     = 'dw_form_v2';
+const LS_AI       = 'dw_ai_v1';
+const LS_TEMPLATE = 'dw_template_v1';
+
+const DEFAULT_COLORS = {
+  accent:'#6f8b7a', accent2:'#8aa89a', gold:'#b08a4a',
+  ink:'#1f2a2e', bg:'#fafaf7'
+};
+
+/* جلسه‌ی جاری: روش ساخت و استفاده از اکسل */
+let FORM_METHOD = 'manual';   // 'ai' | 'manual'
+let USE_EXCEL   = false;
+
+/* ---------- قالب‌های ظاهری ---------- */
+const TEMPLATES = {
+  classic : { label:'کلاسیک',    dot:'#6f8b7a', colors:{accent:'#6f8b7a',accent2:'#8aa89a',gold:'#b08a4a',ink:'#1f2a2e',bg:'#fafaf7'}, badge:''   },
+  teen    : { label:'نوجوان',    dot:'#7c5cbf', colors:{accent:'#7c5cbf',accent2:'#b48be0',gold:'#8e6c1f',ink:'#241f33',bg:'#faf9fd'}, badge:'🌟' },
+  young   : { label:'جوان',      dot:'#ff7a59', colors:{accent:'#e8603c',accent2:'#ff9d7f',gold:'#b08a4a',ink:'#2b211d',bg:'#fdfaf8'}, badge:'🔥' },
+  athlete : { label:'ورزشکار',   dot:'#c0392b', colors:{accent:'#c0392b',accent2:'#e67e22',gold:'#8d6e2f',ink:'#211714',bg:'#fcf8f6'}, badge:'💪' },
+  home    : { label:'خانه‌دار',  dot:'#c96f4a', colors:{accent:'#c96f4a',accent2:'#e0a37e',gold:'#a4762c',ink:'#2d2018',bg:'#fdf9f4'}, badge:'🏡' },
+};
+let CURRENT_TEMPLATE = 'classic';
+
+/* ---------- تنظیمات AI ---------- */
+const DEFAULT_AI_MODEL = 'openai/gpt-4o-mini';
+const DEFAULT_AI_PROMPT = `تو یک متخصص تغذیه ایرانی باتجربه هستی. بر اساس اطلاعات مراجع، یک برنامه غذایی روزانه کامل و واقع‌بینانه با مواد غذایی رایج ایرانی بنویس.
+
+قواعد:
+- برای هر وعده ۲ تا ۴ «گزینه» بده که مراجع بتواند جایگزین انتخاب کند؛ هر گزینه ۳ تا ۶ آیتم غذایی با اندازه‌ی تقریبی (مثلاً «نان سنگک ۲ کف دست»).
+- بیماری‌ها، محدودیت‌ها، هدف (کاهش/افزایش/پایداری وزن)، سن و فعالیت را حتماً در نظر بگیر.
+- اگر «فهرست منابع غذایی» داده شده، غذاها را تا حد امکان از همان فهرست انتخاب کن.
+- مکمل‌ها فقط موارد عمومی و ایمن؛ دارو تجویز نکن.
+- نکته‌ها کوتاه و کاربردی باشند؛ نکته‌های حساس (مثل تداخل دارویی) را با warn=true علامت بزن.
+
+فقط و فقط یک شیء JSON با دقیقاً این ساختار برگردان، بدون هیچ متن اضافه:
+{
+  "fasting": "یادداشت ناشتا یا رشته خالی",
+  "breakfast":   [ { "full": false, "items": ["..."] } ],
+  "morning":     [ { "full": false, "items": ["..."] } ],
+  "lunch":       [ { "full": false, "items": ["..."] } ],
+  "afternoon":   [ { "full": false, "items": ["..."] } ],
+  "dinner":      [ { "full": false, "items": ["..."] } ],
+  "latenight":   [ { "full": false, "items": ["..."] } ],
+  "supplements": ["..."],
+  "notes":       [ { "title": "...", "text": "...", "warn": false } ]
+}`;
+
+const DEFAULT_PLATFORM = {
+  clinician: 'فاطمه حیدری',
+  lic: '۱۱۴۴۲',
+  brand: 'استودیو ورزشی آواتار',
+  addr: 'سلمانشهر، خیابان باهنر، مجموعه ورزشی اوتار',
+  phone: '۰۹۳۵-۱۸۹۶۶۰۲',
+  instagram: '@diet_tisa | @avatar_sportstudio'
+};
+
+/* ============================================================
+   Helpers
+============================================================ */
+function v(id){return (document.getElementById(id)?.value||'').trim();}
+function toPersianDigit(n){const p=['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];return String(n).replace(/\d/g,d=>p[+d]);}
+function esc(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function todayJalali(){
+  try{
+    const pd = new persianDate().toLocale('fa');
+    return pd.format('YYYY/MM/DD');
+  }catch(e){
+    const d = new Date();
+    return d.toLocaleDateString('fa-IR');
+  }
+}
+
+/* ============================================================
+   Progress / Steps
+============================================================ */
+function renderProgress(){
+  const wrap = document.getElementById('progressSteps');
+  wrap.innerHTML = STEP_LABELS.map((l,i)=>{
+    const cls = i===currentStep?'active':(i<currentStep?'done':'');
+    return `<div class="st ${cls}" onclick="showStep(${i})">${toPersianDigit(i+1)}. ${l}</div>`;
+  }).join('');
+  document.getElementById('progressFill').style.width = ((currentStep)/(totalSteps-1)*100)+'%';
+  document.getElementById('prevBtn').style.visibility = currentStep===0?'hidden':'visible';
+  const next = document.getElementById('nextBtn');
+  next.innerHTML = currentStep===totalSteps-1 ? 'پایان' : 'مرحله بعد <span class="material-symbols-outlined">chevron_left</span>';
+  next.style.visibility = currentStep===totalSteps-1 ? 'hidden':'visible';
+}
+function showStep(i){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.querySelector(`.step[data-step="${i}"]`).classList.add('active');
+  currentStep = i;
+  renderProgress();
+  if(i===totalSteps-1){ renderPreview('previewArea'); }
+  else { document.getElementById('previewArea').innerHTML=''; }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function nextStep(){ if(currentStep<totalSteps-1) showStep(currentStep+1); }
+function prevStep(){ if(currentStep>0) showStep(currentStep-1); }
+
+/* ============================================================
+   Option editor
+============================================================ */
+function optionBlockHTML(){
+  return `
+    <div class="option-block">
+      <div class="oh">
+        <div class="lbl">گزینه</div>
+        <div class="oh-actions">
+          <label class="full-toggle"><input type="checkbox" class="fullchk"/> عرض کامل (متن بلند)</label>
+          <button class="btn btn-danger btn-sm" onclick="removeBlock(this)"><span class="material-symbols-outlined">delete</span> حذف</button>
+        </div>
+      </div>
+      <div class="chip-editor">
+        <div class="chips"></div>
+        <div class="chip-add">
+          <input placeholder="یک آیتم بنویسید و Enter بزنید..." onkeydown="chipKey(event,this)"/>
+          <button class="btn btn-primary btn-sm" onclick="chipAdd(this)"><span class="material-symbols-outlined">add</span> افزودن</button>
+        </div>
+      </div>
+    </div>`;
+}
+function removeBlock(el){ el.closest('.option-block, .snack-block, .note-block').remove(); scheduleSave(); }
+function addOption(containerId, data){
+  const c = document.getElementById(containerId);
+  c.insertAdjacentHTML('beforeend', optionBlockHTML());
+  const block = c.lastElementChild;
+  if(data){
+    if(data.full) block.querySelector('.fullchk').checked = true;
+    (data.items||[]).forEach(t=>addChipTo(block, t));
+  }
+  scheduleSave();
+}
+function chipKey(e,inp){ if(e.key==='Enter'){e.preventDefault(); chipAdd(inp);} }
+function addChipTo(block, text){
+  const chips = block.querySelector('.chips');
+  const chip = document.createElement('span');
+  chip.className='chip';
+  chip.innerHTML = `<span class="txt"></span><span class="rm" title="حذف"><span class="material-symbols-outlined">close</span></span>`;
+  chip.querySelector('.txt').textContent = text;
+  chip.querySelector('.rm').onclick = ()=>{chip.remove();scheduleSave();};
+  chips.appendChild(chip);
+}
+function chipAdd(el){
+  const wrap = el.closest('.option-block');
+  const input = wrap.querySelector('.chip-add input');
+  const val = input.value.trim(); if(!val) return;
+  addChipTo(wrap, val);
+  input.value=''; input.focus();
+  scheduleSave();
+}
+
+/* ============================================================
+   Supplements
+============================================================ */
+function addSupplement(val){
+  const c = document.getElementById('supplements_container');
+  const row = document.createElement('div');
+  row.className='snack-block';
+  row.style.padding='10px 14px';
+  row.innerHTML = `
+    <div class="sh" style="margin:0;">
+      <div class="lbl">مکمل</div>
+      <input class="supp-input" placeholder="مثال: ویتامین دی ۵۰۰۰۰ ماهی ۱ عدد بعد از ناهار"/>
+      <button class="btn btn-danger btn-sm" onclick="removeBlock(this)"><span class="material-symbols-outlined">delete</span> حذف</button>
+    </div>`;
+  c.appendChild(row);
+  if(val) row.querySelector('.supp-input').value = val;
+  row.querySelector('.supp-input').addEventListener('input', scheduleSave);
+  scheduleSave();
+}
+
+/* ============================================================
+   Notes
+============================================================ */
+function addNote(data){
+  const c = document.getElementById('notes_container');
+  const row = document.createElement('div');
+  row.className='note-block';
+  const rn = 'nt_'+Math.random().toString(36).slice(2);
+  row.innerHTML = `
+    <div class="nh">
+      <div class="lbl">نکته</div>
+      <input class="note-title-inp" placeholder="عنوان (اختیاری)"/>
+      <button class="btn btn-danger btn-sm" onclick="removeBlock(this)"><span class="material-symbols-outlined">delete</span> حذف</button>
+    </div>
+    <textarea class="note-text" placeholder="متن نکته..."></textarea>
+    <div class="type-row">
+      <label><input type="radio" name="${rn}" class="nt-normal" checked/> عادی</label>
+      <label><input type="radio" name="${rn}" class="nt-warn"/> هشدار</label>
+    </div>`;
+  c.appendChild(row);
+  if(data){
+    row.querySelector('.note-title-inp').value = data.title||'';
+    row.querySelector('.note-text').value = data.text||'';
+    if(data.warn) row.querySelector('.nt-warn').checked = true;
+  }
+  row.querySelectorAll('input,textarea').forEach(i=>i.addEventListener('input',scheduleSave));
+  scheduleSave();
+}
+
+/* ============================================================
+   Collect data
+============================================================ */
+function collectOptions(containerId){
+  const c = document.getElementById(containerId);
+  if(!c) return [];
+  return [...c.querySelectorAll('.option-block')].map(b=>{
+    const full = b.querySelector('.fullchk').checked;
+    const items = [...b.querySelectorAll('.chips .chip .txt')].map(x=>x.textContent);
+    return {full, items};
+  }).filter(o=>o.items.length);
+}
+function collectSupplements(){
+  return [...document.querySelectorAll('#supplements_container .supp-input')]
+    .map(i=>i.value.trim()).filter(Boolean);
+}
+function collectNotes(){
+  return [...document.querySelectorAll('#notes_container .note-block')].map(n=>({
+    title: n.querySelector('.note-title-inp').value.trim(),
+    text: n.querySelector('.note-text').value.trim(),
+    warn: n.querySelector('.nt-warn').checked
+  })).filter(n=>n.text);
+}
+function collectData(){
+  return {
+    clinician: v('p_clinician')||'—',
+    lic: v('p_lic')||'',
+    brand: v('p_brand')||'',
+    addr: v('p_addr')||'',
+    phone: v('p_phone')||'',
+    instagram: v('p_instagram')||'',
+    logo: localStorage.getItem(LS_LOGO)||'',
+    name: v('f_name')||'—',
+    date: v('f_date')||todayJalali(),
+    age: v('f_age')||'—',
+    height: v('f_height')||'—',
+    weight: v('f_weight')||'—',
+    goal: v('f_goal')||'—',
+    disease: v('f_disease')||'—',
+    other: v('f_other')||'—',
+    fasting: v('f_fasting'),
+    breakfast: collectOptions('breakfast_options'),
+    morning:   collectOptions('morning_options'),
+    lunch:     collectOptions('lunch_options'),
+    afternoon: collectOptions('afternoon_options'),
+    dinner:    collectOptions('dinner_options'),
+    latenight: collectOptions('latenight_options'),
+    supplements: collectSupplements(),
+    notes: collectNotes()
+  };
+}
+
+/* ============================================================
+   Preview builders
+============================================================ */
+let pageCounter = 0;
+function resetPages(){ pageCounter=0; }
+function logoHTML(d){
+  if(d.logo) return `<div class="mark"><img src="${d.logo}" alt="لوگو"/></div>`;
+  const letter = (d.brand||'A').trim().charAt(0) || 'A';
+  return `<div class="mark">${esc(letter)}</div>`;
+}
+function hdr(d, metaHTML){
+  return `
+  <div class="hdr">
+    <div class="brand">
+      ${logoHTML(d)}
+      <div>
+        <h1>${esc(d.brand||'—')}</h1>
+        <div class="sub">رژیم درمانگر: ${esc(d.clinician)}${d.lic?' · شماره نظام پزشکی: '+esc(d.lic):''}</div>
+      </div>
+    </div>
+    <div class="meta">${metaHTML}</div>
+  </div>`;
+}
+function footer(d){
+  pageCounter++;
+  const parts = [d.addr, d.phone, d.instagram].map(s=>(s||'').trim()).filter(Boolean);
+  const addr = parts.map(p=>`<span>${esc(p)}</span>`).join('');
+  return `
+  <div class="footer">
+    <div class="addr">${addr||''}</div>
+    <div class="pagenum">صفحه ${toPersianDigit(pageCounter)}</div>
+    <div class="copyright">ساخته‌شده با ❤️ توسط WEBIRO</div>
+  </div>`;
+}
+function optionsHTML(opts){
+  if(!opts.length) return '<p class="empty-msg">گزینه‌ای ثبت نشده است.</p>';
+  return `<ul class="options">${opts.map((o,i)=>`
+    <li class="${o.full?'full':''}">
+      <div class="num">${toPersianDigit(i+1)}</div>
+      <div class="items">${o.items.map(it=>`<span class="chip">${esc(it)}</span>`).join('')}</div>
+    </li>`).join('')}</ul>`;
+}
+const MEAL_IMAGE_DEFAULTS = {
+    "breakfast": "images/chai.png",
+    "morning": "images/mive.png",
+    "lunch": "images/berenj.png",
+    "afternoon": "images/mast.png",
+    "dinner": "images/soop.png",
+    "latenight": "images/shir.png",
+    "supplement": "images/mokamel.png"   // ← اضافه شد
+};
+
+const LS_MEAL_IMG_PREFIX = 'dw_meal_img_v1_';
+const MEAL_KEYS = ['breakfast','morning','lunch','afternoon','dinner','latenight','supplement'];
+
+const MEAL_LABELS = {
+  breakfast: 'صبحانه',
+  morning: 'میان‌وعده صبح',
+  lunch: 'ناهار',
+  afternoon: 'میان‌وعده عصر',
+  dinner: 'شام',
+  latenight: 'وعده آخر شب',
+  supplement: 'مکمل‌ها'
+};
+function getMealImg(key){
+  try {
+    return localStorage.getItem(LS_MEAL_IMG_PREFIX + key) || MEAL_IMAGE_DEFAULTS[key] || '';
+  } catch(e){
+    return MEAL_IMAGE_DEFAULTS[key] || '';
+  }
+}
+const MEAL_ICONS = {
+  supplement: `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="24" width="44" height="16" rx="8" fill="#ef5350" transform="rotate(-20 32 32)"/><rect x="10" y="24" width="22" height="16" rx="8" fill="#fff8e1" transform="rotate(-20 32 32)"/><circle cx="32" cy="32" r="1.5" fill="#c62828" transform="rotate(-20 32 32)"/></svg>`,
+  supplementDot: `<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="12" width="24" height="8" rx="4" fill="#66bb6a" transform="rotate(-25 16 16)"/><rect x="4" y="12" width="12" height="8" rx="4" fill="#fff" transform="rotate(-25 16 16)"/></svg>`,
+};
+function sectionTitle(fa, en, key){
+  let ico = '';
+  if(key && MEAL_KEYS.includes(key)){
+    const src = getMealImg(key);
+    if(src){
+      ico = `<div class="ico"><img src="${src}" alt="${esc(fa)}" crossorigin="anonymous"/></div>`;
+    }
+  }
+  return `<div class="section-title">${ico}<div class="txt"><span class="fa">${esc(fa)}</span><span class="en">${esc(en)}</span></div></div>`;
+}
+function renderPreview(targetId){
+  resetPages();
+  const d = collectData();
+  const area = document.getElementById(targetId||'previewArea');
+  if(!area) return;
+  const pages = [];
+
+  // Cover
+  pages.push(`
+    <section class="page">
+      ${hdr(d, `برنامه غذایی اختصاصی<br/><b>تاریخ:</b> ${esc(d.date)}`)}
+      <div class="cover-title">
+        <div class="eyebrow">DIET PLAN</div>
+        ${TEMPLATES[CURRENT_TEMPLATE] && TEMPLATES[CURRENT_TEMPLATE].badge ? `<div class="cover-badge">${TEMPLATES[CURRENT_TEMPLATE].badge}</div>` : ''}
+        <h2>برنامه غذایی اختصاصی</h2>
+        <p>طراحی شده بر اساس شرایط و اهداف فردی</p>
+      </div>
+      <div class="patient">
+        <div class="row"><span>نام و نام خانوادگی</span><b>${esc(d.name)}</b></div>
+        <div class="row"><span>تاریخ</span><b>${esc(d.date)}</b></div>
+        <div class="row"><span>سن</span><b>${esc(d.age)}</b></div>
+        <div class="row"><span>قد</span><b>${esc(d.height)}</b></div>
+        <div class="row"><span>وزن</span><b>${esc(d.weight)}</b></div>
+        <div class="row"><span>هدف</span><b>${esc(d.goal)}</b></div>
+        <div class="row full"><span>سابقه بیماری</span><b>${esc(d.disease)}</b></div>
+        <div class="row full"><span>سایر اطلاعات</span><b>${esc(d.other)}</b></div>
+      </div>
+      <div class="clinician">
+        <div class="name">${esc(d.clinician)}</div>
+        <div class="role">رژیم درمانگر</div>
+        ${d.lic?`<div class="lic">شماره نظام پزشکی ${esc(d.lic)}</div>`:''}
+      </div>
+      ${footer(d)}
+    </section>`);
+
+  // Page 2: Breakfast + Morning snack
+  pages.push(`
+    <section class="page">
+      ${hdr(d, `${esc(d.name)}<br/><b>وعده:</b> صبحانه و میان‌وعده صبح`)}
+      ${sectionTitle('صبحانه','Breakfast','breakfast')}
+      ${d.fasting?`<div class="fasting" style="background:#fffdf6;border:1px solid #efe5c8;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12.5px;"><b style="color:var(--gold);">ناشتا:</b> ${esc(d.fasting)}</div>`:''}
+      ${optionsHTML(d.breakfast)}
+      <div style="margin-top:16px;">${sectionTitle('میان‌وعده صبح','Morning Snack','morning')}</div>
+      ${optionsHTML(d.morning)}
+      ${footer(d)}
+    </section>`);
+
+  // Page 3: Lunch + Afternoon snack
+  pages.push(`
+    <section class="page">
+      ${hdr(d, `${esc(d.name)}<br/><b>وعده:</b> ناهار و میان‌وعده عصر`)}
+      ${sectionTitle('ناهار','Lunch','lunch')}
+      ${optionsHTML(d.lunch)}
+      <div style="margin-top:16px;">${sectionTitle('میان‌وعده عصر','Afternoon Snack','afternoon')}</div>
+      ${optionsHTML(d.afternoon)}
+      ${footer(d)}
+    </section>`);
+
+  // Page 4: Dinner + Late night
+  pages.push(`
+    <section class="page">
+      ${hdr(d, `${esc(d.name)}<br/><b>وعده:</b> شام و وعده آخر شب`)}
+      ${sectionTitle('شام','Dinner','dinner')}
+      ${optionsHTML(d.dinner)}
+      <div style="margin-top:16px;">${sectionTitle('وعده آخر شب','Late Night','latenight')}</div>
+      ${optionsHTML(d.latenight)}
+      ${footer(d)}
+    </section>`);
+
+  // Page 5: Supplements
+  pages.push(`
+    <section class="page">
+      ${hdr(d, `${esc(d.name)}<br/><b>بخش:</b> مکمل‌ها`)}
+      ${sectionTitle('مکمل‌های مورد نیاز','Supplements','supplement')}
+      <div class="supplements">
+        ${d.supplements.length ? d.supplements.map(s => `
+          <div class="supp">
+            ${esc(s)}
+          </div>`).join('') : 
+          '<p class="empty-msg">مکملی ثبت نشده است.</p>'}
+      </div>
+      ${footer(d)}
+    </section>`);
+
+  // Notes
+  if(d.notes.length){
+    const per = 15;
+    for(let i=0;i<d.notes.length;i+=per){
+      const chunk = d.notes.slice(i,i+per);
+      const dense = chunk.length>10 ? 'dense':'';
+      pages.push(`
+        <section class="page ${dense}">
+          ${hdr(d, `${esc(d.name)}<br/><b>بخش:</b> توضیحات`)}
+          ${sectionTitle('توضیحات','Notes')}
+          <div class="notes">
+            ${chunk.map(n=>`
+              <div class="note ${n.warn?'warn':''}">
+                <div>${n.title?`<span class="note-title">${esc(n.title)}</span>`:''}${esc(n.text)}</div>
+              </div>`).join('')}
+          </div>
+          ${footer(d)}
+        </section>`);
+    }
+  }
+
+  area.innerHTML = pages.join('');
+}
+
+/* ============================================================
+   Preview modal
+============================================================ */
+function openPreviewModal(){
+  renderPreview('modalPreviewArea');
+  document.getElementById('previewModal').classList.add('open');
+}
+function closePreviewModal(){
+  document.getElementById('previewModal').classList.remove('open');
+}
+
+/* ============================================================
+   PDF
+============================================================ */
+async function downloadPDF(){
+  renderPreview('previewArea');
+  const target = document.getElementById('previewArea');
+  const d = collectData();
+  const filename = `رژیم غذایی ${d.name} تاریخ ${d.date}.pdf`.replace(/[\\/:*?"<>|]/g,'-');
+  // Wait for fonts (Vazirmatn) — critical for correct Persian rendering
+  try { if(document.fonts && document.fonts.ready) await document.fonts.ready; } catch(e){}
+  // Wait for all images (data URIs decode instantly but be safe)
+  const imgs = target.querySelectorAll('img');
+  await Promise.all([...imgs].map(im => im.complete ? Promise.resolve() : new Promise(r=>{im.onload=im.onerror=r;})));
+  await new Promise(r=>setTimeout(r, 150));
+
+  try {
+    const { jsPDF } = window.jspdf || {};
+    const pdf = new (jsPDF||window.jspdf.jsPDF)({unit:'mm', format:'a4', orientation:'portrait'});
+    const pageW = 210, pageH = 297;
+    const pages = target.querySelectorAll('.page');
+    for(let i=0;i<pages.length;i++){
+      const canvas = await html2canvas(pages[i], {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        windowWidth: pages[i].scrollWidth
+      });
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      // fit to A4 preserving aspect ratio (canvas is A4-shaped already)
+      const ratio = canvas.height / canvas.width;
+      let w = pageW, h = pageW * ratio;
+      if(h > pageH){ h = pageH; w = pageH / ratio; }
+      const x = (pageW - w)/2, y = (pageH - h)/2;
+      if(i>0) pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', x, y, w, h, undefined, 'FAST');
+    }
+    pdf.save(filename);
+  } catch(err){
+    console.error(err);
+    alert('خطا در ساخت PDF. لطفاً دوباره تلاش کنید یا از دکمه چاپ استفاده کنید.');
+  }
+}
+
+
+function downloadHTML(){
+  renderPreview('previewArea');
+  const d = collectData();
+  const filename = `رژیم غذایی ${d.name} تاریخ ${d.date}.html`.replace(/[\\/:*?"<>|]/g,'-');
+  const style = document.querySelector('style').textContent;
+  const pages = document.getElementById('previewArea').innerHTML;
+  const root = getComputedStyle(document.documentElement);
+  const cssVars = ['--bg','--page','--ink','--muted','--line','--soft','--accent','--accent-2','--accent-soft','--gold','--blue-soft']
+    .map(k=>`  ${k}:${root.getPropertyValue(k).trim()};`).join('\n');
+  const html = `<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>برنامه غذایی ${esc(d.name)}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+:root{
+${cssVars}
+}
+${style}
+.wizard, .modal-backdrop, #previewArea { display:none !important; }
+body { background:#fff; }
+</style>
+</head>
+<body${document.body.dataset.template ? ` data-template="${document.body.dataset.template}"` : ''}>
+<div id="printPages">
+${pages}
+</div>
+<script>
+  window.addEventListener('load', function(){
+    if(window.location.hash === '#print') window.print();
+  });
+<\/script>
+</body>
+</html>`;
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ============================================================
+   Platform settings (persistent, no expiry)
+============================================================ */
+function savePlatform(){
+  const data = {
+    clinician:v('p_clinician'), lic:v('p_lic'),
+    brand:v('p_brand'), addr:v('p_addr'),
+    phone:v('p_phone'), instagram:v('p_instagram')
+  };
+  localStorage.setItem(LS_PLATFORM, JSON.stringify(data));
+  updateLogoLetter();
+}
+function loadPlatform(){
+  let d;
+  try{
+    const raw = localStorage.getItem(LS_PLATFORM);
+    d = raw ? JSON.parse(raw) : null;
+  }catch(e){ d = null; }
+  if(!d){
+    // First run: seed defaults and persist them
+    d = { ...DEFAULT_PLATFORM };
+    localStorage.setItem(LS_PLATFORM, JSON.stringify(d));
+  }
+  const set = (id,val)=>{ const el=document.getElementById(id); if(el && val!=null) el.value = val; };
+  set('p_clinician', d.clinician);
+  set('p_lic', d.lic);
+  set('p_brand', d.brand);
+  set('p_addr', d.addr);
+  set('p_phone', d.phone);
+  set('p_instagram', d.instagram);
+}
+
+/* Logo */
+function updateLogoLetter(){
+  const brand = v('p_brand')||'A';
+  const el = document.getElementById('logoLetter');
+  if(el) el.textContent = brand.trim().charAt(0)||'A';
+}
+function applyLogoPreview(){
+  const preview = document.getElementById('logoPreview');
+  const data = localStorage.getItem(LS_LOGO);
+  if(data){
+    preview.innerHTML = `<img src="${data}" alt="لوگو"/>`;
+  } else {
+    preview.innerHTML = `<span id="logoLetter">${(v('p_brand')||'A').trim().charAt(0)||'A'}</span>`;
+  }
+}
+function clearLogo(){
+  localStorage.removeItem(LS_LOGO);
+  document.getElementById('p_logo_file').value='';
+  applyLogoPreview();
+}
+document.addEventListener('change', function(e){
+  if(e.target && e.target.id==='p_logo_file'){
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      localStorage.setItem(LS_LOGO, reader.result);
+      applyLogoPreview();
+    };
+    reader.readAsDataURL(f);
+  }
+});
+
+/* Colors */
+function applyColors(c){
+  const root = document.documentElement.style;
+  root.setProperty('--accent', c.accent);
+  root.setProperty('--accent-2', c.accent2);
+  root.setProperty('--gold', c.gold);
+  root.setProperty('--ink', c.ink);
+  root.setProperty('--bg', c.bg);
+  root.setProperty('--accent-soft', hexToSoft(c.accent));
+}
+function hexToSoft(hex){
+  const h = hex.replace('#','');
+  const r = parseInt(h.substr(0,2),16), g=parseInt(h.substr(2,2),16), b=parseInt(h.substr(4,2),16);
+  const mix = (v)=>Math.round(v + (255-v)*0.82);
+  return `rgb(${mix(r)},${mix(g)},${mix(b)})`;
+}
+function readColorInputs(){
+  return {
+    accent: v('c_accent'),
+    accent2: v('c_accent2'),
+    gold: v('c_gold'),
+    ink: v('c_ink'),
+    bg: v('c_bg')
+  };
+}
+function saveColors(){
+  const c = readColorInputs();
+  localStorage.setItem(LS_COLORS, JSON.stringify(c));
+  applyColors(c);
+}
+function loadColors(){
+  try{
+    const raw = localStorage.getItem(LS_COLORS);
+    const c = raw?JSON.parse(raw):DEFAULT_COLORS;
+    document.getElementById('c_accent').value  = c.accent;
+    document.getElementById('c_accent2').value = c.accent2;
+    document.getElementById('c_gold').value    = c.gold;
+    document.getElementById('c_ink').value     = c.ink;
+    document.getElementById('c_bg').value      = c.bg;
+    applyColors(c);
+  }catch(e){ applyColors(DEFAULT_COLORS); }
+}
+function resetColors(){
+  Object.entries(DEFAULT_COLORS).forEach(([k,val])=>{
+    const map = {accent:'c_accent',accent2:'c_accent2',gold:'c_gold',ink:'c_ink',bg:'c_bg'};
+    document.getElementById(map[k]).value = val;
+  });
+  saveColors();
+}
+
+/* ============================================================
+   Autosave form data (24h expiry)
+============================================================ */
+let saveTimer=null;
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveForm, 300);
+}
+function serializeForm(){
+  return {
+    ts: Date.now(),
+    method: FORM_METHOD,
+    useExcel: USE_EXCEL,
+    template: CURRENT_TEMPLATE,
+    client: {
+      name:v('f_name'), date:v('f_date'), age:v('f_age'),
+      height:v('f_height'), weight:v('f_weight'), goal:v('f_goal'),
+      disease:v('f_disease'), other:v('f_other'), fasting:v('f_fasting')
+    },
+    breakfast: collectOptions('breakfast_options'),
+    morning:   collectOptions('morning_options'),
+    lunch:     collectOptions('lunch_options'),
+    afternoon: collectOptions('afternoon_options'),
+    dinner:    collectOptions('dinner_options'),
+    latenight: collectOptions('latenight_options'),
+    supplements: collectSupplements(),
+    notes: collectNotes()
+  };
+}
+function saveForm(){
+  try{
+    localStorage.setItem(LS_FORM, JSON.stringify(serializeForm()));
+  }catch(e){ console.warn('autosave failed', e); }
+}
+function applyFormData(data){
+  if(!data) return false;
+  const c = data.client||{};
+  restoreStartChoices(data);
+  if(data.template && TEMPLATES[data.template]) applyTemplate(data.template, true);
+  ['name','date','age','height','weight','disease','other','fasting'].forEach(k=>{
+    const el = document.getElementById('f_'+k); if(el && c[k]!=null) el.value = c[k];
+  });
+  if(c.goal){ const g = document.getElementById('f_goal'); if(g) g.value = c.goal; }
+  ['breakfast_options','morning_options','lunch_options','afternoon_options','dinner_options','latenight_options']
+    .forEach(id=>{ const el = document.getElementById(id); if(el) el.innerHTML=''; });
+  const suppC = document.getElementById('supplements_container'); if(suppC) suppC.innerHTML='';
+  const noteC = document.getElementById('notes_container'); if(noteC) noteC.innerHTML='';
+  (data.breakfast||[]).forEach(o=>addOption('breakfast_options', o));
+  (data.morning||[]).forEach(o=>addOption('morning_options', o));
+  (data.lunch||[]).forEach(o=>addOption('lunch_options', o));
+  (data.afternoon||[]).forEach(o=>addOption('afternoon_options', o));
+  (data.dinner||[]).forEach(o=>addOption('dinner_options', o));
+  (data.latenight||[]).forEach(o=>addOption('latenight_options', o));
+  (data.supplements||[]).forEach(s=>addSupplement(s));
+  (data.notes||[]).forEach(n=>addNote(n));
+  return true;
+}
+function loadForm(){
+  try{
+    const raw = localStorage.getItem(LS_FORM);
+    if(!raw) return false;
+    const data = JSON.parse(raw);
+    if(!data.ts || (Date.now()-data.ts) > 24*3600*1000){
+      localStorage.removeItem(LS_FORM);
+      return false;
+    }
+    return applyFormData(data);
+  }catch(e){ return false; }
+}
+
+/* ============================================================
+   Drafts (offline, per-browser)
+============================================================ */
+const LS_DRAFTS = 'dw_drafts_v1';
+function getDrafts(){
+  try{
+    const raw = localStorage.getItem(LS_DRAFTS);
+    const d = raw ? JSON.parse(raw) : {};
+    return (d && typeof d === 'object') ? d : {};
+  }catch(e){ return {}; }
+}
+function setDrafts(d){
+  try{
+    localStorage.setItem(LS_DRAFTS, JSON.stringify(d));
+    return true;
+  }catch(e){
+    alert('فضای ذخیره‌سازی مرورگر پر است. چند پیش‌نویس را حذف کنید.');
+    return false;
+  }
+}
+function openSaveDraft(){
+  const suggested = (v('f_name') ? 'پیش‌نویس مراجع ' + v('f_name') : 'پیش‌نویس ' + todayJalali());
+  document.getElementById('draftName').value = suggested;
+  document.getElementById('saveDraftModal').classList.add('open');
+  setTimeout(()=>document.getElementById('draftName').select(), 100);
+}
+function closeSaveDraft(){ document.getElementById('saveDraftModal').classList.remove('open'); }
+function saveDraft(){
+  const name = document.getElementById('draftName').value.trim();
+  if(!name){ alert('عنوان پیش‌نویس را بنویسید.'); return; }
+  const d = getDrafts();
+  d['draft_' + Date.now()] = { name, ts: Date.now(), data: serializeForm() };
+  // حداکثر ۳۰ پیش‌نویس؛ قدیمی‌ها حذف شوند
+  const keys = Object.keys(d).sort((a,b)=>d[a].ts-d[b].ts);
+  while(keys.length > 30){ delete d[keys.shift()]; }
+  if(setDrafts(d)){
+    closeSaveDraft();
+    openDrafts();
+  }
+}
+function openDrafts(){
+  renderDraftsList();
+  document.getElementById('draftsModal').classList.add('open');
+}
+function closeDrafts(){ document.getElementById('draftsModal').classList.remove('open'); }
+function renderDraftsList(){
+  const wrap = document.getElementById('draftsList');
+  const d = getDrafts();
+  const keys = Object.keys(d).sort((a,b)=>d[b].ts-d[a].ts);
+  if(!keys.length){ wrap.innerHTML = '<div class="draft-empty">هنوز پیش‌نویسی ذخیره نشده است.</div>'; return; }
+  wrap.innerHTML = keys.map(k=>{
+    const it = d[k];
+    const dateStr = new Date(it.ts).toLocaleString('fa-IR');
+    return `<div class="draft-item">
+      <div>
+        <div class="d-name">${esc(it.name)}</div>
+        <div class="d-meta">${dateStr} · ${esc(it.data?.client?.name||'')}</div>
+      </div>
+      <div class="d-actions">
+        <button class="btn btn-primary btn-sm" onclick="loadDraft('${k}')"><span class="material-symbols-outlined">upload</span> بارگذاری</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteDraft('${k}')"><span class="material-symbols-outlined">delete</span> حذف</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function loadDraft(key){
+  const d = getDrafts();
+  const it = d[key];
+  if(!it) return;
+  if(!confirm('پیش‌نویس «'+it.name+'» بارگذاری شود؟\n(اطلاعات فعلی فرم جایگزین می‌شود)')) return;
+  applyFormData(it.data);
+  saveForm();
+  closeDrafts();
+  showStep(2); // رفتن به اطلاعات مراجع
+}
+function deleteDraft(key){
+  if(!confirm('این پیش‌نویس حذف شود؟')) return;
+  const d = getDrafts();
+  delete d[key];
+  setDrafts(d);
+  renderDraftsList();
+}
+function resetForm(){
+  if(!confirm('آیا از ریست کردن فرم مطمئنید؟\nتمام داده‌های وارد شده حذف خواهد شد.\n(تنظیمات پلتفرم، لوگو و رنگ‌ها حذف نمی‌شود.)')) return;
+  localStorage.removeItem(LS_FORM);
+  location.reload();
+}
+
+/* ============================================================
+   Init
+============================================================ */
+function bindPlatformInputs(){
+  ['p_clinician','p_lic','p_brand','p_addr','p_phone','p_instagram'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', ()=>{ savePlatform(); applyLogoPreview(); });
+  });
+  ['c_accent','c_accent2','c_gold','c_ink','c_bg'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', saveColors);
+  });
+}
+function bindClientInputs(){
+  ['f_name','f_date','f_age','f_height','f_weight','f_goal','f_disease','f_other','f_fasting']
+    .forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.addEventListener('input', scheduleSave);
+    });
+}
+function initDatePicker(){
+  const el = $('#f_date');
+  if(!el.persianDatepicker){
+    if(!el.val()) el.val(todayJalali());
+    return;
+  }
+  el.persianDatepicker({
+    format:'YYYY/MM/DD',
+    autoClose:true,
+    initialValue:false,
+    observer:true,
+    persianDigit:true,
+    toolbox:{ calendarSwitch:{enabled:false} }
+  });
+  if(!el.val()) el.val(todayJalali());
+}
+function seedDefaults(){
+  ['breakfast_options','morning_options','lunch_options','afternoon_options','dinner_options','latenight_options']
+    .forEach(id=>{
+      if(document.getElementById(id).children.length===0) addOption(id);
+    });
+  if(document.getElementById('supplements_container').children.length===0) addSupplement('');
+  if(document.getElementById('notes_container').children.length===0) addNote();
+}
+const loadStartAt = Date.now();
+let loadFinished = false;
+
+function maybeHideLoading(){
+  if(!loadFinished) return;
+  const elapsed = Date.now() - loadStartAt;
+  const remain = Math.max(0, 3000 - elapsed);
+  setTimeout(()=>{
+    const loader = document.getElementById('loadingScreen');
+    if(loader) loader.classList.add('hidden');
+  }, remain);
+}
+
+
+/* ============================================================
+   Meal images (per-section uploads)
+============================================================ */
+function renderMealImagesUI(){
+  const grid = document.getElementById('mealImgsGrid');
+  if(!grid) return;
+  grid.innerHTML = MEAL_KEYS.map(k=>`
+    <div class="meal-img-item" data-key="${k}">
+      <div class="meal-img-thumb"><img src="${getMealImg(k)}" alt=""/></div>
+      <div class="col">
+        <span class="nm">${MEAL_LABELS[k]}</span>
+        <input type="file" accept="image/*" class="meal-img-file" data-key="${k}"/>
+        <div class="row">
+          <button class="btn btn-ghost btn-sm" onclick="clearMealImg('${k}')"><span class="material-symbols-outlined">restart_alt</span> پیش‌فرض</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function refreshMealThumb(k){
+  const item = document.querySelector(`.meal-img-item[data-key="${k}"] .meal-img-thumb img`);
+  if(item) item.src = getMealImg(k);
+}
+function clearMealImg(k){
+  try { localStorage.removeItem(LS_MEAL_IMG_PREFIX+k); } catch(e){}
+  const inp = document.querySelector(`.meal-img-file[data-key="${k}"]`);
+  if(inp) inp.value = '';
+  refreshMealThumb(k);
+}
+document.addEventListener('change', function(e){
+  const t = e.target;
+  if(t && t.classList && t.classList.contains('meal-img-file')){
+    const k = t.dataset.key;
+    const f = t.files && t.files[0];
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      try { localStorage.setItem(LS_MEAL_IMG_PREFIX+k, reader.result); } catch(err){ alert('حجم تصویر بالاست.'); return; }
+      refreshMealThumb(k);
+    };
+    reader.readAsDataURL(f);
+  }
+});
+
+function init(){
+  loadColors();
+  loadPlatform();
+  loadAI();
+  loadTemplate();
+  applyLogoPreview();
+  renderMealImagesUI();
+  renderTplRow();
+  bindPlatformInputs();
+  bindClientInputs();
+  bindAIInputs();
+  bindStartScreen();
+  loadForm();
+  seedDefaults();
+  initDatePicker();
+  tryAutoLoadExcel();
+  fetchModels(false);
+  renderProgress();
+  setInterval(saveForm, 5000);
+  loadFinished = true;
+  maybeHideLoading();
+}
+
+/* ============================================================
+   Start screen: method + excel choice
+============================================================ */
+function bindStartScreen(){
+  document.querySelectorAll('#methodChoices .choice').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('#methodChoices .choice').forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel');
+      FORM_METHOD = c.dataset.method;
+      document.getElementById('aiGenBox').hidden = (FORM_METHOD !== 'ai');
+      scheduleSave();
+    });
+  });
+  document.querySelectorAll('#excelChoices .choice').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('#excelChoices .choice').forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel');
+      USE_EXCEL = (c.dataset.excel === 'yes');
+      if(USE_EXCEL) tryAutoLoadExcel();
+      scheduleSave();
+    });
+  });
+}
+function restoreStartChoices(d){
+  FORM_METHOD = (d && d.method)==='ai' ? 'ai' : 'manual';
+  USE_EXCEL   = !!(d && d.useExcel);
+  document.querySelectorAll('#methodChoices .choice').forEach(c=>c.classList.toggle('sel', c.dataset.method===FORM_METHOD));
+  document.querySelectorAll('#excelChoices .choice').forEach(c=>c.classList.toggle('sel', (c.dataset.excel==='yes')===USE_EXCEL));
+  document.getElementById('aiGenBox').hidden = (FORM_METHOD !== 'ai');
+}
+
+/* ============================================================
+   AI settings (OpenRouter)
+============================================================ */
+function getAISettings(){
+  try{
+    const raw = localStorage.getItem(LS_AI);
+    if(raw){
+      const d = JSON.parse(raw);
+      return {
+        key: d.key||'',
+        model: d.model||DEFAULT_AI_MODEL,
+        prompt: d.prompt||DEFAULT_AI_PROMPT
+      };
+    }
+  }catch(e){}
+  return { key:'', model:DEFAULT_AI_MODEL, prompt:DEFAULT_AI_PROMPT };
+}
+function saveAISettings(){
+  localStorage.setItem(LS_AI, JSON.stringify({
+    key: v('ai_key'), model: v('ai_model')||DEFAULT_AI_MODEL, prompt: document.getElementById('ai_prompt').value
+  }));
+}
+function loadAI(){
+  const s = getAISettings();
+  document.getElementById('ai_key').value = s.key;
+  document.getElementById('ai_model').value = s.model;
+  document.getElementById('ai_prompt').value = s.prompt;
+}
+function resetAIPrompt(){
+  document.getElementById('ai_prompt').value = DEFAULT_AI_PROMPT;
+  saveAISettings();
+}
+function bindAIInputs(){
+  ['ai_key','ai_model','ai_prompt'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', saveAISettings);
+    document.getElementById(id).addEventListener('change', saveAISettings);
+  });
+}
+
+/* ---------- لیست مدل‌ها از OpenRouter ---------- */
+async function fetchModels(manual){
+  const statusEl = document.getElementById('modelsStatus');
+  const cache = sessionStorage.getItem('or_models');
+  if(cache && !manual){
+    populateModels(JSON.parse(cache));
+    return;
+  }
+  if(manual && statusEl) statusEl.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">hourglass_empty</span> در حال دریافت لیست مدل‌ها...';
+  try{
+    const res = await fetch('https://openrouter.ai/api/v1/models');
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const j = await res.json();
+    const list = (j.data||[]).map(m=>({
+      id: m.id,
+      name: m.name || m.id,
+      free: !m.pricing || (parseFloat(m.pricing.prompt||'1') === 0 && parseFloat(m.pricing.completion||'1') === 0)
+    }));
+    sessionStorage.setItem('or_models', JSON.stringify(list));
+    populateModels(list);
+  }catch(e){
+    if(statusEl) statusEl.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">info</span> دریافت لیست مدل‌ها ناموفق بود (اینترنت؟) — می‌توانید نام مدل را دستی بنویسید.';
+  }
+}
+function populateModels(list){
+  const dl = document.getElementById('orModelsList');
+  if(!dl) return;
+  dl.innerHTML = list.map(m=>`<option value="${esc(m.id)}">${esc(m.name)}${m.free?' — رایگان':''}</option>`).join('');
+  const statusEl = document.getElementById('modelsStatus');
+  if(statusEl) statusEl.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">check_circle</span> ' + toPersianDigit(list.length) + ' مدل از OpenRouter بارگذاری شد — در فیلد مدل تایپ کنید و از لیست انتخاب کنید.';
+}
+
+/* ============================================================
+   Excel food reference
+============================================================ */
+const EXCEL_PATH = 'data/foods.xlsx';
+let FOOD_REF_TEXT = '';     // متن فشرده برای پرامپت
+let FOOD_REF_ROWS  = [];    // آیتم‌های خطی برای بانک غذایی
+
+function excelStatusEl(){ return document.getElementById('excelStatus'); }
+function setExcelStatus(cls, html){
+  const el = excelStatusEl(); if(!el) return;
+  el.className = 'excel-status ' + (cls||'');
+  el.innerHTML = html;
+}
+function tryAutoLoadExcel(){
+  setExcelStatus('', '<span class="material-symbols-outlined" style="font-size:14px">hourglass_empty</span> در حال جستجوی فایل اکسل مرجع...');
+  fetch(EXCEL_PATH).then(r=>{
+    if(!r.ok) throw new Error('not-found');
+    return r.arrayBuffer();
+  }).then(buf=>{
+    parseExcelBuffer(buf);
+    setExcelStatus('ok', '<span class="material-symbols-outlined" style="font-size:14px">check_circle</span> فایل اکسل مرجع بارگذاری شد (' + toPersianDigit(FOOD_REF_ROWS.length) + ' ردیف).');
+    updateFoodBankBtn();
+  }).catch(()=>{
+    setExcelStatus('err',
+      '<span class="material-symbols-outlined" style="font-size:14px">info</span> فایل اکسل پیدا نشد. ' +
+      'می‌توانید همین حالا انتخابش کنید: <input type="file" id="excelFilePick" accept=".xlsx,.xls" style="font-size:11px;"/>');
+    const pick = document.getElementById('excelFilePick');
+    if(pick) pick.addEventListener('change', e=>{
+      const f = e.target.files && e.target.files[0]; if(!f) return;
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        parseExcelBuffer(reader.result);
+        setExcelStatus('ok', '<span class="material-symbols-outlined" style="font-size:14px">check_circle</span> «'+ esc(f.name) +'» بارگذاری شد (' + toPersianDigit(FOOD_REF_ROWS.length) + ' ردیف).');
+        updateFoodBankBtn();
+      };
+      reader.readAsArrayBuffer(f);
+    });
+  });
+}
+function parseExcelBuffer(buf){
+  const wb = XLSX.read(buf, {type:'array'});
+  const lines = [];
+  FOOD_REF_ROWS = [];
+  wb.SheetNames.forEach(name=>{
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, defval:''});
+    lines.push('### ' + name);
+    rows.forEach(row=>{
+      const cells = row.map(c=>String(c).trim()).filter(Boolean);
+      if(!cells.length) return;
+      const line = cells.join(' | ');
+      lines.push(line);
+      FOOD_REF_ROWS.push(cells.join(' — '));
+    });
+  });
+  const MAX = 8000;
+  FOOD_REF_TEXT = lines.join('\n');
+  if(FOOD_REF_TEXT.length > MAX) FOOD_REF_TEXT = FOOD_REF_TEXT.slice(0, MAX) + '\n(بخش‌های بعدی فهرست برای کوتاه‌ماندن حذف شد)';
+}
+
+/* ============================================================
+   Food bank modal
+============================================================ */
+const FB_TARGETS = {
+  breakfast:'breakfast_options', morning:'morning_options', lunch:'lunch_options',
+  afternoon:'afternoon_options', dinner:'dinner_options', latenight:'latenight_options'
+};
+function updateFoodBankBtn(){
+  const btn = document.getElementById('foodbankBtn');
+  if(btn) btn.style.display = FOOD_REF_ROWS.length ? 'inline-flex' : 'none';
+}
+function openFoodBank(){
+  if(!FOOD_REF_ROWS.length) return;
+  const sel = document.getElementById('foodbankTarget');
+  sel.innerHTML = Object.keys(FB_TARGETS).map(k=>`<option value="${k}">${MEAL_LABELS[k]}</option>`).join('');
+  document.getElementById('foodbankSearch').value='';
+  renderFoodBankList();
+  document.getElementById('foodBankModal').classList.add('open');
+}
+function closeFoodBank(){ document.getElementById('foodBankModal').classList.remove('open'); }
+function renderFoodBankList(){
+  const q = (document.getElementById('foodbankSearch').value||'').trim();
+  const list = FOOD_REF_ROWS.filter(r=>!q || r.includes(q)).slice(0, 400);
+  document.getElementById('foodbankList').innerHTML = list.map(r=>
+    `<span class="food-chip" onclick="addFoodFromBank(this.textContent)">${esc(r)}</span>`).join('')
+    || '<p style="color:var(--muted);font-size:12px;">چیزی پیدا نشد.</p>';
+}
+function addFoodFromBank(text){
+  const key = document.getElementById('foodbankTarget').value;
+  const containerId = FB_TARGETS[key];
+  const c = document.getElementById(containerId);
+  let block = c.querySelector('.option-block:last-child');
+  if(!block){ addOption(containerId); block = c.querySelector('.option-block:last-child'); }
+  addChipTo(block, text);
+  scheduleSave();
+}
+
+/* ============================================================
+   Generate diet with AI (OpenRouter)
+============================================================ */
+function setGenStatus(cls, text){
+  const el = document.getElementById('genStatus');
+  el.className = 'gen-status ' + (cls||'');
+  el.textContent = text;
+}
+function extractJSON(text){
+  let t = String(text||'').trim();
+  t = t.replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();
+  const s = t.indexOf('{'), e = t.lastIndexOf('}');
+  if(s===-1 || e===-1) throw new Error('json-not-found');
+  return JSON.parse(t.slice(s, e+1));
+}
+async function generateWithAI(){
+  const s = getAISettings();
+  const status = document.getElementById('genStatus');
+  const btn = document.getElementById('genBtn');
+  if(!s.key){ setGenStatus('err','ابتدا کلید API را در مرحله «پلتفرم» وارد کنید.'); showStep(1); return; }
+  const d = collectData();
+  if(!d.name || d.name==='—'){ setGenStatus('err','نام مراجع را وارد کنید.'); return; }
+
+  const userInfo = [
+    'نام: '+d.name, 'سن: '+d.age, 'قد: '+d.height, 'وزن: '+d.weight,
+    'هدف: '+d.goal, 'سابقه بیماری: '+d.disease, 'سایر اطلاعات: '+d.other
+  ].join('\n');
+
+  let userMsg = 'اطلاعات مراجع:\n' + userInfo;
+  if(USE_EXCEL){
+    if(!FOOD_REF_TEXT){ setGenStatus('err','فایل اکسل مرجع هنوز بارگذاری نشده است. در مرحله «شروع» فایل را انتخاب کنید.'); return; }
+    userMsg += '\n\nفهرست منابع غذایی (فایل اکسل):\n' + FOOD_REF_TEXT;
+  }
+
+  btn.disabled = true;
+  setGenStatus('','در حال ساخت رژیم... ممکن است تا یک دقیقه طول بکشد.');
+  try{
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+s.key
+      },
+      body: JSON.stringify({
+        model: s.model,
+        messages:[
+          {role:'system', content: s.prompt},
+          {role:'user',   content: userMsg}
+        ],
+        temperature: 0.4
+      })
+    });
+    if(!res.ok){
+      const errText = await res.text().catch(()=> '');
+      throw new Error('HTTP '+res.status+' — '+errText.slice(0,300));
+    }
+    const data = await res.json();
+    const content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    if(!content) throw new Error('پاسخ خالی از مدل');
+    const plan = extractJSON(content);
+    populateFromAI(plan);
+    setGenStatus('ok','رژیم ساخته شد! حالا مرحله‌به‌مرحله بازبینی کنید و هر آیتم را که خواستید تغییر دهید.');
+    saveForm();
+    showStep(3); // شروع بازبینی از صبحانه
+  }catch(err){
+    console.error(err);
+    setGenStatus('err','خطا در ساخت رژیم: '+err.message);
+  }finally{
+    btn.disabled = false;
+  }
+}
+function populateFromAI(plan){
+  const map = {
+    breakfast:'breakfast_options', morning:'morning_options', lunch:'lunch_options',
+    afternoon:'afternoon_options', dinner:'dinner_options', latenight:'latenight_options'
+  };
+  Object.values(map).forEach(id=>{ document.getElementById(id).innerHTML=''; });
+  document.getElementById('supplements_container').innerHTML='';
+  document.getElementById('notes_container').innerHTML='';
+
+  if(plan.fasting) document.getElementById('f_fasting').value = String(plan.fasting);
+  Object.keys(map).forEach(k=>{
+    (Array.isArray(plan[k]) ? plan[k] : []).forEach(o=>{
+      if(o && Array.isArray(o.items) && o.items.length){
+        addOption(map[k], { full: !!o.full, items: o.items.map(String) });
+      }
+    });
+    if(!document.getElementById(map[k]).children.length) addOption(map[k]);
+  });
+  (Array.isArray(plan.supplements)?plan.supplements:[]).forEach(x=>{ if(String(x).trim()) addSupplement(String(x)); });
+  (Array.isArray(plan.notes)?plan.notes:[]).forEach(n=>{
+    if(n && String(n.text||'').trim()) addNote({ title:String(n.title||''), text:String(n.text), warn:!!n.warn });
+  });
+  autoSuggestTemplate();
+}
+
+/* ============================================================
+   Templates
+============================================================ */
+function renderTplRow(){
+  const row = document.getElementById('tplRow'); if(!row) return;
+  row.innerHTML = Object.entries(TEMPLATES).map(([k,t])=>
+    `<div class="tpl-chip ${k===CURRENT_TEMPLATE?'sel':''}" data-tpl="${k}" onclick="applyTemplate('${k}')">
+       <span class="tpl-dot" style="background:${t.dot}"></span>${t.label}${t.badge?' '+t.badge:''}
+     </div>`).join('');
+}
+function applyTemplate(key, silent){
+  if(!TEMPLATES[key]) key = 'classic';
+  CURRENT_TEMPLATE = key;
+  localStorage.setItem(LS_TEMPLATE, key);
+  document.body.dataset.template = key;
+  const c = TEMPLATES[key].colors;
+  document.getElementById('c_accent').value=c.accent;
+  document.getElementById('c_accent2').value=c.accent2;
+  document.getElementById('c_gold').value=c.gold;
+  document.getElementById('c_ink').value=c.ink;
+  document.getElementById('c_bg').value=c.bg;
+  saveColors();
+  renderTplRow();
+  if(!silent && currentStep===totalSteps-1) renderPreview('previewArea');
+}
+function loadTemplate(){
+  applyTemplate(localStorage.getItem(LS_TEMPLATE)||'classic', true);
+}
+function autoSuggestTemplate(){
+  const age = parseInt(v('f_age'),10);
+  if(!Number.isFinite(age)) return;
+  const goal = v('f_goal')||'';
+  let key='classic';
+  if(age<=19) key='teen';
+  else if(age<=35) key='young';
+  else if(goal==='کاهش وزن'||goal==='افزایش وزن') key='athlete';
+  else key='home';
+  applyTemplate(key, true);
+}
+
+window.addEventListener('load', init);
+</script>
+</body>
+</html>
