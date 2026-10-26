@@ -29,6 +29,8 @@
   <link rel="icon" href="images/logo.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://cdn.plyr.io">
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,300,0,0"
@@ -274,7 +276,7 @@
               stroke-width="1.6" />
           </svg>
           <div class="portrait-frame">
-            <img src="images/dr-fateme-heidari.jpeg" alt="پرتره فاطمه حیدری نائیج، متخصص تغذیه در نوشهر" width="784" height="784">
+            <img src="images/dr-fateme-heidari.jpeg" alt="پرتره فاطمه حیدری نائیج، متخصص تغذیه در نوشهر" width="784" height="784" fetchpriority="high" decoding="async">
             <div class="portrait-glass"></div>
           </div>
           <div class="badge-med">ت-۱۱۴۴۲</div>
@@ -463,6 +465,13 @@
   </footer>
 
   <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+  <script>
+    if('serviceWorker' in navigator){
+      window.addEventListener('load', function(){
+        navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function(){});
+      });
+    }
+  </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js" defer></script>
   <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js" defer></script>
