@@ -1,0 +1,72 @@
+name: Tisa Platform — macOS dmg (Apple Silicon)
+
+# خروجی مک سیلیکون (dmg) به همان ریلیز نسخه ویندوز اضافه می‌شود.
+# ⚠️ اگر جاب با «cancelled» و بدون هیچ مرحله‌ای متوقف شد:
+#    Settings سازمان → Actions → General → «Runner machines» باید روی All باشد
+#    (سازمان webiro باید macOS runnerها را مجاز کند).
+# نسخه را از آخرین ریلیز ویندوز برمی‌دارد تا فایل‌ها کنار هم بمانند.
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'platform/index.htm'
+      - 'platform/images/**'
+      - 'platform/vendor/**'
+      - 'platform/sw.js'
+      - 'platform/desktop/**'
+      - '.github/workflows/desktop-release-mac.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-macos-silicon:
+    runs-on: macos-14      # رانر Apple Silicon
+    defaults:
+      run:
+        working-directory: platform/desktop
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Sync web source into desktop bundle (single source of truth)
+        working-directory: .
+        run: node platform/desktop/sync.js
+
+      - name: Align version with latest Windows release
+        working-directory: .
+        run: |
+          TAG=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r '.tag_name // empty')
+          if [ -z "$TAG" ]; then
+            v="1.0.${{ github.run_number }}"
+            echo "no release found — using $v"
+          else
+            v="${TAG#v}"
+            echo "aligning with release tag $TAG"
+          fi
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('platform/desktop/package.json','utf8'));p.version='$v';fs.writeFileSync('platform/desktop/package.json',JSON.stringify(p,null,2));"
+          echo "VERSION=$v" >> $GITHUB_ENV
+          echo "TAG=v$v" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build dmg (Apple Silicon) & publish to the same GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false   # بدون کدساینینگ؛ اپ unsigned
+        run: npx electron-builder --mac dmg arm64 --publish always
+
+      - name: Upload artifact (backup copy of dmg)
+        uses: actions/upload-artifact@v4
+        with:
+          name: TisaPlatform-${{ env.VERSION }}-mac-arm64
+          path: platform/desktop/dist/*.dmg
+          if-no-files-found: error
