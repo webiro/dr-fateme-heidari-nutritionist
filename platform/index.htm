@@ -4,17 +4,16 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>DIET TISA | WEBIRO!</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- همه‌ی فونت‌ها و کتابخانه‌ها لوکال‌اند (platform/vendor) — کاملاً آفلاین کار می‌کند؛ فقط بخش AI اینترنت می‌خواهد -->
+<link rel="stylesheet" href="vendor/fonts/vazirmatn.css" />
+<link rel="stylesheet" href="vendor/fonts/material-symbols.css" />
+<link rel="stylesheet" href="vendor/persian-datepicker.min.css" />
+<script src="vendor/jquery-3.6.0.min.js"></script>
+<script src="vendor/persian-date.min.js"></script>
+<script src="vendor/persian-datepicker.min.js"></script>
+<script src="vendor/html2canvas.min.js"></script>
+<script src="vendor/jspdf.umd.min.js"></script>
+<script src="vendor/xlsx.full.min.js"></script>
 <style>
   /* ================= Design tokens ================= */
   :root{
@@ -483,6 +482,172 @@
   body[data-template="rose"] .cover-title .eyebrow{color:#b76e79;letter-spacing:6px;}
   body[data-template="rose"] .cb-text.center .cb-title{color:#b76e79;}
   body[data-template="rose"] .cb-divider{border-top:2px solid #dca9ad;}
+
+  /* نوآر طلایی: مشکی مخملی با رگه‌های طلایی — لوکس تیره */
+  body[data-template="noir"] .page{
+    background:
+      repeating-linear-gradient(135deg, rgba(201,162,39,.05) 0 1px, transparent 1px 9px),
+      linear-gradient(165deg,#1d1812,#120e09);
+  }
+  body[data-template="noir"] .page::before{content:"";position:absolute;inset:5mm;border:1.5px solid #c9a227;border-radius:4px;pointer-events:none;}
+  body[data-template="noir"] .page::after{content:"";position:absolute;inset:7mm;border:1px solid rgba(201,162,39,.35);border-radius:3px;pointer-events:none;}
+  body[data-template="noir"] .hdr{border-bottom:1px solid rgba(201,162,39,.55);}
+  body[data-template="noir"] .hdr h1{color:#f2ead2;}
+  body[data-template="noir"] .hdr .sub, body[data-template="noir"] .hdr .meta{color:#a89f85;}
+  body[data-template="noir"] .hdr .meta b{color:#e6d9a8;}
+  body[data-template="noir"] .hdr .mark{background:linear-gradient(135deg,#c9a227,#7a621f);}
+  body[data-template="noir"] .section-title{background:#241e14;border-right:5px solid #c9a227;border-radius:8px;}
+  body[data-template="noir"] .section-title .fa{color:#e9c95c;}
+  body[data-template="noir"] .section-title .en{color:#8d8368;}
+  body[data-template="noir"] .section-title .ico{background:#2e2718;box-shadow:none;}
+  body[data-template="noir"] .options li{background:#1f1a11;border-color:#3d3419;border-radius:8px;color:#e8e0c8;}
+  body[data-template="noir"] .options li .num{background:linear-gradient(135deg,#c9a227,#8a7a3a);color:#171207;}
+  body[data-template="noir"] .options li .items .chip{background:#2e2717;color:#e6d9a8;}
+  body[data-template="noir"] .options li.full .items .chip{background:#332a18;color:#f0e4b8;}
+  body[data-template="noir"] .patient{background:#1f1a11;border-color:#3d3419;}
+  body[data-template="noir"] .patient .row span{color:#a89f85;}
+  body[data-template="noir"] .patient .row b{color:#f2ead2;}
+  body[data-template="noir"] .note{background:#1f1a11;border-color:#3d3419;color:#e8e0c8;}
+  body[data-template="noir"] .note::before{background:#c9a227;}
+  body[data-template="noir"] .note-title{color:#e9c95c;}
+  body[data-template="noir"] .note.warn{background:#2b210e;border-color:#5a4520;}
+  body[data-template="noir"] .supp{background:#241e14;color:#e8e0c8;}
+  body[data-template="noir"] .clinician{background:#1f1a11;border-color:rgba(201,162,39,.5);}
+  body[data-template="noir"] .clinician .name{color:#f2ead2;}
+  body[data-template="noir"] .clinician .role{color:#a89f85;}
+  body[data-template="noir"] .clinician .lic{color:#c9a227;}
+  body[data-template="noir"] .footer{border-top:1px solid rgba(201,162,39,.4);color:#a89f85;}
+  body[data-template="noir"] .footer .ig-line b{color:#e6d9a8;}
+  body[data-template="noir"] .footer .ig-line .ig-ico{color:#c9a227;}
+  body[data-template="noir"] .pagenum{background:#2e2717;color:#e6d9a8;}
+  body[data-template="noir"] .cover-title .eyebrow{color:#c9a227;letter-spacing:10px;}
+  body[data-template="noir"] .cover-title h2{color:#f4ecd4;}
+  body[data-template="noir"] .cover-title p{color:#a89f85;}
+  body[data-template="noir"] .cb-text .cb-title{color:#f2ead2;}
+  body[data-template="noir"] .cb-text .cb-body{color:#e8e0c8;}
+  body[data-template="noir"] .cb-text.center .cb-title{color:#e9c95c;}
+  body[data-template="noir"] .cb-caption{color:#a89f85;}
+  body[data-template="noir"] .cb-img img{border-color:#3d3419;}
+  body[data-template="noir"] .cb-divider{border-top:1px solid rgba(201,162,39,.5);}
+
+  /* زمرد: سبز تیره براق با نقاط طلایی — شیک و پرانرژی */
+  body[data-template="emerald"] .page{
+    background:
+      radial-gradient(rgba(212,175,55,.10) 1.2px, transparent 1.8px) 0 0/22px 22px,
+      radial-gradient(circle at 85% 8%, rgba(212,175,55,.14), transparent 30%),
+      radial-gradient(circle at 10% 92%, rgba(212,175,55,.12), transparent 28%),
+      linear-gradient(160deg,#12352a,#0c241c);
+  }
+  body[data-template="emerald"] .page::before{content:"";position:absolute;inset:5mm;border:2px solid #d4af37;border-radius:6px;pointer-events:none;}
+  body[data-template="emerald"] .page::after{content:"";position:absolute;inset:7.5mm;border:1px solid rgba(212,175,55,.4);border-radius:4px;pointer-events:none;}
+  body[data-template="emerald"] .hdr{border-bottom:2px solid rgba(212,175,55,.7);}
+  body[data-template="emerald"] .hdr h1{color:#f4f1de;}
+  body[data-template="emerald"] .hdr .sub, body[data-template="emerald"] .hdr .meta{color:#9db8a8;}
+  body[data-template="emerald"] .hdr .meta b{color:#e8dfb8;}
+  body[data-template="emerald"] .hdr .mark{background:linear-gradient(135deg,#d4af37,#4e8a6d);}
+  body[data-template="emerald"] .section-title{background:#173428;border-right:5px solid #d4af37;border-radius:10px;}
+  body[data-template="emerald"] .section-title .fa{color:#ecd98a;}
+  body[data-template="emerald"] .section-title .en{color:#7fa091;}
+  body[data-template="emerald"] .section-title .ico{background:#1e4033;box-shadow:none;}
+  body[data-template="emerald"] .options li{background:#14312a;border-color:#2c5449;border-radius:10px;color:#e6efe4;}
+  body[data-template="emerald"] .options li .num{background:linear-gradient(135deg,#d4af37,#7a9b52);color:#0c241c;}
+  body[data-template="emerald"] .options li .items .chip{background:#1d453a;color:#e8dfb8;}
+  body[data-template="emerald"] .options li.full .items .chip{background:#204a2e;color:#e8f0d8;}
+  body[data-template="emerald"] .patient{background:#14312a;border-color:#2c5449;}
+  body[data-template="emerald"] .patient .row span{color:#9db8a8;}
+  body[data-template="emerald"] .patient .row b{color:#f4f1de;}
+  body[data-template="emerald"] .note{background:#14312a;border-color:#2c5449;color:#e6efe4;}
+  body[data-template="emerald"] .note::before{background:#d4af37;}
+  body[data-template="emerald"] .note-title{color:#ecd98a;}
+  body[data-template="emerald"] .note.warn{background:#2e2410;border-color:#5a4520;}
+  body[data-template="emerald"] .supp{background:#173428;color:#e6efe4;}
+  body[data-template="emerald"] .clinician{background:#14312a;border-color:rgba(212,175,55,.55);}
+  body[data-template="emerald"] .clinician .name{color:#f4f1de;}
+  body[data-template="emerald"] .clinician .role{color:#9db8a8;}
+  body[data-template="emerald"] .clinician .lic{color:#d4af37;}
+  body[data-template="emerald"] .footer{border-top:1px solid rgba(212,175,55,.45);color:#9db8a8;}
+  body[data-template="emerald"] .footer .ig-line b{color:#e8dfb8;}
+  body[data-template="emerald"] .footer .ig-line .ig-ico{color:#d4af37;}
+  body[data-template="emerald"] .pagenum{background:#1d453a;color:#e8dfb8;}
+  body[data-template="emerald"] .cover-title .eyebrow{color:#d4af37;letter-spacing:9px;}
+  body[data-template="emerald"] .cover-title h2{color:#f4f1de;}
+  body[data-template="emerald"] .cover-title p{color:#9db8a8;}
+  body[data-template="emerald"] .cb-text .cb-title{color:#f4f1de;}
+  body[data-template="emerald"] .cb-text .cb-body{color:#e6efe4;}
+  body[data-template="emerald"] .cb-text.center .cb-title{color:#ecd98a;}
+  body[data-template="emerald"] .cb-caption{color:#9db8a8;}
+  body[data-template="emerald"] .cb-img img{border-color:#2c5449;}
+  body[data-template="emerald"] .cb-divider{border-top:1px solid rgba(212,175,55,.55);}
+
+  /* مرمر: رگه‌های سنگ مرمر با برنز و رز — آراسته و گران */
+  body[data-template="marble"] .page{
+    background:
+      radial-gradient(ellipse 60% 40% at 18% 8%, rgba(125,120,130,.11), transparent 60%),
+      radial-gradient(ellipse 50% 32% at 86% 22%, rgba(140,128,118,.10), transparent 60%),
+      radial-gradient(ellipse 55% 30% at 12% 78%, rgba(115,115,125,.10), transparent 60%),
+      radial-gradient(ellipse 45% 28% at 82% 86%, rgba(135,120,112,.11), transparent 60%),
+      linear-gradient(150deg,#faf9f6,#f3f1ec);
+  }
+  body[data-template="marble"] .page::before{content:"";position:absolute;inset:6mm;border:1px solid #b0895e;pointer-events:none;}
+  body[data-template="marble"] .page::after{content:"";position:absolute;inset:7.5mm;border:2px solid rgba(183,110,121,.45);pointer-events:none;}
+  body[data-template="marble"] .hdr{border-bottom:1px solid #ddd3c4;}
+  body[data-template="marble"] .hdr .mark{border-radius:10px;background:linear-gradient(135deg,#b0895e,#b76e79);}
+  body[data-template="marble"] .section-title{background:#f1ebe2;border-right:5px solid #b0895e;border-radius:10px;}
+  body[data-template="marble"] .options li{border-color:#e2d9cb;background:#fffefc;border-radius:10px;}
+  body[data-template="marble"] .options li .num{border-radius:8px;background:#b0895e;color:#fff;}
+  body[data-template="marble"] .options li .items .chip{background:#f4efe6;}
+  body[data-template="marble"] .patient{background:#f4efe6;border-color:#e2d9cb;border-radius:12px;}
+  body[data-template="marble"] .note::before{background:#b0895e;}
+  body[data-template="marble"] .supp{background:#f4efe6;border-radius:10px;}
+  body[data-template="marble"] .clinician{border-color:#b76e79;}
+  body[data-template="marble"] .cover-title .eyebrow{color:#b0895e;letter-spacing:8px;}
+  body[data-template="marble"] .cb-text.center .cb-title{color:#b0895e;}
+  body[data-template="marble"] .cb-divider{border-top:1px solid #b76e79;}
+
+  /* حریر: ابریشم شامپاینی با موج نور — نرم و پرستیژی */
+  body[data-template="silk"] .page{
+    background:
+      linear-gradient(115deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 28%, rgba(255,255,255,.45) 52%, rgba(255,255,255,0) 74%, rgba(255,255,255,.5) 100%),
+      linear-gradient(160deg,#fdf8ee 0%,#f6ecd9 45%,#f2e4c8 100%);
+  }
+  body[data-template="silk"] .page::before{content:"";position:absolute;inset:6mm;border:1px solid #c9a227;border-radius:10px;pointer-events:none;}
+  body[data-template="silk"] .page::after{content:"";position:absolute;inset:8mm;border:1px solid rgba(201,162,39,.4);border-radius:7px;pointer-events:none;}
+  body[data-template="silk"] .hdr{border-bottom:1px solid #e6d3a8;}
+  body[data-template="silk"] .hdr .mark{border-radius:12px;background:linear-gradient(135deg,#b98c2c,#e0c07a);}
+  body[data-template="silk"] .section-title{background:#f7ecd2;border-right:5px solid #b98c2c;border-radius:12px;}
+  body[data-template="silk"] .options li{border-color:#e8d8b2;background:#fffdf6;border-radius:12px;}
+  body[data-template="silk"] .options li .num{background:linear-gradient(135deg,#b98c2c,#d9c08a);color:#3a2c10;}
+  body[data-template="silk"] .options li .items .chip{background:#f7efdb;border-radius:99px;}
+  body[data-template="silk"] .patient{background:#f7efdb;border-color:#e8d8b2;border-radius:14px;}
+  body[data-template="silk"] .note::before{background:#b98c2c;}
+  body[data-template="silk"] .supp{background:#f7efdb;border-radius:12px;}
+  body[data-template="silk"] .cover-title .eyebrow{color:#b98c2c;letter-spacing:8px;}
+  body[data-template="silk"] .cb-text.center .cb-title{color:#b98c2c;}
+  body[data-template="silk"] .cb-divider{border-top:1px solid #c9a227;}
+
+  /* بنفش لوکس: با نقطه‌های بنفش و لهجه طلایی — جسورانه */
+  body[data-template="violet"] .page{
+    background:
+      radial-gradient(rgba(109,79,161,.12) 1.5px, transparent 2.2px) 0 0/24px 24px,
+      radial-gradient(circle at 12% 8%, rgba(109,79,161,.13), transparent 32%),
+      radial-gradient(circle at 88% 88%, rgba(176,138,74,.13), transparent 30%),
+      linear-gradient(160deg,#f5f1fb,#eae3f8);
+  }
+  body[data-template="violet"] .page::before{content:"";position:absolute;inset:5mm;border:2px solid #6d4fa1;border-radius:8px;pointer-events:none;}
+  body[data-template="violet"] .hdr{border-bottom:2px solid #6d4fa1;}
+  body[data-template="violet"] .hdr .mark{border-radius:10px;background:linear-gradient(135deg,#6d4fa1,#a48fd0);}
+  body[data-template="violet"] .section-title{background:#ece5f7;border-right:5px solid #6d4fa1;border-radius:12px;}
+  body[data-template="violet"] .section-title .fa::after{content:" ✦";}
+  body[data-template="violet"] .options li{border-color:#ddd2f0;background:#ffffff;border-radius:12px;}
+  body[data-template="violet"] .options li .num{background:linear-gradient(135deg,#6d4fa1,#a48fd0);color:#fff;}
+  body[data-template="violet"] .options li .items .chip{background:#f1ecf9;border-radius:99px;}
+  body[data-template="violet"] .options li.full .items .chip{background:#fbf3e4;}
+  body[data-template="violet"] .patient{background:#f1ecf9;border-color:#ddd2f0;border-radius:14px;}
+  body[data-template="violet"] .note::before{background:#6d4fa1;}
+  body[data-template="violet"] .supp{background:#f1ecf9;border-radius:12px;}
+  body[data-template="violet"] .cover-title .eyebrow{color:#6d4fa1;letter-spacing:8px;}
+  body[data-template="violet"] .cb-text.center .cb-title{color:#6d4fa1;}
+  body[data-template="violet"] .cb-divider{border-top:2px solid #a48fd0;}
 
   .cover-badge{font-size:34px;text-align:center;margin-top:4px;}
   .empty-msg{color:var(--muted);font-size:12px;}
@@ -1006,6 +1171,11 @@ const TEMPLATES = {
   athlete  : { label:'ورزشکار',  dot:'#c0392b', colors:{accent:'#c0392b',accent2:'#e67e22',gold:'#8d6e2f',ink:'#211714',bg:'#fcf8f6'}, badge:'💪' },
   home     : { label:'خانه‌دار', dot:'#c96f4a', colors:{accent:'#c96f4a',accent2:'#e0a37e',gold:'#a4762c',ink:'#2d2018',bg:'#fdf9f4'}, badge:'🏡' },
   royal    : { label:'سلطنتی',   dot:'#c9a227', colors:{accent:'#1f2a44',accent2:'#c9a227',gold:'#b98c2c',ink:'#1f2a44',bg:'#fdfaf1'}, badge:'👑' },
+  noir     : { label:'نوآر طلایی',dot:'#c9a227', colors:{accent:'#c9a227',accent2:'#a3893c',gold:'#e9c95c',ink:'#26211a',bg:'#f5f0e4'}, badge:'✨' },
+  emerald  : { label:'زمرد',      dot:'#d4af37', colors:{accent:'#d4af37',accent2:'#5ea88a',gold:'#e9c95c',ink:'#14251d',bg:'#f2f6f1'}, badge:'💎' },
+  marble   : { label:'مرمر',      dot:'#b0895e', colors:{accent:'#b0895e',accent2:'#d7c0a3',gold:'#b76e79',ink:'#2c2a28',bg:'#f8f7f4'}, badge:'🏛️' },
+  silk     : { label:'حریر',      dot:'#d9c08a', colors:{accent:'#b98c2c',accent2:'#d9c08a',gold:'#c9a227',ink:'#3a3020',bg:'#fdf8ee'}, badge:'🎀' },
+  violet   : { label:'بنفش لوکس', dot:'#6d4fa1', colors:{accent:'#6d4fa1',accent2:'#a48fd0',gold:'#b08a4a',ink:'#2a2240',bg:'#f3effc'}, badge:'💜' },
   minimal  : { label:'مینیمال',  dot:'#111111', colors:{accent:'#111111',accent2:'#4a4a4a',gold:'#111111',ink:'#111111',bg:'#ffffff'}, badge:'◻️' },
   pinstripe: { label:'شیاری',    dot:'#37474f', colors:{accent:'#37474f',accent2:'#78909c',gold:'#8d6e2f',ink:'#263238',bg:'#f4f6f7'}, badge:'〰️' },
   botanic  : { label:'بوتانیک',  dot:'#2e5e4e', colors:{accent:'#2e5e4e',accent2:'#6fae91',gold:'#a4762c',ink:'#1d3329',bg:'#f4f8f2'}, badge:'🌿' },
@@ -1560,6 +1730,23 @@ async function inlineExportImages(){
   }));
 }
 
+/* فونت وزیرمتن را برای خروجی HTML به‌صورت data URI داخل خود فایل می‌گذاریم تا خروجی کاملاً آفلاین باشد */
+async function buildExportFontCss(){
+  try{
+    let css = await (await fetch('vendor/fonts/vazirmatn.css')).text();
+    const urls = [...new Set([...css.matchAll(/url\(([^)]+\.woff2)\)/g)].map(m=>m[1]))];
+    for(const u of urls){
+      const path = 'vendor/fonts/' + u.replace(/^\.\//,'');
+      const buf = await (await fetch(path)).arrayBuffer();
+      let binary=''; const bytes=new Uint8Array(buf);
+      for(let i=0;i<bytes.length;i++) binary += String.fromCharCode(bytes[i]);
+      const b64 = btoa(binary);
+      css = css.split(u).join('data:font/woff2;base64,'+b64);
+    }
+    return css;
+  }catch(e){ console.warn('export font inline failed:', e); return ''; }
+}
+
 async function downloadHTML(){
   renderPreview('previewArea');
   await inlineExportImages();
@@ -1570,16 +1757,15 @@ async function downloadHTML(){
   const root = getComputedStyle(document.documentElement);
   const cssVars = ['--bg','--page','--ink','--muted','--line','--soft','--accent','--accent-2','--accent-soft','--gold','--blue-soft']
     .map(k=>`  ${k}:${root.getPropertyValue(k).trim()};`).join('\n');
+  const fontCss = await buildExportFontCss();
   const html = `<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>برنامه غذایی ${esc(d.name)}</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
+${fontCss}
 :root{
 ${cssVars}
 }
@@ -2760,6 +2946,62 @@ function autoSuggestTemplate(){
   else key='home';
   applyTemplate(key, true);
 }
+
+/* ============================================================
+   Tisa Platform — desktop integration (Electron)
+   فقط در نسخه ویندوز فعال می‌شود؛ روی وب کاملاً بی‌اثر است.
+============================================================ */
+(function(){
+  if(!window.TisaDesktop || !window.TisaDesktop.isDesktop) return;
+  const btn = document.createElement('button');
+  btn.className='btn btn-outline btn-sm';
+  btn.title='بررسی به‌روزرسانی Tisa Platform';
+  btn.innerHTML='<span class="material-symbols-outlined">system_update_alt</span><span class="d-label">…</span>';
+  const actions = document.querySelector('.header-actions');
+  if(!actions) return;
+  actions.prepend(btn);
+  const label = btn.querySelector('.d-label');
+  window.TisaDesktop.getVersion().then(v=>{ if(label && !label.dataset.busy) label.textContent='v'+v; }).catch(()=>{});
+  let toastEl=null, toastTimer=null;
+  function toast(msg, tone){
+    if(!toastEl){
+      toastEl=document.createElement('div');
+      toastEl.style.cssText='position:fixed;bottom:18px;left:18px;z-index:5000;color:#fff;padding:10px 16px;border-radius:12px;font-size:12.5px;box-shadow:0 10px 30px rgba(0,0,0,.25);transition:opacity .25s;opacity:0;direction:rtl;max-width:320px;line-height:1.9;';
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent=msg;
+    toastEl.style.background = tone===true?'#3e6b52':(tone===false?'#8a4a2e':'#1f2a2e');
+    toastEl.style.opacity='1';
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>{toastEl.style.opacity='0';}, 3200);
+  }
+  btn.addEventListener('click', async ()=>{
+    if(label.dataset.busy==='downloaded'){ window.TisaDesktop.installUpdate(); return; }
+    if(label.dataset.busy) return;
+    toast('در حال بررسی نسخه جدید…');
+    try{
+      await window.TisaDesktop.checkForUpdates();
+    }catch(e){
+      toast('بررسی به‌روزرسانی ناموفق بود — اتصال اینترنت را چک کنید.', false);
+    }
+  });
+  window.TisaDesktop.onUpdateStatus(s=>{
+    if(!s) return;
+    if(s.state==='checking'){ label.dataset.busy='checking'; setLabel('بررسی…'); }
+    else if(s.state==='available'){ toast('نسخه جدید '+(s.version||'')+' پیدا شد — در حال دانلود…'); }
+    else if(s.state==='downloading'){ label.dataset.busy='downloading'; setLabel('دانلود '+Math.round(s.percent||0)+'٪'); }
+    else if(s.state==='downloaded'){
+      label.dataset.busy='downloaded';
+      setLabel('نصب نسخه جدید ✓');
+      btn.style.borderColor='var(--accent)';
+      btn.style.color='var(--accent)';
+      toast('نسخه جدید آماده نصب است — برای نصب و راه‌اندازی مجدد روی دکمه بزنید.', true);
+    }
+    else if(s.state==='not-available'){ label.dataset.busy=''; setLabel('v'+(s.version||'')); toast('شما جدیدترین نسخه را دارید ✅', true); }
+    else if(s.state==='error'){ label.dataset.busy=''; setLabel('بروزرسانی'); toast('خطا در به‌روزرسانی: '+(s.message||'نامشخص'), false); }
+  });
+  function setLabel(t){ if(label) label.textContent=t; }
+})();
 
 window.addEventListener('load', init);
 

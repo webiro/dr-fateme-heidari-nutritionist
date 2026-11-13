@@ -2,7 +2,7 @@
  * Strategy: cache-first for everything; runtime-cache any new GET.
  * Bump CACHE_VERSION to force a full refresh for all users.
  */
-const CACHE_VERSION = 'diettisa-v3';
+const CACHE_VERSION = 'diettisa-v4';
 const PRECACHE_URLS = [
   './',
   './index.htm',
@@ -14,16 +14,20 @@ const PRECACHE_URLS = [
   './images/mive.png',
   './images/berenj.png',
   './images/mokamel.png',
-  // CDN libraries
-  'https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap',
-  'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200',
-  'https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css',
-  'https://code.jquery.com/jquery-3.6.0.min.js',
-  'https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.js',
-  'https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+  // کتابخانه‌ها و فونت‌ها — لوکال (vendor)
+  './vendor/fonts/vazirmatn.css',
+  './vendor/fonts/webfonts/vazirmatn-01.woff2',
+  './vendor/fonts/webfonts/vazirmatn-02.woff2',
+  './vendor/fonts/webfonts/vazirmatn-03.woff2',
+  './vendor/fonts/material-symbols.css',
+  './vendor/fonts/webfonts/material-symbols-01.woff2',
+  './vendor/persian-datepicker.min.css',
+  './vendor/jquery-3.6.0.min.js',
+  './vendor/persian-date.min.js',
+  './vendor/persian-datepicker.min.js',
+  './vendor/html2canvas.min.js',
+  './vendor/jspdf.umd.min.js',
+  './vendor/xlsx.full.min.js',
 ];
 
 self.addEventListener('install', (event) => {

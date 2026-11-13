@@ -1,0 +1,80 @@
+{
+  "name": "tisa-platform",
+  "productName": "Tisa Platform",
+  "version": "1.0.0",
+  "description": "پلتفرم ساخت برنامه غذایی DIET TISA — نسخه ویندوز (باندل همان نسخه وب)",
+  "author": "Pedram Gholizadeh",
+  "license": "UNLICENSED",
+  "main": "main.js",
+  "scripts": {
+    "sync": "node sync.js",
+    "start": "npm run sync && electron .",
+    "dist": "npm run sync && electron-builder --win nsis"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "ir.diettisa.platform",
+    "productName": "Tisa Platform",
+    "copyright": "Copyright © 2026 Pedram Gholizadeh",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "splash.html",
+      "app/**",
+      "build/icon.png"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "publisherName": "Pedram Gholizadeh"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "category": "public.app-category.medical",
+      "identity": null,
+      "artifactName": "TisaPlatform-${version}-mac-arm64.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Tisa Platform",
+      "artifactName": "TisaPlatform-Setup-${version}.${ext}"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "webiro",
+      "repo": "dr-fateme-heidari-nutritionist"
+    }
+  },
+  "allowScripts": {
+    "electron@33.4.11": true
+  }
+}

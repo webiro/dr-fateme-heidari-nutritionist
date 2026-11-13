@@ -1,0 +1,107 @@
+name: Tisa Platform — desktop build & release (Windows exe + macOS dmg)
+
+# نسخه دسکتاپ = باندل همان platform/index.htm وب (منبع حقیقت واحد).
+# هر تغییری روی platform/** → بیلد خودکار و ریلیز جدید روی GitHub Releases؛
+# اپ‌های نصب‌شده با دکمه بروزرسانی داخل خود برنامه نسخه جدید را می‌گیرند.
+# خروجی‌ها فقط همین‌جا ساخته می‌شوند (ویندوز exe + مک dmg سیلیکون) — نه روی سیستم محلی.
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'platform/index.htm'
+      - 'platform/images/**'
+      - 'platform/vendor/**'
+      - 'platform/sw.js'
+      - 'platform/desktop/**'
+      - '.github/workflows/desktop-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: platform/desktop
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Sync web source into desktop bundle (single source of truth)
+        shell: pwsh
+        working-directory: .
+        run: |
+          node platform/desktop/sync.js
+          Get-ChildItem platform/desktop/app | Format-Table Name, Length
+
+      - name: Compute version (1.0.<run_number>)
+        shell: pwsh
+        run: |
+          $v = "1.0.${{ github.run_number }}"
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('platform/desktop/package.json','utf8'));p.version='$v';fs.writeFileSync('platform/desktop/package.json',JSON.stringify(p,null,2));"
+          "VERSION=$v" >> $env:GITHUB_ENV
+          "TAG=v$v" >> $env:GITHUB_ENV
+          Write-Host "Version: $v (tag: v$v)"
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build NSIS installer & publish to GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run dist -- --publish always
+
+      - name: Upload artifact (backup copy of installer)
+        uses: actions/upload-artifact@v4
+        with:
+          name: TisaPlatform-Setup-${{ env.VERSION }}-win
+          path: platform/desktop/dist/*.exe
+          if-no-files-found: error
+
+  build-macos-silicon:
+    needs: build-windows   # پشت‌سرهم تا هر دو به یک ریلیز اضافه شوند
+    runs-on: macos-14      # رانر Apple Silicon
+    defaults:
+      run:
+        working-directory: platform/desktop
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Sync web source into desktop bundle (single source of truth)
+        run: node ../../platform/desktop/sync.js || node sync.js
+
+      - name: Compute version (1.0.<run_number>)
+        run: |
+          v="1.0.${{ github.run_number }}"
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('platform/desktop/package.json','utf8'));p.version='$v';fs.writeFileSync('platform/desktop/package.json',JSON.stringify(p,null,2));"
+          echo "VERSION=$v" >> $GITHUB_ENV
+          echo "TAG=v$v" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build dmg (Apple Silicon) & publish to the same GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false   # بدون کدساینینگ؛ اپ unsigned
+        run: npx electron-builder --mac dmg arm64 --publish always
+
+      - name: Upload artifact (backup copy of dmg)
+        uses: actions/upload-artifact@v4
+        with:
+          name: TisaPlatform-${{ env.VERSION }}-mac-arm64
+          path: platform/desktop/dist/*.dmg
+          if-no-files-found: error

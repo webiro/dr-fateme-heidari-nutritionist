@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<title>Tisa Platform</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{width:100%;height:100%;overflow:hidden;}
+  /* فونت وزیرمتن لوکال از باندل اپ — کاملاً آفلاین؛ در نبودش Segoe UI */
+  @font-face{
+    font-family:'Vazirmatn';
+    src:url('app/vendor/fonts/webfonts/vazirmatn-01.woff2') format('woff2');
+    font-weight:300 800;font-display:swap;
+  }
+  body{
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 38%, #22382d 0%, #14231c 55%, #0c1510 100%);
+    font-family:'Vazirmatn','Segoe UI',Tahoma,sans-serif;
+    color:#f2ead2;
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+  }
+  /* درخشش طلایی محو پشت لوگو */
+  .glow{
+    position:absolute;top:34%;left:50%;transform:translate(-50%,-50%);
+    width:420px;height:420px;border-radius:50%;
+    background:radial-gradient(circle, rgba(201,162,39,.16) 0%, rgba(201,162,39,0) 65%);
+    animation:glow 3.2s ease-in-out infinite;
+  }
+  @keyframes glow{0%,100%{opacity:.7;transform:translate(-50%,-50%) scale(1);}50%{opacity:1;transform:translate(-50%,-50%) scale(1.12);}}
+
+  .stage{display:flex;flex-direction:column;align-items:center;gap:22px;animation:rise .9s ease both;}
+  @keyframes rise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+
+  .mark{
+    width:104px;height:104px;border-radius:30px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:54px;font-weight:800;color:#e9c95c;
+    background:linear-gradient(160deg,#1d3226,#132119);
+    border:1.5px solid rgba(201,162,39,.85);
+    box-shadow:0 0 0 6px rgba(201,162,39,.07), 0 18px 50px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
+    animation:markPulse 3s ease-in-out infinite;
+  }
+  @keyframes markPulse{0%,100%{box-shadow:0 0 0 6px rgba(201,162,39,.07), 0 18px 50px rgba(0,0,0,.5);}50%{box-shadow:0 0 0 10px rgba(201,162,39,.1), 0 18px 60px rgba(0,0,0,.55);}}
+
+  h1{
+    font-size:44px;font-weight:800;letter-spacing:.5px;
+    background:linear-gradient(180deg,#f6efd8,#d9c98e);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .divider{width:150px;height:1px;background:linear-gradient(90deg,transparent,#c9a227,transparent);position:relative;overflow:hidden;}
+  .divider::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,235,170,.9),transparent);transform:translateX(-100%);animation:sheen 2.4s ease-in-out infinite;}
+  @keyframes sheen{to{transform:translateX(100%);}}
+
+  .track{width:230px;height:3px;border-radius:99px;background:rgba(201,162,39,.15);overflow:hidden;margin-top:6px;}
+  .track .fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#8a7a3a,#e9c95c);animation:load 5s linear forwards;}
+  @keyframes load{to{width:100%;}}
+
+  .credit{
+    position:absolute;bottom:34px;left:0;right:0;text-align:center;
+    font-size:13px;color:rgba(233,201,92,.75);letter-spacing:.3px;
+    animation:rise 1.2s .4s ease both;
+  }
+  .credit .sep{margin:0 8px;color:rgba(233,201,92,.4);}
+  .ver{position:absolute;top:22px;left:26px;font-size:11px;color:rgba(242,234,210,.35);letter-spacing:1px;}
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="ver">TISA&nbsp;PLATFORM</div>
+  <div class="stage">
+    <div class="mark">T</div>
+    <h1>پلتفرم تیسا</h1>
+    <div class="divider"></div>
+    <div class="track"><div class="fill"></div></div>
+  </div>
+  <div class="credit">توسعه با ❤️ از طرف پدرام<span class="sep">—</span>تقدیم به پرنسس 🎀</div>
+</body>
+</html>
