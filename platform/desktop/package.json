@@ -71,7 +71,8 @@
     "publish": {
       "provider": "github",
       "owner": "webiro",
-      "repo": "dr-fateme-heidari-nutritionist"
+      "repo": "dr-fateme-heidari-nutritionist",
+      "releaseType": "release"
     }
   },
   "allowScripts": {
