@@ -382,6 +382,108 @@
   body[data-template="home"] .cover-title .eyebrow{color:#c96f4a;letter-spacing:5px;}
   body[data-template="home"] .cover-title h2{font-weight:800;color:#5f4633;}
 
+  /* سلطنتی: کرم سلطنتی + سرمه‌ای و طلایی با قاب دولا */
+  body[data-template="royal"] .page{background:linear-gradient(160deg,#fdfaf1,#f6ecd5);}
+  body[data-template="royal"] .page::before{content:"";position:absolute;inset:6.5mm;border:2px solid #1f2a44;border-radius:3px;pointer-events:none;}
+  body[data-template="royal"] .page::after{content:"";position:absolute;inset:5mm;border:1px solid #c9a227;border-radius:4px;pointer-events:none;}
+  body[data-template="royal"] .hdr{border-bottom:2px solid #1f2a44;}
+  body[data-template="royal"] .hdr .mark{border-radius:8px;background:linear-gradient(135deg,#1f2a44,#c9a227);}
+  body[data-template="royal"] .section-title{background:#f3ead2;border-right:5px solid #c9a227;border-radius:6px;}
+  body[data-template="royal"] .section-title .fa{color:#1f2a44;}
+  body[data-template="royal"] .options li{border-color:#e4d6ac;background:#fffdf6;border-radius:6px;}
+  body[data-template="royal"] .options li .num{border-radius:4px;background:#1f2a44;color:#e9c95c;}
+  body[data-template="royal"] .options li .items .chip{background:#f7efdb;border-radius:4px;}
+  body[data-template="royal"] .patient{background:#f6ecd2;border-color:#e0cf9e;border-radius:8px;}
+  body[data-template="royal"] .note{border-radius:6px;}
+  body[data-template="royal"] .note::before{background:#c9a227;}
+  body[data-template="royal"] .supp{background:#f7efdb;border-radius:6px;}
+  body[data-template="royal"] .clinician{border-color:#c9a227;}
+  body[data-template="royal"] .cover-title .eyebrow{color:#b98c2c;letter-spacing:8px;}
+  body[data-template="royal"] .cb-text.center .cb-title{color:#1f2a44;}
+  body[data-template="royal"] .cb-divider{border-top:2px solid #c9a227;}
+
+  /* مینیمال: سفید خالص، قاب مشکی پهن، گوشه‌های تیز و مربعی */
+  body[data-template="minimal"] .page{background:#ffffff;}
+  body[data-template="minimal"] .page::before{content:"";position:absolute;inset:4mm;border:3px solid #111;pointer-events:none;}
+  body[data-template="minimal"] .hdr{border-bottom:3px solid #111;}
+  body[data-template="minimal"] .hdr .mark{border-radius:0;background:#111;}
+  body[data-template="minimal"] .section-title{background:#111;border-right:0;border-radius:0;padding:12px 14px;}
+  body[data-template="minimal"] .section-title .fa{color:#fff;}
+  body[data-template="minimal"] .section-title .en{color:#9a9a9a;}
+  body[data-template="minimal"] .section-title .ico{background:#fff;border-radius:0;}
+  body[data-template="minimal"] .options li{border-color:#111;border-radius:0;background:#fff;}
+  body[data-template="minimal"] .options li .num{border-radius:0;background:#111;color:#fff;}
+  body[data-template="minimal"] .options li .items .chip{border-radius:0;background:#f0f0f0;}
+  body[data-template="minimal"] .patient{border-radius:0;border-color:#111;background:#f7f7f7;}
+  body[data-template="minimal"] .note{border-radius:0;border-color:#cfcfcf;}
+  body[data-template="minimal"] .note::before{border-radius:0;background:#111;}
+  body[data-template="minimal"] .note.warn{border-color:#111;background:#fafafa;}
+  body[data-template="minimal"] .supp{border-radius:0;background:#f0f0f0;}
+  body[data-template="minimal"] .clinician{border-radius:0;border-color:#111;}
+  body[data-template="minimal"] .footer{border-top:2px solid #111;}
+  body[data-template="minimal"] .cover-title .eyebrow{color:#111;letter-spacing:10px;}
+  body[data-template="minimal"] .cb-text.center .cb-title{color:#111;}
+  body[data-template="minimal"] .cb-divider{border-top:2px solid #111;}
+
+  /* شیاری: پس‌زمینه با خطوط عمودی ظریف و قاب مویی */
+  body[data-template="pinstripe"] .page{
+    background:
+      repeating-linear-gradient(90deg, rgba(55,71,79,.06) 0 1px, transparent 1px 7px),
+      #f4f6f7;
+  }
+  body[data-template="pinstripe"] .page::before{content:"";position:absolute;inset:5mm;border:1px solid #a9b8bd;pointer-events:none;}
+  body[data-template="pinstripe"] .hdr{border-bottom:2px solid #37474f;}
+  body[data-template="pinstripe"] .hdr .mark{border-radius:4px;background:#37474f;}
+  body[data-template="pinstripe"] .section-title{background:#e3eaec;border-right:6px double #37474f;border-radius:0;}
+  body[data-template="pinstripe"] .options li{border-radius:0;background:#fbfdfd;border-color:#cfdadd;}
+  body[data-template="pinstripe"] .options li .num{border-radius:0;background:#37474f;color:#fff;}
+  body[data-template="pinstripe"] .options li .items .chip{border-radius:0;background:#e8eef0;}
+  body[data-template="pinstripe"] .patient{border-radius:0;background:#e8eef0;border-color:#cfdadd;}
+  body[data-template="pinstripe"] .note{border-radius:0;background:#fbfdfd;}
+  body[data-template="pinstripe"] .supp{background:#e8eef0;border-radius:0;}
+  body[data-template="pinstripe"] .cover-title .eyebrow{color:#37474f;letter-spacing:7px;}
+  body[data-template="pinstripe"] .cb-text.center .cb-title{color:#37474f;}
+  body[data-template="pinstripe"] .cb-divider{border-top:1px solid #90a4ae;}
+
+  /* بوتانیک: سبز طبیعت با نقاط ظریف و قاب دولا */
+  body[data-template="botanic"] .page{
+    background:
+      radial-gradient(rgba(46,94,78,.10) 1px, transparent 1.5px) 0 0/18px 18px,
+      linear-gradient(150deg,#f4f8f2,#edf3e8);
+  }
+  body[data-template="botanic"] .page::before{content:"";position:absolute;inset:5mm;border:1.5px solid #2e5e4e;border-radius:6px;pointer-events:none;}
+  body[data-template="botanic"] .hdr{border-bottom:1px solid #cfe0d4;}
+  body[data-template="botanic"] .hdr .mark{border-radius:50%;background:linear-gradient(135deg,#2e5e4e,#6fae91);}
+  body[data-template="botanic"] .section-title{background:#e2efe4;border-right:5px solid #2e5e4e;border-radius:12px;}
+  body[data-template="botanic"] .options li{border-radius:10px;border-color:#d7e6d8;background:#ffffff;}
+  body[data-template="botanic"] .options li .num{background:#2e5e4e;color:#fff;}
+  body[data-template="botanic"] .options li .items .chip{background:#eef5ee;}
+  body[data-template="botanic"] .patient{background:#eaf3ea;border-color:#d7e6d8;}
+  body[data-template="botanic"] .note{background:#fbfefb;}
+  body[data-template="botanic"] .note::before{background:#2e5e4e;}
+  body[data-template="botanic"] .supp{background:#e2efe4;border-radius:12px;}
+  body[data-template="botanic"] .cover-title .eyebrow{color:#2e5e4e;letter-spacing:6px;}
+  body[data-template="botanic"] .cb-text.center .cb-title{color:#2e5e4e;}
+  body[data-template="botanic"] .cb-divider{border-top:1.5px solid #6fae91;}
+
+  /* رزگلد: بلوش لطیف با قاب دولای رز */
+  body[data-template="rose"] .page{background:linear-gradient(165deg,#fff7f4,#fdeee9);}
+  body[data-template="rose"] .page::before{content:"";position:absolute;inset:7mm;border:2px solid #b76e79;border-radius:6px;pointer-events:none;}
+  body[data-template="rose"] .page::after{content:"";position:absolute;inset:5mm;border:1px solid #dca9ad;border-radius:8px;pointer-events:none;}
+  body[data-template="rose"] .hdr{border-bottom:1px solid #eccfc9;}
+  body[data-template="rose"] .hdr .mark{background:linear-gradient(135deg,#b76e79,#e3aeb3);}
+  body[data-template="rose"] .section-title{background:#fbe9e4;border-right:5px solid #b76e79;border-radius:12px;}
+  body[data-template="rose"] .options li{border-radius:12px;border-color:#eed4cd;background:#fffdfd;}
+  body[data-template="rose"] .options li .num{background:#b76e79;color:#fff;}
+  body[data-template="rose"] .options li .items .chip{background:#faecea;border-radius:99px;}
+  body[data-template="rose"] .patient{background:#fae9e4;border-color:#eed4cd;border-radius:14px;}
+  body[data-template="rose"] .note{background:#fffafa;}
+  body[data-template="rose"] .note::before{background:#b76e79;}
+  body[data-template="rose"] .supp{background:#fbe9e4;border-radius:12px;}
+  body[data-template="rose"] .cover-title .eyebrow{color:#b76e79;letter-spacing:6px;}
+  body[data-template="rose"] .cb-text.center .cb-title{color:#b76e79;}
+  body[data-template="rose"] .cb-divider{border-top:2px solid #dca9ad;}
+
   .cover-badge{font-size:34px;text-align:center;margin-top:4px;}
   .empty-msg{color:var(--muted);font-size:12px;}
   body[data-template="athlete"] .empty-msg{color:#9aa0ac;}
@@ -396,6 +498,18 @@
   .save-dlg .field{margin:12px 0;}
 
   /* ================= Cover page builder (صفحه اول) ================= */
+  .cover-pos-row{display:none;align-items:center;gap:10px;margin:10px 0 2px;flex-wrap:wrap;}
+  .cover-pos-label{font-size:12.5px;color:var(--muted);font-weight:600;}
+  .seg{display:inline-flex;background:var(--soft);border:1px solid var(--line);border-radius:11px;padding:3px;gap:2px;}
+  .seg-btn{border:0;background:transparent;padding:8px 16px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--muted);transition:.15s;min-height:36px;}
+  .seg-btn:hover{color:var(--ink);}
+  .seg-btn.sel{background:#fff;color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.08);}
+  .footer .addr{display:flex;flex-wrap:wrap;gap:2px 10px;align-items:center;}
+  .footer .ig-line{display:inline-flex;align-items:center;gap:5px;}
+  .footer .ig-line .ig-ico{width:13px;height:13px;color:var(--accent);}
+  .footer .ig-line b{font-weight:600;color:var(--ink);font-size:11px;}
+  body[data-template="athlete"] .footer .ig-line b{color:#d5d9e0;}
+  body[data-template="athlete"] .footer .ig-line .ig-ico{color:#e67e22;}
   .cover-toggle{display:flex;align-items:center;gap:10px;background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;padding:13px 16px;cursor:pointer;font-size:13px;font-weight:600;color:var(--ink);transition:.15s;}
   .cover-toggle:hover{filter:brightness(.98);}
   .cover-toggle input{width:18px;height:18px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;}
@@ -539,7 +653,7 @@
             <small>فهرست مواد غذایی از فایل اکسل مرجع خوانده می‌شود.</small>
           </div>
           <div class="choice" data-excel="no">
-            <span class="material-symbols-outlined">table_view_off</span>
+            <span class="material-symbols-outlined">grid_off</span>
             <b>خیر</b>
             <small>بدون فایل مرجع ادامه می‌دهیم.</small>
           </div>
@@ -556,8 +670,7 @@
           <div class="field"><label>شماره نظام پزشکی</label><input id="p_lic" placeholder="۱۱۴۴۲"/></div>
           <div class="field full"><label>اسم مجموعه</label><input id="p_brand" placeholder="مثال: استودیو ورزشی آواتار"/></div>
           <div class="field full"><label>آدرس</label><input id="p_addr" placeholder="سلمانشهر، خیابان باهنر، مجموعه ورزشی اوتار"/></div>
-          <div class="field"><label>شماره تماس</label><input id="p_phone" placeholder="۰۹۳۵-۱۸۹۶۶۰۲"/></div>
-          <div class="field"><label>اینستاگرام</label><input id="p_instagram" placeholder="@diet_tisa | @avatar_sportstudio"/></div>
+          <div class="field"><label>شماره تماس</label><input id="p_phone" dir="ltr" placeholder="09306968649"/></div>
         </div>
 
         <div class="panel">
@@ -594,17 +707,34 @@
           </div>
         </div>
 
-        <div class="panel">
-          <h3><span class="material-symbols-outlined">smart_toy</span> تنظیمات هوش مصنوعی (OpenRouter)</h3>
-          <div class="grid">
-            <div class="field full"><label>کلید API (فقط در مرورگر شما ذخیره می‌شود)</label><input id="ai_key" type="password" dir="ltr" placeholder="sk-or-v1-..."/></div>
+        <div class="panel" id="aiPanel">
+          <h3><span class="material-symbols-outlined">smart_toy</span> تنظیمات هوش مصنوعی <span style="font-weight:400;color:var(--muted);font-size:11px;">(فقط برای روش «با هوش مصنوعی»)</span></h3>
+          <div class="q-label" style="margin-top:2px;"><span class="material-symbols-outlined">hub</span> سرویس‌دهنده را انتخاب کنید</div>
+          <div class="choice-grid" id="providerChoices" style="max-width:460px;">
+            <div class="choice" data-provider="openrouter">
+              <span class="material-symbols-outlined">public</span>
+              <b>OpenRouter</b>
+              <small>صدها مدل بین‌المللی؛ نیاز به پرداخت ارزی دارد.</small>
+            </div>
+            <div class="choice" data-provider="paasta">
+              <span class="material-symbols-outlined">domain</span>
+              <b>پاستا کلاد</b>
+              <small>سرویس ایرانی با پرداخت ریالی؛ میزبان مدل‌های DeepSeek.</small>
+            </div>
+          </div>
+          <div class="grid" style="margin-top:12px;">
+            <div class="field full">
+              <label id="aiKeyLabel">کلید API (فقط در مرورگر شما ذخیره می‌شود)</label>
+              <input id="ai_key" type="password" dir="ltr" placeholder="sk-or-v1-..."/>
+              <div class="excel-status" id="aiKeyHint" style="margin-top:6px;"></div>
+            </div>
             <div class="field full">
               <label>نام مدل (از لیست انتخاب کنید یا بنویسید)</label>
-              <input id="ai_model" dir="ltr" list="orModelsList" placeholder="openai/gpt-4o-mini"/>
+              <input id="ai_model" dir="ltr" list="orModelsList"/>
               <datalist id="orModelsList"></datalist>
               <div class="excel-status" id="modelsStatus" style="margin-top:6px;"></div>
             </div>
-            <div class="field full"><label>دستور ساخت رژیم (پرامپت)</label><textarea id="ai_prompt" style="min-height:130px;"></textarea></div>
+            <div class="field full"><label>مستر پرامپت ساخت رژیم</label><textarea id="ai_prompt" style="min-height:170px;"></textarea></div>
           </div>
           <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
             <button class="btn btn-ghost btn-sm" onclick="resetAIPrompt()"><span class="material-symbols-outlined">restart_alt</span> پرامپت پیش‌فرض</button>
@@ -647,8 +777,16 @@
         <p class="hint">صفحه‌ی اول برنامه را خودتان بسازید: متن و عکس دلخواه اضافه کنید، کارت‌های آماده را بگذارید و همه را با درگ‌اند‌دراپ جابجا کنید.</p>
         <label class="cover-toggle">
           <input type="checkbox" id="coverEnabled"/>
-          <span>استفاده از صفحه اول سفارشی <span style="color:var(--muted);font-weight:400;">(به‌جای جلد پیش‌فرض)</span></span>
+          <span>استفاده از صفحه اول سفارشی <span style="color:var(--muted);font-weight:400;">(یک صفحه اضافه کنار جلد پیش‌فرض)</span></span>
         </label>
+
+        <div class="cover-pos-row" id="coverPosRow">
+          <span class="cover-pos-label">موقعیت این صفحه:</span>
+          <div class="seg" id="coverPosSeg" role="radiogroup" aria-label="موقعیت صفحه سفارشی">
+            <button type="button" class="seg-btn sel" data-pos="before" role="radio" aria-checked="true">قبل از جلد</button>
+            <button type="button" class="seg-btn" data-pos="after" role="radio" aria-checked="false">بعد از جلد</button>
+          </div>
+        </div>
 
         <div id="coverBuilderWrap" hidden>
           <div class="cover-toolbar" role="toolbar" aria-label="افزودن بلوک به صفحه اول">
@@ -844,12 +982,12 @@ const STEP_LABELS = [
 const totalSteps = STEP_LABELS.length;
 let currentStep = 0;
 
-const LS_PLATFORM = 'dw_platform_v2';
+const LS_PLATFORM = 'dw_platform_v3';
 const LS_LOGO     = 'dw_logo_v1';
 const LS_COLORS   = 'dw_colors_v1';
 const LS_FORM     = 'dw_form_v2';
-const LS_AI       = 'dw_ai_v1';
 const LS_TEMPLATE = 'dw_template_v1';
+/* LS_AI داخل بخش «AI settings» تعریف می‌شود (dw_ai_v2) */
 
 const DEFAULT_COLORS = {
   accent:'#6f8b7a', accent2:'#8aa89a', gold:'#b08a4a',
@@ -862,26 +1000,60 @@ let USE_EXCEL   = false;
 
 /* ---------- قالب‌های ظاهری ---------- */
 const TEMPLATES = {
-  classic : { label:'کلاسیک',    dot:'#6f8b7a', colors:{accent:'#6f8b7a',accent2:'#8aa89a',gold:'#b08a4a',ink:'#1f2a2e',bg:'#fafaf7'}, badge:''   },
-  teen    : { label:'نوجوان',    dot:'#7c5cbf', colors:{accent:'#7c5cbf',accent2:'#b48be0',gold:'#8e6c1f',ink:'#241f33',bg:'#faf9fd'}, badge:'🌟' },
-  young   : { label:'جوان',      dot:'#ff7a59', colors:{accent:'#e8603c',accent2:'#ff9d7f',gold:'#b08a4a',ink:'#2b211d',bg:'#fdfaf8'}, badge:'🔥' },
-  athlete : { label:'ورزشکار',   dot:'#c0392b', colors:{accent:'#c0392b',accent2:'#e67e22',gold:'#8d6e2f',ink:'#211714',bg:'#fcf8f6'}, badge:'💪' },
-  home    : { label:'خانه‌دار',  dot:'#c96f4a', colors:{accent:'#c96f4a',accent2:'#e0a37e',gold:'#a4762c',ink:'#2d2018',bg:'#fdf9f4'}, badge:'🏡' },
+  classic  : { label:'کلاسیک',   dot:'#6f8b7a', colors:{accent:'#6f8b7a',accent2:'#8aa89a',gold:'#b08a4a',ink:'#1f2a2e',bg:'#fafaf7'}, badge:''   },
+  teen     : { label:'نوجوان',   dot:'#7c5cbf', colors:{accent:'#7c5cbf',accent2:'#b48be0',gold:'#8e6c1f',ink:'#241f33',bg:'#faf9fd'}, badge:'🌟' },
+  young    : { label:'جوان',     dot:'#ff7a59', colors:{accent:'#e8603c',accent2:'#ff9d7f',gold:'#b08a4a',ink:'#2b211d',bg:'#fdfaf8'}, badge:'🔥' },
+  athlete  : { label:'ورزشکار',  dot:'#c0392b', colors:{accent:'#c0392b',accent2:'#e67e22',gold:'#8d6e2f',ink:'#211714',bg:'#fcf8f6'}, badge:'💪' },
+  home     : { label:'خانه‌دار', dot:'#c96f4a', colors:{accent:'#c96f4a',accent2:'#e0a37e',gold:'#a4762c',ink:'#2d2018',bg:'#fdf9f4'}, badge:'🏡' },
+  royal    : { label:'سلطنتی',   dot:'#c9a227', colors:{accent:'#1f2a44',accent2:'#c9a227',gold:'#b98c2c',ink:'#1f2a44',bg:'#fdfaf1'}, badge:'👑' },
+  minimal  : { label:'مینیمال',  dot:'#111111', colors:{accent:'#111111',accent2:'#4a4a4a',gold:'#111111',ink:'#111111',bg:'#ffffff'}, badge:'◻️' },
+  pinstripe: { label:'شیاری',    dot:'#37474f', colors:{accent:'#37474f',accent2:'#78909c',gold:'#8d6e2f',ink:'#263238',bg:'#f4f6f7'}, badge:'〰️' },
+  botanic  : { label:'بوتانیک',  dot:'#2e5e4e', colors:{accent:'#2e5e4e',accent2:'#6fae91',gold:'#a4762c',ink:'#1d3329',bg:'#f4f8f2'}, badge:'🌿' },
+  rose     : { label:'رزگلد',    dot:'#b76e79', colors:{accent:'#b76e79',accent2:'#e3aeb3',gold:'#c9a24a',ink:'#4a2e32',bg:'#fff7f4'}, badge:'🌹' },
 };
 let CURRENT_TEMPLATE = 'classic';
 
 /* ---------- تنظیمات AI ---------- */
-const DEFAULT_AI_MODEL = 'openai/gpt-4o-mini';
-const DEFAULT_AI_PROMPT = `تو یک متخصص تغذیه ایرانی باتجربه هستی. بر اساس اطلاعات مراجع، یک برنامه غذایی روزانه کامل و واقع‌بینانه با مواد غذایی رایج ایرانی بنویس.
+/* ---------- سرویس‌دهنده‌های هوش مصنوعی ---------- */
+const AI_PROVIDERS = {
+  openrouter: {
+    label:'OpenRouter',
+    endpoint:'https://openrouter.ai/api/v1/chat/completions',
+    models:'https://openrouter.ai/api/v1/models',
+    defaultModel:'openai/gpt-4o-mini',
+    keyPlaceholder:'sk-or-v1-...',
+    keyHint:'دریافت کلید: <b dir="ltr">openrouter.ai/keys</b>'
+  },
+  paasta: {
+    label:'پاستا کلاد',
+    endpoint:'https://console.paasta.cloud/api/ai/v1/chat/completions',
+    models:'https://console.paasta.cloud/api/ai/v1/models',
+    defaultModel:'paasta/deepseek-v4-flash',
+    keyPlaceholder:'کلید API پاستا کلاد',
+    keyHint:'دریافت کلید: <b dir="ltr">console.paasta.cloud/ai/keys</b> · مدل پیش‌فرض: <b dir="ltr">paasta/deepseek-v4-flash</b>'
+  }
+};
 
-قواعد:
-- برای هر وعده ۲ تا ۴ «گزینه» بده که مراجع بتواند جایگزین انتخاب کند؛ هر گزینه ۳ تا ۶ آیتم غذایی با اندازه‌ی تقریبی (مثلاً «نان سنگک ۲ کف دست»).
-- بیماری‌ها، محدودیت‌ها، هدف (کاهش/افزایش/پایداری وزن)، سن و فعالیت را حتماً در نظر بگیر.
-- اگر «فهرست منابع غذایی» داده شده، غذاها را تا حد امکان از همان فهرست انتخاب کن.
-- مکمل‌ها فقط موارد عمومی و ایمن؛ دارو تجویز نکن.
-- نکته‌ها کوتاه و کاربردی باشند؛ نکته‌های حساس (مثل تداخل دارویی) را با warn=true علامت بزن.
+/* ---------- مستر پرامپت ---------- */
+const DEFAULT_AI_PROMPT = `تو یک متخصص تغذیه بالینی ارشد ایرانی هستی که برای کلینیک برنامه غذایی روزانهٔ دقیق، ایمن و اجراپذیر می‌نویسی. خروجی تو توسط پزشک بازبینی می‌شود؛ دقت بالینی، ایمنی مراجع و قابل‌اجرا بودن در اولویت است.
 
-فقط و فقط یک شیء JSON با دقیقاً این ساختار برگردان، بدون هیچ متن اضافه:
+## گام‌های تصمیم‌گیری (ذهنی؛ در خروجی نیاور)
+۱. برآورد انرژی: با توجه به سن، قد، وزن، هدف (کاهش/افزایش/پایداری) و سطح فعالیت در «سایر اطلاعات»، کالری هدف روزانه را منطقی برآورد کن. کاهش وزن: حدود ۱۵ تا ۲۰ درصد کمتر از نیاز؛ افزایش وزن: ۱۰ تا ۲۰ درصد بیشتر؛ پایداری: نزدیک نیاز.
+۲. درشت‌مغذی‌ها: پروتئین حدود ۱٫۲ تا ۱٫۶ گرم بر کیلوگرم وزن (در ورزشکاران تا ۲)، چربی دست‌کم ۲۵ درصد انرژی، باقی کربوهیدرات ترجیحاً مرکب؛ فیبر روزانه دست‌کم ۲۵ گرم.
+۳. توزیع وعده‌ها: صبحانه ۲۰ تا ۲۵ درصد، میان‌وعده صبح حدود ۱۰ درصد، ناهار ۳۰ تا ۳۵ درصد، میان‌وعده عصر حدود ۱۰ درصد، شام ۲۰ تا ۲۵ درصد؛ وعده آخر شب فقط اگر واقعاً نیاز بود (دیابت، تمرین شب، بارداری).
+
+## قواعد نوشتن برنامه
+- برای هر وعده ۲ تا ۴ «گزینه» با ارزش غذایی تقریباً معادل بده که جایگزین هم باشند؛ هر گزینه ۳ تا ۶ آیتم با اندازه‌های خانگی قابل‌فهم (کف دست، قاشق غذاخوری، لیوان، عدد).
+- فقط غذاهای رایج و در دسترس ایرانی؛ ترکیب هر وعده متعادل: منبع پروتئین + کربوهیدرات مرکب + سبزیجات یا سالاد؛ میان‌وعده‌ها سبک و ساده.
+- محدودیت‌ها و بیماری‌ها را حتماً رعایت کن: دیابت (قند ساده و نان سفید ممنوع، منابع گلایسمی پایین)، فشار خون (سدیم کم)، نارسایی کلیه (پروتئین/پتاسیم/فسفات کنترل‌شده)، عدم تحمل لاکتوز، گلوتن، رفلاکس، کبد چرب و... . در تعارض‌ها، ایمنی مراجع مقدم بر هدف وزنی است.
+- تنوع واقعی بده: در گزینه‌های یک وعده غذای تکراری نگذار؛ سلیقه و فرهنگ غذایی ایرانی حفظ شود.
+- اگر «فهرست منابع غذایی» داده شده، تا حد امکان فقط از همان فهرست انتخاب کن.
+- مکمل‌ها فقط عمومی و ایمن (مانند ویتامین D3، امگا۳، منیزیم، مولتی‌ویتامین) با دوز معمول و زمان مصرف مشخص؛ هیچ دارویی تجویز نکن.
+- نکته‌ها کوتاه، رفتاری و قابل اجرا باشند (آبرسانی، ترتیب مصرف، آماده‌سازی، پیاده‌روی و...)؛ هر نکته حساس (تداخل دارویی، بیماری خاص، علامت هشدار) با warn=true علامت بخورد.
+- از توصیه‌های کلی و بی‌اثر پرهیز کن؛ هر خط باید مشخص و قابل اجرا باشد.
+
+## خروجی
+فقط و فقط یک شیء JSON معتبر با دقیقاً همین ساختار برگردان؛ بدون هیچ متن اضافه و بدون markdown:
 {
   "fasting": "یادداشت ناشتا یا رشته خالی",
   "breakfast":   [ { "full": false, "items": ["..."] } ],
@@ -897,11 +1069,12 @@ const DEFAULT_AI_PROMPT = `تو یک متخصص تغذیه ایرانی باتج
 const DEFAULT_PLATFORM = {
   clinician: 'فاطمه حیدری',
   lic: '۱۱۴۴۲',
-  brand: 'استودیو ورزشی آواتار',
-  addr: 'سلمانشهر، خیابان باهنر، مجموعه ورزشی اوتار',
-  phone: '۰۹۳۵-۱۸۹۶۶۰۲',
-  instagram: '@diet_tisa | @avatar_sportstudio'
+  brand: '',
+  addr: '',
+  phone: '09306968649',
+  instagram: 'diet_tisa'
 };
+const DOCTOR_INSTAGRAM = 'diet_tisa';
 
 /* ============================================================
    Helpers
@@ -1078,7 +1251,7 @@ function collectData(){
     brand: v('p_brand')||'',
     addr: v('p_addr')||'',
     phone: v('p_phone')||'',
-    instagram: v('p_instagram')||'',
+    instagram: DOCTOR_INSTAGRAM,
     logo: localStorage.getItem(LS_LOGO)||'',
     name: v('f_name')||'—',
     date: v('f_date')||todayJalali(),
@@ -1108,29 +1281,31 @@ let pageCounter = 0;
 function resetPages(){ pageCounter=0; }
 function logoHTML(d){
   if(d.logo) return `<div class="mark"><img src="${d.logo}" alt="لوگو"/></div>`;
-  const letter = (d.brand||'A').trim().charAt(0) || 'A';
+  const letter = ((d.brand||d.clinician||'D').trim().charAt(0)) || 'D';
   return `<div class="mark">${esc(letter)}</div>`;
 }
 function hdr(d, metaHTML){
+  const title = (d.name && d.name!=='—') ? d.name : 'برنامه غذایی اختصاصی';
   return `
   <div class="hdr">
     <div class="brand">
       ${logoHTML(d)}
       <div>
-        <h1>${esc(d.brand||'—')}</h1>
-        <div class="sub">رژیم درمانگر: ${esc(d.clinician)}${d.lic?' · شماره نظام پزشکی: '+esc(d.lic):''}</div>
+        <h1>${esc(title)}</h1>
+        <div class="sub">رژیم درمانگر: ${esc(d.clinician)}${d.lic?' · شماره نظام پزشکی: '+esc(d.lic):''}${d.brand?' · '+esc(d.brand):''}</div>
       </div>
     </div>
     <div class="meta">${metaHTML}</div>
   </div>`;
 }
+const IG_ICON_SVG = `<svg class="ig-ico" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="2.6" y="2.6" width="18.8" height="18.8" rx="5.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.2" cy="6.8" r="1.35" fill="currentColor"/></svg>`;
 function footer(d){
   pageCounter++;
-  const parts = [d.addr, d.phone, d.instagram].map(s=>(s||'').trim()).filter(Boolean);
+  const parts = [d.addr, d.phone].map(s=>(s||'').trim()).filter(Boolean);
   const addr = parts.map(p=>`<span>${esc(p)}</span>`).join('');
   return `
   <div class="footer">
-    <div class="addr">${addr||''}</div>
+    <div class="addr">${addr||''}<span class="ig-line">${IG_ICON_SVG}<b dir="ltr">@${DOCTOR_INSTAGRAM}</b></span></div>
     <div class="pagenum">صفحه ${toPersianDigit(pageCounter)}</div>
     <div class="copyright">ساخته‌شده با ❤️ توسط WEBIRO</div>
   </div>`;
@@ -1221,8 +1396,12 @@ function renderPreview(targetId){
   if(!area) return;
   const pages = [];
 
-  // Cover (سفارشی اگر فعال باشد، وگرنه پیش‌فرض)
-  pages.push(coverPageHTML(d) || defaultCoverHTML(d));
+  // جلد + صفحه سفارشی (طبق موقعیت انتخابی: قبل یا بعد از جلد)
+  const customCover = coverPageHTML(d);
+  const defaultCover = defaultCoverHTML(d);
+  if(customCover && d.cover && d.cover.position==='after'){ pages.push(defaultCover); pages.push(customCover); }
+  else if(customCover){ pages.push(customCover); pages.push(defaultCover); }
+  else { pages.push(defaultCover); }
 
   // Page 2: Breakfast + Morning snack
   pages.push(`
@@ -1438,7 +1617,7 @@ function savePlatform(){
   const data = {
     clinician:v('p_clinician'), lic:v('p_lic'),
     brand:v('p_brand'), addr:v('p_addr'),
-    phone:v('p_phone'), instagram:v('p_instagram')
+    phone:v('p_phone')
   };
   localStorage.setItem(LS_PLATFORM, JSON.stringify(data));
   updateLogoLetter();
@@ -1460,14 +1639,13 @@ function loadPlatform(){
   set('p_brand', d.brand);
   set('p_addr', d.addr);
   set('p_phone', d.phone);
-  set('p_instagram', d.instagram);
 }
 
 /* Logo */
 function updateLogoLetter(){
-  const brand = v('p_brand')||'A';
+  const brand = v('p_brand')||v('p_clinician')||'D';
   const el = document.getElementById('logoLetter');
-  if(el) el.textContent = brand.trim().charAt(0)||'A';
+  if(el) el.textContent = brand.trim().charAt(0)||'D';
 }
 function applyLogoPreview(){
   const preview = document.getElementById('logoPreview');
@@ -1475,7 +1653,7 @@ function applyLogoPreview(){
   if(data){
     preview.innerHTML = `<img src="${data}" alt="لوگو"/>`;
   } else {
-    preview.innerHTML = `<span id="logoLetter">${(v('p_brand')||'A').trim().charAt(0)||'A'}</span>`;
+    preview.innerHTML = `<span id="logoLetter">${(v('p_brand')||v('p_clinician')||'D').trim().charAt(0)||'D'}</span>`;
   }
 }
 function clearLogo(){
@@ -1710,7 +1888,7 @@ function resetForm(){
    Init
 ============================================================ */
 function bindPlatformInputs(){
-  ['p_clinician','p_lic','p_brand','p_addr','p_phone','p_instagram'].forEach(id=>{
+  ['p_clinician','p_lic','p_brand','p_addr','p_phone'].forEach(id=>{
     document.getElementById(id).addEventListener('input', ()=>{ savePlatform(); applyLogoPreview(); });
   });
   ['c_accent','c_accent2','c_gold','c_ink','c_bg'].forEach(id=>{
@@ -1823,6 +2001,17 @@ function getCoverToggles(){
     showFooter: document.getElementById('coverShowFooter')?.checked !== false
   };
 }
+function getCoverPosition(){
+  const sel = document.querySelector('#coverPosSeg .seg-btn.sel');
+  return (sel && sel.dataset.pos==='after') ? 'after' : 'before';
+}
+function setCoverPosition(pos){
+  document.querySelectorAll('#coverPosSeg .seg-btn').forEach(b=>{
+    const on = b.dataset.pos===pos;
+    b.classList.toggle('sel', on);
+    b.setAttribute('aria-checked', on?'true':'false');
+  });
+}
 function collectCover(){
   const list = document.getElementById('coverBlocksList');
   const blocks = list ? [...list.querySelectorAll('.cv-block')].map(el=>{
@@ -1843,7 +2032,7 @@ function collectCover(){
     if(b.type==='image') return !!b.src;
     return true;
   }) : [];
-  return { ...getCoverToggles(), blocks };
+  return { ...getCoverToggles(), position: getCoverPosition(), blocks };
 }
 function restoreCover(cover){
   cover = cover||{};
@@ -1852,6 +2041,7 @@ function restoreCover(cover){
   cb.checked = !!cover.enabled;
   document.getElementById('coverShowHeader').checked = cover.showHeader!==false;
   document.getElementById('coverShowFooter').checked = cover.showFooter!==false;
+  setCoverPosition(cover.position==='after' ? 'after' : 'before');
   const list = document.getElementById('coverBlocksList');
   list.innerHTML = '';
   (Array.isArray(cover.blocks)?cover.blocks:[]).forEach(b=>{ if(b && CV_TYPES[b.type]) addCoverBlock(b.type, b); });
@@ -1861,6 +2051,8 @@ function restoreCover(cover){
 function updateCoverUI(){
   const on = document.getElementById('coverEnabled').checked;
   document.getElementById('coverBuilderWrap').hidden = !on;
+  const posRow = document.getElementById('coverPosRow');
+  if(posRow) posRow.style.display = on ? 'flex' : 'none';
 }
 function updateCoverEmptyState(){
   const list = document.getElementById('coverBlocksList');
@@ -2016,6 +2208,9 @@ function bindCoverBuilder(){
     b.addEventListener('click', ()=>addCoverBlock(b.dataset.add));
   });
   document.getElementById('coverPresetBtn').addEventListener('click', coverApplyPreset);
+  document.querySelectorAll('#coverPosSeg .seg-btn').forEach(b=>{
+    b.addEventListener('click', ()=>{ setCoverPosition(b.dataset.pos); scheduleSave(); scheduleCoverMini(); });
+  });
   document.getElementById('coverEnabled').addEventListener('change', ()=>{ updateCoverUI(); scheduleSave(); scheduleCoverMini(); });
   ['coverShowHeader','coverShowFooter'].forEach(id=>{
     document.getElementById(id).addEventListener('change', ()=>{ scheduleSave(); scheduleCoverMini(); });
@@ -2158,12 +2353,14 @@ function init(){
   bindPlatformInputs();
   bindClientInputs();
   bindAIInputs();
+  bindProviderChoices();
   bindStartScreen();
   bindCoverBuilder();
   loadForm();
   seedDefaults();
   updateCoverUI();
   updateCoverEmptyState();
+  updateAIPanelVisibility();
   initDatePicker();
   tryAutoLoadExcel();
   fetchModels(false);
@@ -2184,6 +2381,7 @@ function bindStartScreen(){
       c.classList.add('sel');
       FORM_METHOD = c.dataset.method;
       document.getElementById('aiGenBox').hidden = (FORM_METHOD !== 'ai');
+      updateAIPanelVisibility();
       scheduleSave();
     });
   });
@@ -2203,35 +2401,75 @@ function restoreStartChoices(d){
   document.querySelectorAll('#methodChoices .choice').forEach(c=>c.classList.toggle('sel', c.dataset.method===FORM_METHOD));
   document.querySelectorAll('#excelChoices .choice').forEach(c=>c.classList.toggle('sel', (c.dataset.excel==='yes')===USE_EXCEL));
   document.getElementById('aiGenBox').hidden = (FORM_METHOD !== 'ai');
+  updateAIPanelVisibility();
 }
 
 /* ============================================================
-   AI settings (OpenRouter)
+   AI settings (OpenRouter / پاستا کلاد)
 ============================================================ */
-function getAISettings(){
+const LS_AI = 'dw_ai_v2';
+let CURRENT_PROVIDER = 'openrouter';
+
+function getStoredAI(){
   try{
     const raw = localStorage.getItem(LS_AI);
-    if(raw){
-      const d = JSON.parse(raw);
-      return {
-        key: d.key||'',
-        model: d.model||DEFAULT_AI_MODEL,
-        prompt: d.prompt||DEFAULT_AI_PROMPT
-      };
+    if(raw) return JSON.parse(raw)||{};
+  }catch(e){}
+  // مهاجرت از نسخه قبلی (فقط OpenRouter)
+  try{
+    const old = JSON.parse(localStorage.getItem('dw_ai_v1')||'null');
+    if(old && (old.key||old.model||old.prompt)){
+      return { provider:'openrouter', keyOpenrouter:old.key||'', modelOpenrouter:old.model||'', prompt:old.prompt };
     }
   }catch(e){}
-  return { key:'', model:DEFAULT_AI_MODEL, prompt:DEFAULT_AI_PROMPT };
+  return {};
+}
+function getAISettings(){
+  const d = getStoredAI();
+  const p = d.provider==='paasta' ? 'paasta' : 'openrouter';
+  return {
+    provider: p,
+    key: ((p==='paasta' ? d.keyPaasta : d.keyOpenrouter) || ''),
+    model: ((p==='paasta' ? d.modelPaasta : d.modelOpenrouter) || AI_PROVIDERS[p].defaultModel),
+    prompt: d.prompt || DEFAULT_AI_PROMPT
+  };
 }
 function saveAISettings(){
-  localStorage.setItem(LS_AI, JSON.stringify({
-    key: v('ai_key'), model: v('ai_model')||DEFAULT_AI_MODEL, prompt: document.getElementById('ai_prompt').value
-  }));
+  const d = getStoredAI();
+  d.provider = CURRENT_PROVIDER;
+  if(CURRENT_PROVIDER==='paasta'){ d.keyPaasta = v('ai_key'); d.modelPaasta = v('ai_model'); }
+  else { d.keyOpenrouter = v('ai_key'); d.modelOpenrouter = v('ai_model'); }
+  d.prompt = document.getElementById('ai_prompt').value;
+  try{ localStorage.setItem(LS_AI, JSON.stringify(d)); }catch(e){}
+}
+function setAIProvider(p, silent){
+  if(!AI_PROVIDERS[p]) p='openrouter';
+  CURRENT_PROVIDER = p;
+  document.querySelectorAll('#providerChoices .choice').forEach(c=>c.classList.toggle('sel', c.dataset.provider===p));
+  const P = AI_PROVIDERS[p];
+  const d = getStoredAI();
+  document.getElementById('ai_key').value = ((p==='paasta' ? d.keyPaasta : d.keyOpenrouter) || '');
+  document.getElementById('ai_key').placeholder = P.keyPlaceholder;
+  document.getElementById('ai_model').value = ((p==='paasta' ? d.modelPaasta : d.modelOpenrouter) || P.defaultModel);
+  document.getElementById('aiKeyHint').innerHTML = P.keyHint;
+  const st = document.getElementById('modelsStatus'); if(st) st.innerHTML='';
+  saveAISettings();
+  if(!silent) fetchModels(false);
 }
 function loadAI(){
   const s = getAISettings();
-  document.getElementById('ai_key').value = s.key;
-  document.getElementById('ai_model').value = s.model;
+  CURRENT_PROVIDER = s.provider;
   document.getElementById('ai_prompt').value = s.prompt;
+  setAIProvider(CURRENT_PROVIDER, true);
+}
+function bindProviderChoices(){
+  document.querySelectorAll('#providerChoices .choice').forEach(c=>{
+    c.addEventListener('click', ()=>setAIProvider(c.dataset.provider));
+  });
+}
+function updateAIPanelVisibility(){
+  const el = document.getElementById('aiPanel');
+  if(el) el.hidden = (FORM_METHOD !== 'ai');
 }
 function resetAIPrompt(){
   document.getElementById('ai_prompt').value = DEFAULT_AI_PROMPT;
@@ -2244,17 +2482,26 @@ function bindAIInputs(){
   });
 }
 
-/* ---------- لیست مدل‌ها از OpenRouter ---------- */
+/* ---------- لیست مدل‌ها از سرویس‌دهنده فعال ---------- */
 async function fetchModels(manual){
   const statusEl = document.getElementById('modelsStatus');
-  const cache = sessionStorage.getItem('or_models');
+  const p = CURRENT_PROVIDER;
+  const cacheKey = 'ai_models_'+p;
+  const cache = sessionStorage.getItem(cacheKey);
   if(cache && !manual){
-    populateModels(JSON.parse(cache));
+    populateModels(p, JSON.parse(cache));
     return;
   }
   if(manual && statusEl) statusEl.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">hourglass_empty</span> در حال دریافت لیست مدل‌ها...';
+  const P = AI_PROVIDERS[p];
+  const s = getAISettings();
   try{
-    const res = await fetch('https://openrouter.ai/api/v1/models');
+    const headers = {};
+    if(p==='paasta'){
+      if(!s.key) throw new Error('need-key');
+      headers['Authorization'] = 'Bearer '+s.key;
+    }
+    const res = await fetch(P.models, { headers });
     if(!res.ok) throw new Error('HTTP '+res.status);
     const j = await res.json();
     const list = (j.data||[]).map(m=>({
@@ -2262,18 +2509,23 @@ async function fetchModels(manual){
       name: m.name || m.id,
       free: !m.pricing || (parseFloat(m.pricing.prompt||'1') === 0 && parseFloat(m.pricing.completion||'1') === 0)
     }));
-    sessionStorage.setItem('or_models', JSON.stringify(list));
-    populateModels(list);
+    sessionStorage.setItem(cacheKey, JSON.stringify(list));
+    populateModels(p, list);
   }catch(e){
-    if(statusEl) statusEl.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">info</span> دریافت لیست مدل‌ها ناموفق بود (اینترنت؟) — می‌توانید نام مدل را دستی بنویسید.';
+    if(!statusEl) return;
+    if(e.message==='need-key'){
+      statusEl.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">info</span> برای دیدن لیست مدل‌های پاستا، اول کلید API را وارد کنید؛ یا نام مدل را دستی بنویسید (پیش‌فرض: <b dir="ltr">'+P.defaultModel+'</b>).';
+    } else {
+      statusEl.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">info</span> دریافت لیست مدل‌ها ناموفق بود (اینترنت؟) — می‌توانید نام مدل را دستی بنویسید.';
+    }
   }
 }
-function populateModels(list){
+function populateModels(p, list){
   const dl = document.getElementById('orModelsList');
   if(!dl) return;
   dl.innerHTML = list.map(m=>`<option value="${esc(m.id)}">${esc(m.name)}${m.free?' — رایگان':''}</option>`).join('');
   const statusEl = document.getElementById('modelsStatus');
-  if(statusEl) statusEl.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">check_circle</span> ' + toPersianDigit(list.length) + ' مدل از OpenRouter بارگذاری شد — در فیلد مدل تایپ کنید و از لیست انتخاب کنید.';
+  if(statusEl) statusEl.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">check_circle</span> ' + toPersianDigit(list.length) + ' مدل از '+AI_PROVIDERS[p].label+' بارگذاری شد — در فیلد مدل تایپ کنید و از لیست انتخاب کنید.';
 }
 
 /* ============================================================
@@ -2389,9 +2641,10 @@ function extractJSON(text){
 }
 async function generateWithAI(){
   const s = getAISettings();
-  const status = document.getElementById('genStatus');
+  const P = AI_PROVIDERS[s.provider];
   const btn = document.getElementById('genBtn');
-  if(!s.key){ setGenStatus('err','ابتدا کلید API را در مرحله «پلتفرم» وارد کنید.'); showStep(1); return; }
+  if(!s.key){ setGenStatus('err','ابتدا کلید API '+P.label+' را در مرحله «پلتفرم» وارد کنید.'); showStep(1); return; }
+  if(!v('ai_model')){ setGenStatus('err','نام مدل را در مرحله «پلتفرم» انتخاب کنید.'); showStep(1); return; }
   const d = collectData();
   if(!d.name || d.name==='—'){ setGenStatus('err','نام مراجع را وارد کنید.'); return; }
 
@@ -2409,7 +2662,7 @@ async function generateWithAI(){
   btn.disabled = true;
   setGenStatus('','در حال ساخت رژیم... ممکن است تا یک دقیقه طول بکشد.');
   try{
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const res = await fetch(P.endpoint, {
       method:'POST',
       headers:{
         'Content-Type':'application/json',

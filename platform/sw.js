@@ -2,7 +2,7 @@
  * Strategy: cache-first for everything; runtime-cache any new GET.
  * Bump CACHE_VERSION to force a full refresh for all users.
  */
-const CACHE_VERSION = 'diettisa-v2';
+const CACHE_VERSION = 'diettisa-v3';
 const PRECACHE_URLS = [
   './',
   './index.htm',
