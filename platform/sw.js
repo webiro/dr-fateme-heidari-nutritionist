@@ -2,7 +2,7 @@
  * Strategy: cache-first for everything; runtime-cache any new GET.
  * Bump CACHE_VERSION to force a full refresh for all users.
  */
-const CACHE_VERSION = 'diettisa-v1';
+const CACHE_VERSION = 'diettisa-v2';
 const PRECACHE_URLS = [
   './',
   './index.htm',
@@ -21,7 +21,8 @@ const PRECACHE_URLS = [
   'https://code.jquery.com/jquery-3.6.0.min.js',
   'https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.js',
   'https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js',
-  'https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
 ];
 
