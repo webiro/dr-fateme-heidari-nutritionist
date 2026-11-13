@@ -43,11 +43,12 @@ jobs:
 
       - name: Compute version (1.0.<run_number>)
         shell: pwsh
+        working-directory: .
         run: |
           $v = "1.0.${{ github.run_number }}"
           node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('platform/desktop/package.json','utf8'));p.version='$v';fs.writeFileSync('platform/desktop/package.json',JSON.stringify(p,null,2));"
-          "VERSION=$v" >> $env:GITHUB_ENV
-          "TAG=v$v" >> $env:GITHUB_ENV
+          "VERSION=$v" | Add-Content $env:GITHUB_ENV
+          "TAG=v$v" | Add-Content $env:GITHUB_ENV
           Write-Host "Version: $v (tag: v$v)"
 
       - name: Install dependencies
@@ -84,11 +85,13 @@ jobs:
         run: node ../../platform/desktop/sync.js || node sync.js
 
       - name: Compute version (1.0.<run_number>)
+        working-directory: .
         run: |
           v="1.0.${{ github.run_number }}"
           node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('platform/desktop/package.json','utf8'));p.version='$v';fs.writeFileSync('platform/desktop/package.json',JSON.stringify(p,null,2));"
           echo "VERSION=$v" >> $GITHUB_ENV
           echo "TAG=v$v" >> $GITHUB_ENV
+          echo "Version: $v (tag: v$v)"
 
       - name: Install dependencies
         run: npm install --no-audit --no-fund
