@@ -54,10 +54,32 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Build NSIS installer & publish to GitHub Release
+      - name: Build NSIS installer
+        run: npx electron-builder --win nsis
+
+      - name: Smoke test — silent install & launch on real Windows
+        shell: pwsh
+        working-directory: .
+        run: |
+          $exe = Get-ChildItem "platform/desktop/dist/*.exe" |
+            Where-Object { $_.Name -notlike "*.blockmap" } | Select-Object -First 1
+          if (!$exe) { throw "no installer produced in dist/" }
+          Write-Host "Silent installing: $($exe.Name)"
+          Start-Process -FilePath $exe.FullName -ArgumentList "/S" -Wait
+          $app = "$env:LOCALAPPDATA\Programs\Tisa Platform\Tisa Platform.exe"
+          if (!(Test-Path $app)) { throw "Installer did not produce: $app" }
+          Write-Host "Installed OK — launching app..."
+          Start-Process -FilePath $app -ArgumentList "--disable-gpu"
+          Start-Sleep -Seconds 12
+          $p = Get-Process -Name "Tisa Platform" -ErrorAction SilentlyContinue
+          if (!$p) { throw "App process is not running after launch" }
+          Write-Host "App is running (PID $($p.Id)) OK"
+          Stop-Process -Name "Tisa Platform" -Force -ErrorAction SilentlyContinue
+
+      - name: Publish release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run dist -- --publish always
+        run: npx electron-builder --win nsis --publish always
 
       - name: Upload artifact (backup copy of installer)
         uses: actions/upload-artifact@v4
