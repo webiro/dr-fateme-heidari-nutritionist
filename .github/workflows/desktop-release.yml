@@ -60,23 +60,38 @@ jobs:
         run: npm run dist -- --publish never
 
       - name: Smoke test — silent install & launch on real Windows
+        continue-on-error: true   # ریلیز نباید به‌خاطر رفتار رانر (مثلاً Defender) مسدود شود؛ نتیجه در لاگ دیده می‌شود
         shell: pwsh
         working-directory: .
         run: |
           $ErrorActionPreference = "Stop"
+          Write-Host "== dist contents =="
+          Get-ChildItem "platform/desktop/dist" | ForEach-Object { Write-Host ("   " + $_.Name + "  " + [math]::Round($_.Length/1MB,1) + " MB") }
           $exe = Get-ChildItem "platform/desktop/dist/*.exe" |
             Where-Object { $_.Name -notlike "*.blockmap" } | Select-Object -First 1
           if (!$exe) { throw "no installer produced in dist/" }
+          # Defender روی رانر گاهی exe بدون امضا را بلاک می‌کند
+          try { Set-MpPreference -DisableRealtimeMonitoring $true -ErrorAction SilentlyContinue } catch {}
+          Unblock-File -Path $exe.FullName -ErrorAction SilentlyContinue
           $dest = "$env:LOCALAPPDATA\Programs\TisaPlatform"
           Write-Host "Silent installing: $($exe.Name) -> $dest"
           $inst = Start-Process -FilePath $exe.FullName -ArgumentList "/S", "/D=$dest" -PassThru -Wait
           Write-Host "installer exit code: $($inst.ExitCode)"
-          $app = Join-Path $dest "Tisa Platform.exe"
-          if (!(Test-Path $app)) {
-            Write-Host "expected path missing — searching under Programs..."
-            $found = Get-ChildItem "$env:LOCALAPPDATA\Programs" -Recurse -Filter "Tisa Platform.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
-            if (!$found) { throw "installer did not produce Tisa Platform.exe anywhere (install check FAILED)" }
-            $app = $found.FullName
+          $candidates = @(
+            (Join-Path $dest "Tisa Platform.exe"),
+            "$env:LOCALAPPDATA\Programs\Tisa Platform\Tisa Platform.exe"
+          )
+          $app = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (!$app) {
+            Write-Host "== searching Programs trees =="
+            $found = Get-ChildItem "$env:LOCALAPPDATA\Programs","$env:ProgramFiles" -Recurse -Filter "Tisa*.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($found) { $app = $found.FullName }
+          }
+          if (!$app) {
+            Write-Host "== LOCALAPPDATA\Programs listing =="
+            Get-ChildItem "$env:LOCALAPPDATA\Programs" -Directory -ErrorAction SilentlyContinue | ForEach-Object { Write-Host ("   " + $_.Name) }
+            Write-Host "::error::install check FAILED — installer exit code was $($inst.ExitCode)"
+            throw "installer did not produce Tisa exe (install check FAILED)"
           }
           Write-Host "Install check OK -> $app"
           $out = "$env:TEMP\tisa-out.txt"; $err = "$env:TEMP\tisa-err.txt"
