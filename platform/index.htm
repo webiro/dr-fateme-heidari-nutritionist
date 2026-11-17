@@ -13,7 +13,6 @@
 <script src="vendor/persian-datepicker.min.js"></script>
 <script src="vendor/html2canvas.min.js"></script>
 <script src="vendor/jspdf.umd.min.js"></script>
-<script src="vendor/xlsx.full.min.js"></script>
 <style>
   /* ================= Design tokens ================= */
   :root{
@@ -776,9 +775,9 @@
           <p>مرحله به مرحله اطلاعات را وارد کنید و در پایان خروجی PDF بگیرید.</p>
         </div>
         <div class="header-actions">
+          <button class="btn btn-outline btn-sm" onclick="openHistory()" title="رژیم‌های خروجی‌گرفته‌شده"><span class="material-symbols-outlined">history</span> سابقه رژیم‌ها</button>
           <button class="btn btn-outline btn-sm" onclick="openDrafts()" title="پیش‌نویس‌های ذخیره‌شده در این مرورگر"><span class="material-symbols-outlined">folder_open</span> پیش‌نویس‌ها</button>
           <button class="btn btn-primary btn-sm" onclick="openSaveDraft()" title="ذخیره پیش‌نویس مراجع فعلی"><span class="material-symbols-outlined">save</span> ذخیره پیش‌نویس</button>
-          <button class="btn btn-outline btn-sm" onclick="openFoodBank()" title="بانک مواد غذایی از فایل اکسل" id="foodbankBtn" style="display:none;"><span class="material-symbols-outlined">restaurant_menu</span> بانک غذایی</button>
           <button class="btn btn-gold btn-sm" onclick="downloadPDF()" title="خروجی PDF"><span class="material-symbols-outlined">picture_as_pdf</span> خروجی PDF</button>
           <button class="btn btn-primary btn-sm" onclick="downloadHTML()" title="خروجی HTML قابل دانلود"><span class="material-symbols-outlined">download</span> خروجی HTML</button>
           <button class="btn btn-outline btn-sm" onclick="openPreviewModal()" title="پیش‌نمایش سریع"><span class="material-symbols-outlined">visibility</span> پیش‌نمایش</button>
@@ -794,40 +793,8 @@
 
     <div class="wizard-body" id="wizardBody">
 
-      <!-- Step 0: Start (method + excel) -->
+      <!-- Step 0: Platform settings (persistent) -->
       <div class="step active" data-step="0">
-        <h2>شروع ساخت رژیم</h2>
-        <p class="hint">ابتدا روش تهیه برنامه را انتخاب کنید.</p>
-        <div class="choice-grid" id="methodChoices">
-          <div class="choice" data-method="ai">
-            <span class="material-symbols-outlined">auto_awesome</span>
-            <b>با هوش مصنوعی</b>
-            <small>اطلاعات مراجع را وارد می‌کنید، هوش مصنوعی رژیم را می‌نویسد و شما فقط بازبینی و ویرایش می‌کنید.</small>
-          </div>
-          <div class="choice" data-method="manual">
-            <span class="material-symbols-outlined">edit_note</span>
-            <b>دستی</b>
-            <small>تمام وعده‌ها را خودتان از ابتدا می‌نویسید.</small>
-          </div>
-        </div>
-        <div class="q-label"><span class="material-symbols-outlined">grid_on</span> از فایل اکسل منابع غذایی استفاده شود؟</div>
-        <div class="choice-grid" id="excelChoices" style="max-width:420px;">
-          <div class="choice" data-excel="yes">
-            <span class="material-symbols-outlined">table_view</span>
-            <b>بله</b>
-            <small>فهرست مواد غذایی از فایل اکسل مرجع خوانده می‌شود.</small>
-          </div>
-          <div class="choice" data-excel="no">
-            <span class="material-symbols-outlined">grid_off</span>
-            <b>خیر</b>
-            <small>بدون فایل مرجع ادامه می‌دهیم.</small>
-          </div>
-        </div>
-        <div class="excel-status" id="excelStatus"></div>
-      </div>
-
-      <!-- Step 1: Platform settings (persistent) -->
-      <div class="step" data-step="1">
         <h2>اطلاعات اصلی پلتفرم</h2>
         <p class="hint">این اطلاعات ثابت است و برای همیشه در مرورگر شما ذخیره می‌شود. تا زمانی که خودتان ادیت نکنید تغییر نمی‌کند.</p>
         <div class="grid">
@@ -873,7 +840,7 @@
         </div>
 
         <div class="panel" id="aiPanel">
-          <h3><span class="material-symbols-outlined">smart_toy</span> تنظیمات هوش مصنوعی <span style="font-weight:400;color:var(--muted);font-size:11px;">(فقط برای روش «با هوش مصنوعی»)</span></h3>
+          <h3><span class="material-symbols-outlined">smart_toy</span> تنظیمات هوش مصنوعی</h3>
           <div class="q-label" style="margin-top:2px;"><span class="material-symbols-outlined">hub</span> سرویس‌دهنده را انتخاب کنید</div>
           <div class="choice-grid" id="providerChoices" style="max-width:460px;">
             <div class="choice" data-provider="openrouter">
@@ -908,8 +875,8 @@
         </div>
       </div>
 
-      <!-- Step 2: Client Info -->
-      <div class="step" data-step="2">
+      <!-- Step 1: Client Info -->
+      <div class="step" data-step="1">
         <h2>اطلاعات فردی کلاینت</h2>
         <p class="hint">مشخصات مراجع و هدف رژیم را وارد کنید.</p>
         <div class="grid">
@@ -930,14 +897,14 @@
           <div class="field full"><label>سایر اطلاعات</label><textarea id="f_other" placeholder="مثال: تمرین فیتنس"></textarea></div>
         </div>
 
-        <div id="aiGenBox" hidden>
+        <div id="aiGenBox">
           <button class="gen-btn" id="genBtn" onclick="generateWithAI()"><span class="material-symbols-outlined">auto_awesome</span> ساخت رژیم با هوش مصنوعی</button>
           <div class="gen-status" id="genStatus">اطلاعات را کامل کنید و دکمه را بزنید؛ همه‌ی وعده‌ها، مکمل‌ها و نکته‌ها به‌صورت پیش‌نویس ساخته می‌شود و بعد می‌توانید تک‌تک را ویرایش کنید.</div>
         </div>
       </div>
 
-      <!-- Step 3: Custom cover page (صفحه اول رژیم) -->
-      <div class="step" data-step="3">
+      <!-- Step 2: Custom cover page (صفحه اول رژیم) -->
+      <div class="step" data-step="2">
         <h2>صفحه اول رژیم</h2>
         <p class="hint">صفحه‌ی اول برنامه را خودتان بسازید: متن و عکس دلخواه اضافه کنید، کارت‌های آماده را بگذارید و همه را با درگ‌اند‌دراپ جابجا کنید.</p>
         <label class="cover-toggle">
@@ -983,8 +950,8 @@
         </div>
       </div>
 
-      <!-- Step 4: Breakfast -->
-      <div class="step" data-step="4">
+      <!-- Step 3: Breakfast -->
+      <div class="step" data-step="3">
         <h2>صبحانه</h2>
         <p class="hint">برای هر گزینه چند «چیپس غذایی» بنویسید و Enter بزنید.</p>
         <div class="field full" style="margin-bottom:12px;">
@@ -995,64 +962,64 @@
         <button class="add-more" onclick="addOption('breakfast_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
       </div>
 
-      <!-- Step 5: Morning snack -->
-      <div class="step" data-step="5">
+      <!-- Step 4: Morning snack -->
+      <div class="step" data-step="4">
         <h2>میان‌وعده صبح</h2>
         <p class="hint">گزینه‌های میان‌وعده صبح.</p>
         <div id="morning_options"></div>
         <button class="add-more" onclick="addOption('morning_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
       </div>
 
-      <!-- Step 6: Lunch -->
-      <div class="step" data-step="6">
+      <!-- Step 5: Lunch -->
+      <div class="step" data-step="5">
         <h2>ناهار</h2>
         <p class="hint">گزینه‌های ناهار.</p>
         <div id="lunch_options"></div>
         <button class="add-more" onclick="addOption('lunch_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
       </div>
 
-      <!-- Step 7: Afternoon snack -->
-      <div class="step" data-step="7">
+      <!-- Step 6: Afternoon snack -->
+      <div class="step" data-step="6">
         <h2>میان‌وعده عصر</h2>
         <p class="hint">گزینه‌های میان‌وعده عصر.</p>
         <div id="afternoon_options"></div>
         <button class="add-more" onclick="addOption('afternoon_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
       </div>
 
-      <!-- Step 8: Dinner -->
-      <div class="step" data-step="8">
+      <!-- Step 7: Dinner -->
+      <div class="step" data-step="7">
         <h2>شام</h2>
         <p class="hint">گزینه‌های شام.</p>
         <div id="dinner_options"></div>
         <button class="add-more" onclick="addOption('dinner_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
       </div>
 
-      <!-- Step 9: Late night -->
-      <div class="step" data-step="9">
+      <!-- Step 8: Late night -->
+      <div class="step" data-step="8">
         <h2>وعده آخر شب</h2>
         <p class="hint">گزینه‌های میل قبل از خواب.</p>
         <div id="latenight_options"></div>
         <button class="add-more" onclick="addOption('latenight_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
       </div>
 
-      <!-- Step 10: Supplements -->
-      <div class="step" data-step="10">
+      <!-- Step 9: Supplements -->
+      <div class="step" data-step="9">
         <h2>مکمل‌های مورد نیاز</h2>
         <p class="hint">هر مکمل را در یک ردیف وارد کنید.</p>
         <div id="supplements_container"></div>
         <button class="add-more" onclick="addSupplement()"><span class="material-symbols-outlined">add</span> افزودن مکمل</button>
       </div>
 
-      <!-- Step 11: Notes -->
-      <div class="step" data-step="11">
+      <!-- Step 10: Notes -->
+      <div class="step" data-step="10">
         <h2>توضیحات و نکات</h2>
         <p class="hint">نکات نوع «هشدار» با رنگ متفاوت نمایش داده می‌شوند.</p>
         <div id="notes_container"></div>
         <button class="add-more" onclick="addNote()"><span class="material-symbols-outlined">add</span> افزودن نکته</button>
       </div>
 
-      <!-- Step 12: Export -->
-      <div class="step" data-step="12">
+      <!-- Step 11: Export -->
+      <div class="step" data-step="11">
         <h2>خروجی گرفتن</h2>
         <p class="hint">اول قالب ظاهری برنامه را انتخاب کنید، بعد خروجی بگیرید.</p>
         <div class="q-label"><span class="material-symbols-outlined">wallpaper</span> قالب ظاهری برنامه</div>
@@ -1093,19 +1060,16 @@
   </div>
 </div>
 
-<div class="modal-backdrop" id="foodBankModal" onclick="if(event.target===this)closeFoodBank()">
+<div class="modal-backdrop" id="historyModal" onclick="if(event.target===this)closeHistory()">
   <div class="modal" style="max-width:640px;">
     <div class="modal-head">
-      <h3>بانک مواد غذایی (از فایل اکسل)</h3>
-      <button class="btn btn-ghost btn-sm" onclick="closeFoodBank()"><span class="material-symbols-outlined">close</span> بستن</button>
+      <h3>سابقه رژیم‌های خروجی‌گرفته‌شده</h3>
+      <button class="btn btn-ghost btn-sm" onclick="closeHistory()"><span class="material-symbols-outlined">close</span> بستن</button>
     </div>
     <div class="modal-body">
-      <div class="foodbank-target">
-        <span style="font-size:12px;color:var(--muted);white-space:nowrap;">افزودن به:</span>
-        <select id="foodbankTarget"></select>
-      </div>
-      <input class="foodbank-search" id="foodbankSearch" placeholder="جستجوی ماده غذایی..." oninput="renderFoodBankList()"/>
-      <div class="foodbank-grid" id="foodbankList"></div>
+      <input class="foodbank-search" id="historySearch" placeholder="جستجو بر اساس نام مراجع..." oninput="renderHistoryList()"/>
+      <div id="historyStats" class="excel-status ok" style="margin:8px 0;"></div>
+      <div id="historyList"></div>
     </div>
   </div>
 </div>
@@ -1142,7 +1106,7 @@
    Constants / State
 ============================================================ */
 const STEP_LABELS = [
-  "شروع","پلتفرم","مراجع","صفحه اول","صبحانه","میان‌وعده صبح","ناهار","میان‌وعده عصر","شام","آخر شب","مکمل‌ها","توضیحات","خروجی"
+  "پلتفرم","مراجع","صفحه اول","صبحانه","میان‌وعده صبح","ناهار","میان‌وعده عصر","شام","آخر شب","مکمل‌ها","توضیحات","خروجی"
 ];
 const totalSteps = STEP_LABELS.length;
 let currentStep = 0;
@@ -1159,9 +1123,7 @@ const DEFAULT_COLORS = {
   ink:'#1f2a2e', bg:'#fafaf7'
 };
 
-/* جلسه‌ی جاری: روش ساخت و استفاده از اکسل */
-let FORM_METHOD = 'manual';   // 'ai' | 'manual'
-let USE_EXCEL   = false;
+/* رژیم‌ها همیشه با هوش مصنوعی ساخته می‌شوند (روش دستی و اکسل مرجع حذف شد) */
 
 /* ---------- قالب‌های ظاهری ---------- */
 const TEMPLATES = {
@@ -1217,12 +1179,12 @@ const DEFAULT_AI_PROMPT = `تو یک متخصص تغذیه بالینی ارشد
 - فقط غذاهای رایج و در دسترس ایرانی؛ ترکیب هر وعده متعادل: منبع پروتئین + کربوهیدرات مرکب + سبزیجات یا سالاد؛ میان‌وعده‌ها سبک و ساده.
 - محدودیت‌ها و بیماری‌ها را حتماً رعایت کن: دیابت (قند ساده و نان سفید ممنوع، منابع گلایسمی پایین)، فشار خون (سدیم کم)، نارسایی کلیه (پروتئین/پتاسیم/فسفات کنترل‌شده)، عدم تحمل لاکتوز، گلوتن، رفلاکس، کبد چرب و... . در تعارض‌ها، ایمنی مراجع مقدم بر هدف وزنی است.
 - تنوع واقعی بده: در گزینه‌های یک وعده غذای تکراری نگذار؛ سلیقه و فرهنگ غذایی ایرانی حفظ شود.
-- اگر «فهرست منابع غذایی» داده شده، تا حد امکان فقط از همان فهرست انتخاب کن.
 - مکمل‌ها فقط عمومی و ایمن (مانند ویتامین D3، امگا۳، منیزیم، مولتی‌ویتامین) با دوز معمول و زمان مصرف مشخص؛ هیچ دارویی تجویز نکن.
 - نکته‌ها کوتاه، رفتاری و قابل اجرا باشند (آبرسانی، ترتیب مصرف، آماده‌سازی، پیاده‌روی و...)؛ هر نکته حساس (تداخل دارویی، بیماری خاص، علامت هشدار) با warn=true علامت بخورد.
 - از توصیه‌های کلی و بی‌اثر پرهیز کن؛ هر خط باید مشخص و قابل اجرا باشد.
 
 ## خروجی
+خروجی باید دقیقاً با JSON.parse استاندارد قابل خواندن باشد؛ هیچ کامای اضافه یا جاافتاده، هیچ کامنت و هیچ متن بیرون از شیء JSON مجاز نیست.
 فقط و فقط یک شیء JSON معتبر با دقیقاً همین ساختار برگردان؛ بدون هیچ متن اضافه و بدون markdown:
 {
   "fasting": "یادداشت ناشتا یا رشته خالی",
@@ -1284,7 +1246,7 @@ function showStep(i){
   renderProgress();
   if(i===totalSteps-1){ renderPreview('previewArea'); }
   else { document.getElementById('previewArea').innerHTML=''; }
-  if(i===3){ scheduleCoverMini(); }
+  if(i===2){ scheduleCoverMini(); }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function nextStep(){ if(currentStep<totalSteps-1) showStep(currentStep+1); }
@@ -1708,6 +1670,7 @@ async function downloadPDF(){
       pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
     }
     pdf.save(exportStamp() + '.pdf');
+    recordHistory('pdf');
   } catch(err){
     console.error(err);
     alert('خطا در ساخت PDF: ' + (err && err.message ? err.message : 'نامشخص'));
@@ -1794,6 +1757,7 @@ ${pages}
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+  recordHistory('html');
 }
 
 /* ============================================================
@@ -1921,8 +1885,6 @@ function scheduleSave(){
 function serializeForm(){
   return {
     ts: Date.now(),
-    method: FORM_METHOD,
-    useExcel: USE_EXCEL,
     template: CURRENT_TEMPLATE,
     client: {
       name:v('f_name'), date:v('f_date'), age:v('f_age'),
@@ -1948,7 +1910,6 @@ function saveForm(){
 function applyFormData(data){
   if(!data) return false;
   const c = data.client||{};
-  restoreStartChoices(data);
   if(data.template && TEMPLATES[data.template]) applyTemplate(data.template, true);
   ['name','date','age','height','weight','disease','other','fasting'].forEach(k=>{
     const el = document.getElementById('f_'+k); if(el && c[k]!=null) el.value = c[k];
@@ -2055,7 +2016,7 @@ function loadDraft(key){
   applyFormData(it.data);
   saveForm();
   closeDrafts();
-  showStep(2); // رفتن به اطلاعات مراجع
+  showStep(1); // رفتن به اطلاعات مراجع
 }
 function deleteDraft(key){
   if(!confirm('این پیش‌نویس حذف شود؟')) return;
@@ -2469,7 +2430,7 @@ function scheduleCoverMini(){
 function refreshCoverMini(){
   const outer = document.getElementById('coverMiniOuter');
   const page  = document.getElementById('coverMiniPage');
-  if(!outer || !page || currentStep!==3) return;
+  if(!outer || !page || currentStep!==2) return;
   const d = collectData();
   page.innerHTML = coverPageHTML(d) || defaultCoverHTML(d);
   const scale = Math.min(1, Math.max(0.1, (outer.clientWidth-2)/794));
@@ -2540,54 +2501,18 @@ function init(){
   bindClientInputs();
   bindAIInputs();
   bindProviderChoices();
-  bindStartScreen();
   bindCoverBuilder();
   loadForm();
   seedDefaults();
   updateCoverUI();
   updateCoverEmptyState();
-  updateAIPanelVisibility();
   initDatePicker();
-  tryAutoLoadExcel();
   fetchModels(false);
   renderProgress();
   window.addEventListener('resize', scheduleCoverMini);
   setInterval(saveForm, 5000);
   loadFinished = true;
   maybeHideLoading();
-}
-
-/* ============================================================
-   Start screen: method + excel choice
-============================================================ */
-function bindStartScreen(){
-  document.querySelectorAll('#methodChoices .choice').forEach(c=>{
-    c.addEventListener('click', ()=>{
-      document.querySelectorAll('#methodChoices .choice').forEach(x=>x.classList.remove('sel'));
-      c.classList.add('sel');
-      FORM_METHOD = c.dataset.method;
-      document.getElementById('aiGenBox').hidden = (FORM_METHOD !== 'ai');
-      updateAIPanelVisibility();
-      scheduleSave();
-    });
-  });
-  document.querySelectorAll('#excelChoices .choice').forEach(c=>{
-    c.addEventListener('click', ()=>{
-      document.querySelectorAll('#excelChoices .choice').forEach(x=>x.classList.remove('sel'));
-      c.classList.add('sel');
-      USE_EXCEL = (c.dataset.excel === 'yes');
-      if(USE_EXCEL) tryAutoLoadExcel();
-      scheduleSave();
-    });
-  });
-}
-function restoreStartChoices(d){
-  FORM_METHOD = (d && d.method)==='ai' ? 'ai' : 'manual';
-  USE_EXCEL   = !!(d && d.useExcel);
-  document.querySelectorAll('#methodChoices .choice').forEach(c=>c.classList.toggle('sel', c.dataset.method===FORM_METHOD));
-  document.querySelectorAll('#excelChoices .choice').forEach(c=>c.classList.toggle('sel', (c.dataset.excel==='yes')===USE_EXCEL));
-  document.getElementById('aiGenBox').hidden = (FORM_METHOD !== 'ai');
-  updateAIPanelVisibility();
 }
 
 /* ============================================================
@@ -2653,10 +2578,7 @@ function bindProviderChoices(){
     c.addEventListener('click', ()=>setAIProvider(c.dataset.provider));
   });
 }
-function updateAIPanelVisibility(){
-  const el = document.getElementById('aiPanel');
-  if(el) el.hidden = (FORM_METHOD !== 'ai');
-}
+function updateAIPanelVisibility(){ /* روش دستی حذف شده؛ پنل AI همیشه فعال است */ }
 function resetAIPrompt(){
   document.getElementById('ai_prompt').value = DEFAULT_AI_PROMPT;
   saveAISettings();
@@ -2682,19 +2604,18 @@ async function fetchModels(manual){
   const P = AI_PROVIDERS[p];
   const s = getAISettings();
   try{
-    const headers = {};
-    if(p==='paasta'){
-      if(!s.key) throw new Error('need-key');
-      headers['Authorization'] = 'Bearer '+s.key;
-    }
-    const res = await fetch(P.models, { headers });
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    const j = await res.json();
-    const list = (j.data||[]).map(m=>({
-      id: m.id,
-      name: m.name || m.id,
-      free: !m.pricing || (parseFloat(m.pricing.prompt||'1') === 0 && parseFloat(m.pricing.completion||'1') === 0)
-    }));
+    if(p==='paasta' && !s.key) throw new Error('need-key');
+    const r = await aiRequest(P.models, { method:'GET', key: s.key });
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    let list;
+    try{
+      const j = JSON.parse(r.text);
+      list = (j.data||[]).map(m=>({
+        id: m.id,
+        name: m.name || m.id,
+        free: !m.pricing || (parseFloat(m.pricing.prompt||'1') === 0 && parseFloat(m.pricing.completion||'1') === 0)
+      }));
+    }catch(e2){ throw new Error('پاسخ نامعتبر از سرویس'); }
     sessionStorage.setItem(cacheKey, JSON.stringify(list));
     populateModels(p, list);
   }catch(e){
@@ -2702,7 +2623,7 @@ async function fetchModels(manual){
     if(e.message==='need-key'){
       statusEl.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">info</span> برای دیدن لیست مدل‌های پاستا، اول کلید API را وارد کنید؛ یا نام مدل را دستی بنویسید (پیش‌فرض: <b dir="ltr">'+P.defaultModel+'</b>).';
     } else {
-      statusEl.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">info</span> دریافت لیست مدل‌ها ناموفق بود (اینترنت؟) — می‌توانید نام مدل را دستی بنویسید.';
+      statusEl.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px">info</span> دریافت لیست مدل‌ها ناموفق بود — می‌توانید نام مدل را دستی بنویسید (پیش‌فرض: <b dir="ltr">'+P.defaultModel+'</b>).';
     }
   }
 }
@@ -2715,100 +2636,124 @@ function populateModels(p, list){
 }
 
 /* ============================================================
-   Excel food reference
+   سابقه رژیم‌ها (History) — بعد از هر خروجی موفق ثبت می‌شود
 ============================================================ */
-const EXCEL_PATH = 'data/foods.xlsx';
-let FOOD_REF_TEXT = '';     // متن فشرده برای پرامپت
-let FOOD_REF_ROWS  = [];    // آیتم‌های خطی برای بانک غذایی
+const LS_HISTORY = 'dw_history_v1';
+function getHistory(){
+  try{
+    const raw = localStorage.getItem(LS_HISTORY);
+    const d = raw ? JSON.parse(raw) : [];
+    return Array.isArray(d) ? d : [];
+  }catch(e){ return []; }
+}
+function setHistory(list){
+  try{
+    localStorage.setItem(LS_HISTORY, JSON.stringify(list));
+    return true;
+  }catch(e){
+    alert('فضای ذخیره‌سازی مرورگر پر است. چند رکورد سابقه را حذف کنید.');
+    return false;
+  }
+}
+function recordHistory(kind){
+  // kind: 'pdf' | 'html' — کلید یکتا = نام مراجع + تاریخ فرم؛ خروجی مجدد همان رکورد را به‌روز می‌کند
+  const d = collectData();
+  const key = (d.name||'') + '|' + (d.date||'');
+  const list = getHistory();
+  let rec = list.find(h => ((h.name||'')+'|'+(h.date||'')) === key);
+  if(!rec){
+    rec = { id:'h_'+Date.now()+Math.random().toString(36).slice(2,7), name:d.name||'—', date:d.date||'', ts:Date.now(),
+            goal:d.goal||'', age:d.age||'', weight:d.weight||'', template:CURRENT_TEMPLATE, exports:{pdf:0,html:0}, data:null };
+    list.unshift(rec);
+  }
+  rec.ts = Date.now();
+  rec.goal = d.goal||'';
+  rec.age = d.age||'';
+  rec.weight = d.weight||'';
+  rec.template = CURRENT_TEMPLATE;
+  rec.exports[kind] = (rec.exports[kind]||0) + 1;
+  rec.data = serializeForm();
+  // حداکثر ۶۰ رکورد
+  while(list.length > 60) list.pop();
+  return setHistory(list);
+}
+function openHistory(){
+  renderHistoryList();
+  document.getElementById('historyModal').classList.add('open');
+}
+function closeHistory(){ document.getElementById('historyModal').classList.remove('open'); }
+function historyItemHTML(rec){
+  const when = new Date(rec.ts).toLocaleString('fa-IR');
+  const badges = [];
+  if(rec.exports.pdf) badges.push('PDF ×'+toPersianDigit(rec.exports.pdf));
+  if(rec.exports.html) badges.push('HTML ×'+toPersianDigit(rec.exports.html));
+  const tpl = TEMPLATES[rec.template];
+  return `<div class="draft-item" data-id="${rec.id}">
+    <div>
+      <div class="d-name">${esc(rec.name)} <span class="tpl-dot" style="background:${tpl?tpl.dot:'#999'};margin-right:4px;"></span></div>
+      <div class="d-meta">${when} · ${esc(rec.date)} · ${esc(rec.goal||'—')} · سن ${esc(rec.age||'—')} · وزن ${esc(rec.weight||'—')}</div>
+      <div class="d-meta">${badges.length?badges.join(' · '):'—'}</div>
+    </div>
+    <div class="d-actions">
+      <button class="btn btn-outline btn-sm" onclick="viewHistoryRecord('${rec.id}')" title="بازکردن همین رژیم"><span class="material-symbols-outlined">visibility</span> بازبینی</button>
+      <button class="btn btn-primary btn-sm" onclick="reuseHistoryForNew('${rec.id}')" title="همین رژیم برای مراجع جدید"><span class="material-symbols-outlined">person_add</span> برای فرد جدید</button>
+      <button class="btn btn-gold btn-sm" onclick="reexportHistory('${rec.id}')" title="خروجی PDF دوباره"><span class="material-symbols-outlined">picture_as_pdf</span> PDF</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteHistoryRecord('${rec.id}')"><span class="material-symbols-outlined">delete</span></button>
+    </div>
+  </div>`;
+}
+function renderHistoryList(){
+  const wrap = document.getElementById('historyList');
+  const q = (document.getElementById('historySearch')?.value||'').trim();
+  let list = getHistory();
+  document.getElementById('historyStats').textContent = toPersianDigit(list.length) + ' رژیم ثبت شده';
+  if(q) list = list.filter(h => (h.name||'').includes(q));
+  if(!list.length){
+    wrap.innerHTML = '<div class="draft-empty">' + (q ? 'چیزی پیدا نشد.' : 'هنوز رژیمی خروجی گرفته نشده است.<br>بعد از هر خروجی PDF/HTML، رژیم اینجا ثبت می‌شود.') + '</div>';
+    return;
+  }
+  wrap.innerHTML = list.map(historyItemHTML).join('');
+}
+function viewHistoryRecord(id){
+  const rec = getHistory().find(h=>h.id===id);
+  if(!rec) return;
+  if(!confirm('رژیم «'+rec.name+'» در فرم فعلی بارگذاری شود؟\n(اطلاعات فعلی جایگزین می‌شود)')) return;
+  applyFormData(rec.data);
+  saveForm();
+  closeHistory();
+  showStep(1);
+}
+function reuseHistoryForNew(id){
+  const rec = getHistory().find(h=>h.id===id);
+  if(!rec) return;
+  if(!confirm('همین رژیم برای یک مراجع جدید شروع شود؟\n(وعده‌ها و نکته‌ها حفظ می‌شوند؛ فقط مشخصات فرد خالی می‌شود)')) return;
+  applyFormData(rec.data);
+  // خالی کردن مشخصات فردی
+  ['f_name','f_age','f_height','f_weight','f_disease','f_other'].forEach(k=>{ const el=document.getElementById(k); if(el) el.value=''; });
+  document.getElementById('f_date').value = todayJalali();
+  document.getElementById('f_goal').value = 'کاهش وزن';
+  saveForm();
+  closeHistory();
+  showStep(1);
+  setTimeout(()=>document.getElementById('f_name')?.focus(), 400);
+}
+function reexportHistory(id){
+  const rec = getHistory().find(h=>h.id===id);
+  if(!rec) return;
+  if(!confirm('رژیم «'+rec.name+'» بارگذاری و PDF گرفته شود؟')) return;
+  applyFormData(rec.data);
+  saveForm();
+  closeHistory();
+  downloadPDF();
+}
+function deleteHistoryRecord(id){
+  const rec = getHistory().find(h=>h.id===id);
+  if(!rec) return;
+  if(!confirm('رکورد «'+rec.name+'» از سابقه حذف شود؟')) return;
+  setHistory(getHistory().filter(h=>h.id!==id));
+  renderHistoryList();
+}
 
-function excelStatusEl(){ return document.getElementById('excelStatus'); }
-function setExcelStatus(cls, html){
-  const el = excelStatusEl(); if(!el) return;
-  el.className = 'excel-status ' + (cls||'');
-  el.innerHTML = html;
-}
-function tryAutoLoadExcel(){
-  setExcelStatus('', '<span class="material-symbols-outlined" style="font-size:14px">hourglass_empty</span> در حال جستجوی فایل اکسل مرجع...');
-  fetch(EXCEL_PATH).then(r=>{
-    if(!r.ok) throw new Error('not-found');
-    return r.arrayBuffer();
-  }).then(buf=>{
-    parseExcelBuffer(buf);
-    setExcelStatus('ok', '<span class="material-symbols-outlined" style="font-size:14px">check_circle</span> فایل اکسل مرجع بارگذاری شد (' + toPersianDigit(FOOD_REF_ROWS.length) + ' ردیف).');
-    updateFoodBankBtn();
-  }).catch(()=>{
-    setExcelStatus('err',
-      '<span class="material-symbols-outlined" style="font-size:14px">info</span> فایل اکسل پیدا نشد. ' +
-      'می‌توانید همین حالا انتخابش کنید: <input type="file" id="excelFilePick" accept=".xlsx,.xls" style="font-size:11px;"/>');
-    const pick = document.getElementById('excelFilePick');
-    if(pick) pick.addEventListener('change', e=>{
-      const f = e.target.files && e.target.files[0]; if(!f) return;
-      const reader = new FileReader();
-      reader.onload = ()=>{
-        parseExcelBuffer(reader.result);
-        setExcelStatus('ok', '<span class="material-symbols-outlined" style="font-size:14px">check_circle</span> «'+ esc(f.name) +'» بارگذاری شد (' + toPersianDigit(FOOD_REF_ROWS.length) + ' ردیف).');
-        updateFoodBankBtn();
-      };
-      reader.readAsArrayBuffer(f);
-    });
-  });
-}
-function parseExcelBuffer(buf){
-  const wb = XLSX.read(buf, {type:'array'});
-  const lines = [];
-  FOOD_REF_ROWS = [];
-  wb.SheetNames.forEach(name=>{
-    const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, defval:''});
-    lines.push('### ' + name);
-    rows.forEach(row=>{
-      const cells = row.map(c=>String(c).trim()).filter(Boolean);
-      if(!cells.length) return;
-      const line = cells.join(' | ');
-      lines.push(line);
-      FOOD_REF_ROWS.push(cells.join(' — '));
-    });
-  });
-  const MAX = 8000;
-  FOOD_REF_TEXT = lines.join('\n');
-  if(FOOD_REF_TEXT.length > MAX) FOOD_REF_TEXT = FOOD_REF_TEXT.slice(0, MAX) + '\n(بخش‌های بعدی فهرست برای کوتاه‌ماندن حذف شد)';
-}
-
-/* ============================================================
-   Food bank modal
-============================================================ */
-const FB_TARGETS = {
-  breakfast:'breakfast_options', morning:'morning_options', lunch:'lunch_options',
-  afternoon:'afternoon_options', dinner:'dinner_options', latenight:'latenight_options'
-};
-function updateFoodBankBtn(){
-  const btn = document.getElementById('foodbankBtn');
-  if(btn) btn.style.display = FOOD_REF_ROWS.length ? 'inline-flex' : 'none';
-}
-function openFoodBank(){
-  if(!FOOD_REF_ROWS.length) return;
-  const sel = document.getElementById('foodbankTarget');
-  sel.innerHTML = Object.keys(FB_TARGETS).map(k=>`<option value="${k}">${MEAL_LABELS[k]}</option>`).join('');
-  document.getElementById('foodbankSearch').value='';
-  renderFoodBankList();
-  document.getElementById('foodBankModal').classList.add('open');
-}
-function closeFoodBank(){ document.getElementById('foodBankModal').classList.remove('open'); }
-function renderFoodBankList(){
-  const q = (document.getElementById('foodbankSearch').value||'').trim();
-  const list = FOOD_REF_ROWS.filter(r=>!q || r.includes(q)).slice(0, 400);
-  document.getElementById('foodbankList').innerHTML = list.map(r=>
-    `<span class="food-chip" onclick="addFoodFromBank(this.textContent)">${esc(r)}</span>`).join('')
-    || '<p style="color:var(--muted);font-size:12px;">چیزی پیدا نشد.</p>';
-}
-function addFoodFromBank(text){
-  const key = document.getElementById('foodbankTarget').value;
-  const containerId = FB_TARGETS[key];
-  const c = document.getElementById(containerId);
-  let block = c.querySelector('.option-block:last-child');
-  if(!block){ addOption(containerId); block = c.querySelector('.option-block:last-child'); }
-  addChipTo(block, text);
-  scheduleSave();
-}
 
 /* ============================================================
    Generate diet with AI (OpenRouter)
@@ -2820,17 +2765,64 @@ function setGenStatus(cls, text){
 }
 function extractJSON(text){
   let t = String(text||'').trim();
-  t = t.replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();
+  t = t.replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'').trim();
   const s = t.indexOf('{'), e = t.lastIndexOf('}');
   if(s===-1 || e===-1) throw new Error('json-not-found');
-  return JSON.parse(t.slice(s, e+1));
+  t = t.slice(s, e+1);
+  try{ return JSON.parse(t); }
+  catch(e1){ return JSON.parse(repairJson(t)); }
+}
+/* تعمیر خطاهای رایج خروجی مدل: کامای اضافه، کامای جاافتاده بین المان‌ها، گیومه هوشمند */
+function repairJson(t){
+  t = t.replace(/[“”«»]/g, '"').replace(/[‘’]/g, "'");
+  t = t.replace(/,(\s*[}\]])/g, '$1'); // trailing comma
+  let out = '', inStr = false, esc = false;
+  for(let i=0;i<t.length;i++){
+    const ch = t[i];
+    if(inStr){
+      out += ch;
+      if(esc){ esc = false; }
+      else if(ch === '\\'){ esc = true; }
+      else if(ch === '"'){ inStr = false; }
+      continue;
+    }
+    if(ch === '"'){ inStr = true; out += ch; continue; }
+    out += ch;
+    if(ch === '}' || ch === ']' || ch === '"' || /[0-9a-zآ-ی]/i.test(ch)){
+      let j = i+1;
+      while(j < t.length && /\s/.test(t[j])) j++;
+      const nx = t[j];
+      if(nx === '{' || nx === '[' || nx === '"') out += ','; // کامای جاافتاده
+    }
+  }
+  return out;
+}
+/* شبکه‌ی AI: در اپ دسکتاپ از پردازش اصلی (بدون CORS) و در وب از پروکسی ورکر استفاده می‌شود */
+const AI_PROXY = 'https://api.drfatemeheidari.ir/ai-proxy';
+async function aiRequest(url, opts){
+  opts = opts||{};
+  if(window.TisaDesktop && window.TisaDesktop.aiRequest){
+    const r = await window.TisaDesktop.aiRequest({ url, method: opts.method||'GET', key: opts.key||'', body: opts.body||null });
+    return { ok: r.status>=200 && r.status<300, status: r.status, text: r.text||'' };
+  }
+  let res;
+  try{
+    res = await fetch(AI_PROXY, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ url, key: opts.key||'', body: opts.body||null })
+    });
+  }catch(e){
+    throw new Error('اتصال به سرویس برقرار نشد — اینترنت را بررسی کنید.');
+  }
+  return { ok: res.ok, status: res.status, text: await res.text().catch(()=> '') };
 }
 async function generateWithAI(){
   const s = getAISettings();
   const P = AI_PROVIDERS[s.provider];
   const btn = document.getElementById('genBtn');
-  if(!s.key){ setGenStatus('err','ابتدا کلید API '+P.label+' را در مرحله «پلتفرم» وارد کنید.'); showStep(1); return; }
-  if(!v('ai_model')){ setGenStatus('err','نام مدل را در مرحله «پلتفرم» انتخاب کنید.'); showStep(1); return; }
+  if(!s.key){ setGenStatus('err','ابتدا کلید API '+P.label+' را در مرحله «پلتفرم» وارد کنید.'); showStep(0); return; }
+  if(!v('ai_model')){ setGenStatus('err','نام مدل را در مرحله «پلتفرم» انتخاب کنید.'); showStep(0); return; }
   const d = collectData();
   if(!d.name || d.name==='—'){ setGenStatus('err','نام مراجع را وارد کنید.'); return; }
 
@@ -2838,46 +2830,49 @@ async function generateWithAI(){
     'نام: '+d.name, 'سن: '+d.age, 'قد: '+d.height, 'وزن: '+d.weight,
     'هدف: '+d.goal, 'سابقه بیماری: '+d.disease, 'سایر اطلاعات: '+d.other
   ].join('\n');
-
-  let userMsg = 'اطلاعات مراجع:\n' + userInfo;
-  if(USE_EXCEL){
-    if(!FOOD_REF_TEXT){ setGenStatus('err','فایل اکسل مرجع هنوز بارگذاری نشده است. در مرحله «شروع» فایل را انتخاب کنید.'); return; }
-    userMsg += '\n\nفهرست منابع غذایی (فایل اکسل):\n' + FOOD_REF_TEXT;
-  }
+  const userMsg = 'اطلاعات مراجع:\n' + userInfo;
 
   btn.disabled = true;
   setGenStatus('','در حال ساخت رژیم... ممکن است تا یک دقیقه طول بکشد.');
   try{
-    const res = await fetch(P.endpoint, {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':'Bearer '+s.key
-      },
-      body: JSON.stringify({
-        model: s.model,
-        messages:[
-          {role:'system', content: s.prompt},
-          {role:'user',   content: userMsg}
-        ],
-        temperature: 0.4
-      })
-    });
-    if(!res.ok){
-      const errText = await res.text().catch(()=> '');
-      throw new Error('HTTP '+res.status+' — '+errText.slice(0,300));
+    let plan = null, lastRaw = '';
+    for(let attempt=0; attempt<2; attempt++){
+      const msg = attempt===0
+        ? userMsg
+        : userMsg + '\n\nخروجی قبلی تو JSON نامعتبر بود:\n' + lastRaw.slice(0, 4000) +
+          '\n\nهمان رژیم را با JSON کاملاً معتبر (بدون کامای اضافه یا جاافتاده) دوباره برگردان.';
+      const r = await aiRequest(P.endpoint, {
+        method:'POST', key: s.key,
+        body: JSON.stringify({
+          model: s.model,
+          messages:[
+            {role:'system', content: s.prompt},
+            {role:'user',   content: msg}
+          ],
+          temperature: 0.4
+        })
+      });
+      if(!r.ok) throw new Error('HTTP '+r.status+' — '+r.text.slice(0,200));
+      let data;
+      try{ data = JSON.parse(r.text); }
+      catch(e2){ throw new Error('پاسخ نامعتبر از '+P.label+' — لطفاً دوباره تلاش کنید.'); }
+      const content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+      if(!content) throw new Error('پاسخ خالی از مدل');
+      lastRaw = String(content);
+      try{ plan = extractJSON(lastRaw); break; }
+      catch(pe){
+        if(attempt===0){ setGenStatus('','خروجی اول کمی ایراد ساختاری داشت؛ در حال اصلاح خودکار...'); continue; }
+        throw new Error('خروجی مدل قابل پردازش نبود — لطفاً یک‌بار دیگر تلاش کنید.');
+      }
     }
-    const data = await res.json();
-    const content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
-    if(!content) throw new Error('پاسخ خالی از مدل');
-    const plan = extractJSON(content);
+    if(!plan) throw new Error('خروجی مدل قابل پردازش نبود — لطفاً یک‌بار دیگر تلاش کنید.');
     populateFromAI(plan);
     setGenStatus('ok','رژیم ساخته شد! حالا مرحله‌به‌مرحله بازبینی کنید و هر آیتم را که خواستید تغییر دهید.');
     saveForm();
-    showStep(4); // شروع بازبینی از صبحانه
+    showStep(3); // شروع بازبینی از صبحانه
   }catch(err){
     console.error(err);
-    setGenStatus('err','خطا در ساخت رژیم: '+err.message);
+    setGenStatus('err','خطا در ساخت رژیم: '+(err && err.message ? err.message : 'نامشخص'));
   }finally{
     btn.disabled = false;
   }

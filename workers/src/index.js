@@ -86,6 +86,55 @@ async function handleAdminDelete(env, id) {
   return json({ ok: true, deleted: r.meta.changes });
 }
 
+/* ---------- پروکسی AI (برای دور زدن نبود CORS در سرویس‌دهنده‌ها) ----------
+ * فقط به چند endpoint مشخص اجازه عبور می‌دهیم؛ کلید کاربر عبور می‌کند و هیچ‌جا ذخیره نمی‌شود.
+ */
+const AI_ALLOWED = new Set([
+  "https://console.paasta.cloud/api/ai/v1/chat/completions",
+  "https://console.paasta.cloud/api/ai/v1/models",
+  "https://openrouter.ai/api/v1/chat/completions",
+  "https://openrouter.ai/api/v1/models",
+]);
+const aiRate = new Map(); // best-effort per-isolate
+async function handleAIProxy(request) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ ok: false, error: "invalid_json" }, 400);
+  }
+  const target = String(body.url || "");
+  if (!AI_ALLOWED.has(target)) return json({ ok: false, error: "url_not_allowed" }, 403);
+  const key = String(body.key || "");
+  if (!key) return json({ ok: false, error: "key_required" }, 401);
+  const payload = body.body ?? null;
+
+  // نرخ ساده: حداکثر ۲۰ درخواست در دقیقه از هر IP
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  const now = Date.now();
+  const arr = (aiRate.get(ip) || []).filter((t) => now - t < 60000);
+  if (arr.length >= 20) return json({ ok: false, error: "too_many_requests" }, 429);
+  arr.push(now);
+  aiRate.set(ip, arr);
+
+  const upstream = await fetch(target, {
+    method: payload ? "POST" : "GET",
+    headers: {
+      "Authorization": "Bearer " + key,
+      "Content-Type": "application/json",
+    },
+    body: payload ? JSON.stringify(payload) : undefined,
+  });
+  return new Response(upstream.body, {
+    status: upstream.status,
+    headers: {
+      "Content-Type": upstream.headers.get("Content-Type") || "application/json; charset=utf-8",
+      ...CORS,
+      "Cache-Control": "no-store",
+    },
+  });
+}
+
 export default {
   async fetch(request, env) {
     try {
@@ -93,6 +142,11 @@ export default {
     const path = url.pathname.replace(/\/+$/, "") || "/";
 
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
+
+    // ---- پروکسی AI ----
+    if (path === "/ai-proxy" && request.method === "POST") {
+      return handleAIProxy(request);
+    }
 
     // ---- فرم عمومی ----
     if (path === "/api/appointments" && request.method === "POST") {

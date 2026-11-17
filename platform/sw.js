@@ -2,7 +2,7 @@
  * Strategy: cache-first for everything; runtime-cache any new GET.
  * Bump CACHE_VERSION to force a full refresh for all users.
  */
-const CACHE_VERSION = 'diettisa-v4';
+const CACHE_VERSION = 'diettisa-v5';
 const PRECACHE_URLS = [
   './',
   './index.htm',
@@ -27,7 +27,6 @@ const PRECACHE_URLS = [
   './vendor/persian-datepicker.min.js',
   './vendor/html2canvas.min.js',
   './vendor/jspdf.umd.min.js',
-  './vendor/xlsx.full.min.js',
 ];
 
 self.addEventListener('install', (event) => {

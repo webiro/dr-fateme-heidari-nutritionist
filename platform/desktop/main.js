@@ -2,7 +2,7 @@
  * همان نسخه وب (platform/index.htm) در پوشه app/ باندل می‌شود (توسط sync.js یا CI).
  * اسپلش ثابت ۵ ثانیه → پنجره اصلی تمام‌صفحه → آپدیت خودکار از GitHub Releases.
  */
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, net } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { autoUpdater } = require('electron-updater');
@@ -10,6 +10,14 @@ const { autoUpdater } = require('electron-updater');
 const SMOKE = process.env.TISA_SMOKE || '';
 const SPLASH_MS = SMOKE ? 600 : 5000; // در حالت عادی همیشه ۵ ثانیه
 const SPLASH_SHOT = process.env.TISA_SMOKE_SPLASH || '';
+
+/* همان whitelist ورکر — درخواست‌های AI از پروسه اصلی بدون محدودیت CORS عبور می‌کنند */
+const AI_ALLOWED = new Set([
+  'https://console.paasta.cloud/api/ai/v1/chat/completions',
+  'https://console.paasta.cloud/api/ai/v1/models',
+  'https://openrouter.ai/api/v1/chat/completions',
+  'https://openrouter.ai/api/v1/models',
+]);
 
 let splash = null;
 let win = null;
@@ -45,12 +53,11 @@ function createSplash(){
 
 function createMain(){
   win = new BrowserWindow({
-    width: 1440,
-    height: 900,
+    width: 1280,
+    height: 860,
     minWidth: 1024,
     minHeight: 680,
     show: false,
-    fullscreen: !SMOKE,
     autoHideMenuBar: true,
     backgroundColor: '#fafaf7',
     title: 'Tisa Platform',
@@ -84,6 +91,7 @@ app.whenReady().then(()=>{
     setTimeout(()=>{
       if(splash && !splash.isDestroyed()) splash.close();
       if(win && !win.isDestroyed()){
+        if(!SMOKE) win.maximize(); // ماکسیمایز؛ کاربر می‌تواند restore کند (F11 هم تمام‌صفحه)
         win.show();
         if(!SMOKE) win.focus();
       }
@@ -130,6 +138,9 @@ autoUpdater.autoInstallOnAppQuit = true;
 });
 ipcMain.handle('app:version', ()=> app.getVersion());
 ipcMain.handle('updater:check', async ()=>{
+  if(!app.isPackaged){
+    return { status:'dev', message:'در حالت توسعه آپدیت بررسی نمی‌شود.' };
+  }
   try{
     const r = await autoUpdater.checkForUpdates();
     return { status:'ok', version: r && r.update ? r.update.version : undefined };
@@ -141,6 +152,28 @@ ipcMain.handle('updater:check', async ()=>{
 });
 ipcMain.on('updater:install', ()=>{
   autoUpdater.quitAndInstall(false, true);
+});
+
+/* شبکه AI — بدون CORS (از پروسه اصلی) */
+ipcMain.handle('ai:network', async (_e, opts)=>{
+  const url = String((opts && opts.url) || '');
+  if(!AI_ALLOWED.has(url)) return { status: 403, text: JSON.stringify({ error:'url_not_allowed' }) };
+  const key = String((opts && opts.key) || '');
+  const body = opts && opts.body;
+  try{
+    const res = await net.fetch(url, {
+      method: body ? 'POST' : 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + key,
+        'Content-Type': 'application/json'
+      },
+      body: body ? JSON.stringify(body) : undefined
+    });
+    const text = await res.text();
+    return { status: res.status, text };
+  }catch(e){
+    return { status: 502, text: JSON.stringify({ error: String((e && e.message) || e) }) };
+  }
 });
 
 app.on('second-instance', ()=>{

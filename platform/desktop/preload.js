@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('TisaDesktop', {
   getVersion: () => ipcRenderer.invoke('app:version'),
   checkForUpdates: () => ipcRenderer.invoke('updater:check'),
   installUpdate: () => ipcRenderer.send('updater:install'),
+  aiRequest: (opts) => ipcRenderer.invoke('ai:network', opts),
   onUpdateStatus: (cb) => {
     ipcRenderer.on('updater:status', (_e, s) => { try { cb(s); } catch(err){} });
   }
