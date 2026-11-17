@@ -1160,9 +1160,9 @@ const AI_PROVIDERS = {
     label:'پاستا کلاد',
     endpoint:'https://console.paasta.cloud/api/ai/v1/chat/completions',
     models:'https://console.paasta.cloud/api/ai/v1/models',
-    defaultModel:'paasta/deepseek-v4-flash',
+    defaultModel:'deepseek/deepseek-v4-flash',
     keyPlaceholder:'کلید API پاستا کلاد',
-    keyHint:'دریافت کلید: <b dir="ltr">console.paasta.cloud/ai/keys</b> · مدل پیش‌فرض: <b dir="ltr">paasta/deepseek-v4-flash</b>'
+    keyHint:'دریافت کلید: <b dir="ltr">console.paasta.cloud/ai/keys</b> · پیش‌فرض مدل: <b dir="ltr">deepseek/deepseek-v4-flash</b> · مدل رایگان برای تست: <b dir="ltr">paasta/deepseek-v4-flash-0731:free</b>'
   }
 };
 
@@ -1678,12 +1678,19 @@ async function downloadPDF(){
 }
 
 
-/* تبدیل عکس‌های خروجی به data URI تا فایل HTML کاملاً مستقل و قابل ارسال باشد */
+/* تبدیل عکس‌های خروجی به data URI تا فایل HTML/PDF کاملاً مستقل باشد */
 async function inlineExportImages(){
+  const useBridge = !!(window.TisaDesktop && window.TisaDesktop.readDataUrl);
   const imgs = [...document.querySelectorAll('#previewArea img')];
   await Promise.all(imgs.map(im=>{
     const src = im.getAttribute('src')||'';
     if(!src || src.startsWith('data:') || /^(https?:)?\/\//i.test(src)) return Promise.resolve();
+    if(useBridge){
+      // اپ دسکتاپ: خواندن امن از داخل پوشه اپ (بدون دردسرهای file://)
+      return window.TisaDesktop.readDataUrl(src).then(r=>{
+        if(r && r.ok) im.setAttribute('src', r.dataUrl);
+      }).catch(()=>{});
+    }
     return fetch(src).then(r=>r.ok ? r.blob() : Promise.reject(new Error('http '+r.status)))
       .then(blob=>new Promise(res=>{
         const fr = new FileReader();
@@ -2538,10 +2545,12 @@ function getStoredAI(){
 function getAISettings(){
   const d = getStoredAI();
   const p = d.provider==='paasta' ? 'paasta' : 'openrouter';
+  let model = (p==='paasta' ? d.modelPaasta : d.modelOpenrouter) || AI_PROVIDERS[p].defaultModel;
+  if(p==='paasta' && model==='paasta/deepseek-v4-flash') model = 'deepseek/deepseek-v4-flash'; // مهاجرت id قدیمی کاتالوگ
   return {
     provider: p,
     key: ((p==='paasta' ? d.keyPaasta : d.keyOpenrouter) || ''),
-    model: ((p==='paasta' ? d.modelPaasta : d.modelOpenrouter) || AI_PROVIDERS[p].defaultModel),
+    model: model,
     prompt: d.prompt || DEFAULT_AI_PROMPT
   };
 }

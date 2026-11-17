@@ -137,6 +137,22 @@ autoUpdater.autoInstallOnAppQuit = true;
   });
 });
 ipcMain.handle('app:version', ()=> app.getVersion());
+
+/* خواندن امن فایل از داخل پوشه اپ (برای inline کردن عکس‌ها در PDF/HTML روی file://) */
+ipcMain.handle('app:read-data-url', async (_e, relPath)=>{
+  try{
+    const rel = String(relPath || '').replace(/^\/+/, '');
+    const appDir = path.join(__dirname, 'app');
+    const abs = path.resolve(appDir, rel);
+    if(!abs.startsWith(appDir + path.sep)) throw new Error('forbidden');
+    const ext = path.extname(abs).toLowerCase();
+    const mime = ext === '.png' ? 'image/png' : (ext === '.svg' ? 'image/svg+xml' : 'image/jpeg');
+    const buf = fs.readFileSync(abs);
+    return { ok:true, dataUrl: 'data:' + mime + ';base64,' + buf.toString('base64') };
+  }catch(e){
+    return { ok:false };
+  }
+});
 ipcMain.handle('updater:check', async ()=>{
   if(!app.isPackaged){
     return { status:'dev', message:'در حالت توسعه آپدیت بررسی نمی‌شود.' };
@@ -159,15 +175,17 @@ ipcMain.handle('ai:network', async (_e, opts)=>{
   const url = String((opts && opts.url) || '');
   if(!AI_ALLOWED.has(url)) return { status: 403, text: JSON.stringify({ error:'url_not_allowed' }) };
   const key = String((opts && opts.key) || '');
-  const body = opts && opts.body;
+  const raw = opts && opts.body;
+  // رندرر body را به‌صورت رشته JSON می‌فرستد؛ اگر شیء بود هم پذیرفته می‌شود
+  const bodyStr = typeof raw === 'string' ? raw : (raw ? JSON.stringify(raw) : null);
   try{
     const res = await net.fetch(url, {
-      method: body ? 'POST' : 'GET',
+      method: bodyStr ? 'POST' : 'GET',
       headers: {
         'Authorization': 'Bearer ' + key,
         'Content-Type': 'application/json'
       },
-      body: body ? JSON.stringify(body) : undefined
+      body: bodyStr || undefined
     });
     const text = await res.text();
     return { status: res.status, text };

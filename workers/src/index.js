@@ -108,6 +108,8 @@ async function handleAIProxy(request) {
   const key = String(body.key || "");
   if (!key) return json({ ok: false, error: "key_required" }, 401);
   const payload = body.body ?? null;
+  // کلاینت body را به‌صورت رشته JSON می‌فرستد؛ اگر شیء بود هم پذیرفته می‌شود
+  const bodyStr = typeof payload === "string" ? payload : (payload ? JSON.stringify(payload) : null);
 
   // نرخ ساده: حداکثر ۲۰ درخواست در دقیقه از هر IP
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";
@@ -118,12 +120,12 @@ async function handleAIProxy(request) {
   aiRate.set(ip, arr);
 
   const upstream = await fetch(target, {
-    method: payload ? "POST" : "GET",
+    method: bodyStr ? "POST" : "GET",
     headers: {
       "Authorization": "Bearer " + key,
       "Content-Type": "application/json",
     },
-    body: payload ? JSON.stringify(payload) : undefined,
+    body: bodyStr || undefined,
   });
   return new Response(upstream.body, {
     status: upstream.status,
