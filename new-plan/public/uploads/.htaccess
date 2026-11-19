@@ -1,0 +1,17 @@
+# uploads/ — never execute anything here
+Options -Indexes -ExecCGI
+
+<FilesMatch "\.(php|php3|php4|php5|php7|php8|phtml|pht|phar|pl|py|cgi|sh|asp|aspx|jsp|htaccess)$">
+  Require all denied
+</FilesMatch>
+
+<IfModule mod_php.c>
+  php_flag engine off
+</IfModule>
+
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .pht .phar
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8 .pht .phar
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+</IfModule>

@@ -1,0 +1,6 @@
+# runtime data
+storage/
+# admin-uploaded media (seed post slides in uploads/posts ARE committed)
+uploads/image/
+uploads/video/
+.DS_Store

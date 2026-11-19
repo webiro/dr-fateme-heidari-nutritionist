@@ -1,0 +1,36 @@
+services:
+  web:
+    build:
+      context: ./docker
+    container_name: fh_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./public:/var/www/html/public
+      - ./app:/var/www/html/app
+      - ./config.env:/var/www/html/config.env
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_DEBUG: "1"
+
+  db:
+    image: public.ecr.aws/docker/library/mysql:8.0
+    container_name: fh_db
+    environment:
+      MYSQL_ROOT_PASSWORD: fh_root_dev
+      MYSQL_DATABASE: fh_site
+      MYSQL_USER: fh_user
+      MYSQL_PASSWORD: fh_dev_password
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - fh_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pfh_root_dev"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  fh_db_data:
