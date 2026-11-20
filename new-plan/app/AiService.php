@@ -52,17 +52,39 @@ final class AiService
             throw new RuntimeException('تنظیمات هوش مصنوعی کامل نیست. کلید API و مدل را در «دستیار هوشمند → تنظیمات» ذخیره کنید.');
         }
 
+        $content = self::chat(
+            'You are a helpful assistant. Always reply with valid JSON only.',
+            $ai['masterPrompt'],
+            0.9
+        );
+        $items = self::parseIdeas((string) $content);
+        if (!$items) {
+            throw new RuntimeException('پاسخ مدل قابل پردازش نبود. لطفاً دوباره تلاش کنید یا مسترپرامپت را ویرایش کنید.');
+        }
+        return ['items' => $items, 'raw' => (string) $content, 'model' => $ai['model']];
+    }
+
+    /** Generic chat completion using the configured provider. Returns the message content. */
+    public static function chat(string $system, string $user, float $temperature = 0.4, ?string $model = null, ?string $apiKey = null): string
+    {
+        $ai = self::group();
+        $model = $model ?: $ai['model'];
+        $apiKey = $apiKey ?: $ai['apiKey'];
+        if ($apiKey === '' || $model === '') {
+            throw new RuntimeException('کلید API یا مدل تنظیم نشده است.');
+        }
+
         $payload = [
-            'model' => $ai['model'],
+            'model' => $model,
             'messages' => [
-                ['role' => 'system', 'content' => 'You are a helpful assistant. Always reply with valid JSON only.'],
-                ['role' => 'user', 'content' => $ai['masterPrompt']],
+                ['role' => 'system', 'content' => $system],
+                ['role' => 'user', 'content' => $user],
             ],
-            'temperature' => 0.9,
+            'temperature' => $temperature,
             'stream' => false,
         ];
 
-        [$status, $body] = self::http($ai['endpoint'], 'POST', $ai['apiKey'], $payload, 120);
+        [$status, $body] = self::http($ai['endpoint'], 'POST', $apiKey, $payload, 150);
         if ($status !== 200) {
             $hint = '';
             $decoded = json_decode($body, true);
@@ -76,12 +98,7 @@ final class AiService
         }
 
         $json = json_decode($body, true);
-        $content = $json['choices'][0]['message']['content'] ?? '';
-        $items = self::parseIdeas((string) $content);
-        if (!$items) {
-            throw new RuntimeException('پاسخ مدل قابل پردازش نبود. لطفاً دوباره تلاش کنید یا مسترپرامپت را ویرایش کنید.');
-        }
-        return ['items' => $items, 'raw' => (string) $content, 'model' => $ai['model']];
+        return (string) ($json['choices'][0]['message']['content'] ?? '');
     }
 
     /** Extract a JSON array of ideas from the model text (tolerates code fences). */

@@ -1,0 +1,8 @@
+# platform/ — app source is only served through the login-gated index.php
+<Files "app.html">
+  Require all denied
+</Files>
+<FilesMatch "\.(env|md|txt)$">
+  Require all denied
+</FilesMatch>
+Options -Indexes

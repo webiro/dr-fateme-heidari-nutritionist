@@ -3,7 +3,10 @@
 FROM public.ecr.aws/docker/library/php:8.5-apache
 
 # Extensions needed by the app
-RUN docker-php-ext-install pdo_mysql && a2enmod rewrite headers expires deflate
+RUN apt-get update && apt-get install -y --no-install-recommends libzip-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install pdo_mysql zip \
+    && a2enmod rewrite headers expires deflate
 
 # Apache: docroot = /var/www/html/public (the project mounts its public/ here)
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public

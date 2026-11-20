@@ -25,7 +25,7 @@ final class SiteData
 تو دستیار تولید محتوای وب‌سایت «دکتر فاطمه حیدری، متخصص و کارشناس تغذیه در نوشهر» هستی.
 ۱۰ موضوع داغ، ترند و جذاب از دنیای تغذیه، رژیم‌درمانی، لاغری، عضله‌سازی و سبک زندگی سالم که این هفته برای مخاطب فارسی‌زبان ایرانی پرطرفدار هستند، پیشنهاد بده.
 موضوعات باید ترکیبی باشند از: اخبار و ترندهای جدید تغذیه، سوالات پرتکرار مخاطبان، باورهای غلط رایج، و نکات کاربردی برای رزرو مشاوره.
-برای هر مورد فقط و فقط JSON معتبر با این ساختار برگردان، بدون هیچ متن اضافه:
+برای هر مورد فقط و فقط JSON معتبر برگردان، بدون هیچ متن اضافه:
 
 [
   {
@@ -36,6 +36,13 @@ final class SiteData
   }
 ]
 PROMPT;
+    }
+
+    /** Diet platform master prompt (body only; the JSON tail is always appended by the app). */
+    private static function defaultPlatformPrompt(): string
+    {
+        $file = __DIR__ . '/platform-prompt-default.txt';
+        return is_file($file) ? rtrim((string) file_get_contents($file)) : '';
     }
 
     /** Defaults mirror the current static site exactly. */
@@ -153,6 +160,29 @@ PROMPT;
                 'apiKey' => '',
                 'model' => 'deepseek/deepseek-v4-flash',
                 'masterPrompt' => self::defaultMasterPrompt(),
+            ],
+            /** پلتفرم تغذیه‌ساز (تنظیمات اولیه). */
+            'platform' => [
+                'clinician' => 'فاطمه حیدری',
+                'lic' => '۱۱۴۴۲',
+                'brand' => '',
+                'addr' => '',
+                'phone' => '09306968649',
+                'instagram' => 'diet_tisa',
+                'aiModel' => 'deepseek/deepseek-v4-flash',
+                'apiKey' => '', // خالی = استفاده از کلید بخش هوش مصنوعی
+                'masterPrompt' => self::defaultPlatformPrompt(),
+                'meals' => [
+                    'fasting' => true,
+                    'breakfast' => true,
+                    'morning' => true,
+                    'lunch' => true,
+                    'afternoon' => true,
+                    'dinner' => true,
+                    'latenight' => true,
+                    'supplements' => true,
+                ],
+                'customTemplates' => [],
             ],
             'slogans' => [
                 'Small steps. Stronger habits.',

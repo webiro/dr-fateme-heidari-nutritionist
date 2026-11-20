@@ -43,10 +43,12 @@ $navItems = [
     'reels' => ['reels.php', 'ریلزها', 'movie'],
     'seo' => ['seo.php', 'متاتگ‌ها و سوشال', 'query_stats'],
     'seo_content' => ['seo_content.php', 'محتوای سئو', 'article'],
-    'settings' => ['settings.php', 'اطلاعات و تماس', 'person_circle'],
+    'settings' => ['settings.php', 'اطلاعات و تماس', 'contact_page'],
     'location' => ['location.php', 'آدرس مطب', 'location_on'],
     'ai' => ['ai.php', 'تنظیمات هوشمند', 'neurology'],
-    'ai_ideas' => ['ai_ideas.php', 'آرشیو ایده‌ها', 'bulb'],
+    'ai_ideas' => ['ai_ideas.php', 'آرشیو ایده‌ها', 'lightbulb'],
+    'platform_settings' => ['platform.php', 'تنظیمات پلتفرم', 'restaurant_menu'],
+    'platform_open' => ['../platform/index.php', 'ورود به پلتفرم تغذیه', 'launch'],
     'account' => ['account.php', 'حساب کاربری', 'person'],
 ];
 
@@ -56,6 +58,7 @@ $navGroups = [
     ['label' => 'رسانه‌ها', 'keys' => ['posts', 'reels']],
     ['label' => 'سئو و ارتباطات', 'keys' => ['seo', 'seo_content', 'settings', 'location']],
     ['label' => 'دستیار هوشمند', 'keys' => ['ai', 'ai_ideas']],
+    ['label' => 'پلتفرم تغذیه', 'keys' => ['platform_settings', 'platform_open']],
     ['label' => '', 'keys' => ['account']],
 ];
 ?>
@@ -88,7 +91,7 @@ $navGroups = [
         <?php endif; ?>
         <div class="nav-group">
           <?php foreach ($group['keys'] as $key): [$href, $label, $icon] = $navItems[$key]; ?>
-          <a class="side-link<?= $active === $key ? ' is-active' : '' ?>" href="<?= e($href) ?>">
+          <a class="side-link<?= $active === $key ? ' is-active' : '' ?>" href="<?= e($href) ?>"<?= $key === 'platform_open' ? ' target="_blank" rel="noopener"' : '' ?>>
             <span class="material-symbols-rounded"><?= $icon ?></span>
             <span><?= e($label) ?></span>
             <?php if ($key === 'messages' && $unreadCount > 0): ?>
