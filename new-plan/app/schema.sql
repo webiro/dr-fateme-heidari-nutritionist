@@ -115,3 +115,21 @@ CREATE TABLE IF NOT EXISTS fh_ai_ideas (
   KEY idx_batch (batch_id),
   CONSTRAINT fk_idea_batch FOREIGN KEY (batch_id) REFERENCES fh_ai_batches (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS fh_diet_records (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  type ENUM('final','draft') NOT NULL DEFAULT 'final',
+  source ENUM('manual','ai','word') NULL,
+  client_key VARCHAR(150) NULL,
+  patient_name VARCHAR(191) NULL,
+  patient_meta TEXT NULL,
+  template VARCHAR(64) NULL,
+  model VARCHAR(120) NULL,
+  exports TEXT NULL,
+  data LONGTEXT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL ON UPDATE CURRENT_TIMESTAMP,
+  KEY idx_type (type),
+  KEY idx_client (type, client_key),
+  KEY idx_name (patient_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

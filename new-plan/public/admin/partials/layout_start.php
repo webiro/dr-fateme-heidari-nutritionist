@@ -48,6 +48,7 @@ $navItems = [
     'ai' => ['ai.php', 'تنظیمات هوشمند', 'neurology'],
     'ai_ideas' => ['ai_ideas.php', 'آرشیو ایده‌ها', 'lightbulb'],
     'platform_settings' => ['platform.php', 'تنظیمات پلتفرم', 'restaurant_menu'],
+    'diet_history' => ['diet_history.php', 'سابقه رژیم‌ها', 'history'],
     'platform_open' => ['../platform/index.php', 'ورود به پلتفرم تغذیه', 'launch'],
     'account' => ['account.php', 'حساب کاربری', 'person'],
 ];

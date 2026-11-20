@@ -1,12 +1,10 @@
-/* DIET TISA Platform — offline cache service worker
- * Strategy: cache-first for everything; runtime-cache any new GET.
- * Bump CACHE_VERSION to force a full refresh for all users.
+/* پلتفرم تغذیه‌ساز — offline cache service worker (dynamic edition)
+ * Navigations are network-first so panel edits and platform updates reach
+ * the doctor immediately; vendor assets stay cache-first for offline use.
+ * Bump CACHE_VERSION to force a full refresh.
  */
-const CACHE_VERSION = 'diettisa-v5';
+const CACHE_VERSION = 'diettisa-v6';
 const PRECACHE_URLS = [
-  './',
-  './index.htm',
-  './data/README.txt',
   './images/soop.png',
   './images/mast.png',
   './images/shir.png',
@@ -48,29 +46,39 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-  // فقط GET؛ درخواست‌های API (OpenRouter) هرگز کش نشوند
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.pathname.endsWith('/foods.xlsx')) return; // همیشه نسخه تازه اکسل مرجع
-  if (url.hostname === 'openrouter.ai') return;
+  // API calls (proxy / AI / records) never cached
+  if (url.pathname.endsWith('.php')) return;
 
-  event.respondWith(
-    caches.match(req, { ignoreSearch: url.hostname === 'fonts.googleapis.com' }).then((hit) => {
-      if (hit) return hit;
-      return fetch(req).then((res) => {
-        // پاسخ معتبر یا opaque (CDN) را برای دفعات بعد ذخیره کن
-        if (res && (res.ok || res.type === 'opaque')) {
+  // Pages (navigation): network-first so updates arrive immediately
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req).then((res) => {
+        if (res && res.ok) {
           const copy = res.clone();
           caches.open(CACHE_VERSION).then((c) => c.put(req, copy)).catch(() => {});
         }
         return res;
-      }).catch(() => {
-        // آفلاین و در کش هم نیست
-        return new Response('آفلاین — این منبع قبلاً کش نشده است.', {
-          status: 503,
-          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-        });
-      });
+      }).catch(() => caches.match(req).then((hit) => hit || caches.match('./')))
+    );
+    return;
+  }
+
+  // Everything else: cache-first + opportunistic fill
+  event.respondWith(
+    caches.match(req).then((hit) => {
+      if (hit) return hit;
+      return fetch(req).then((res) => {
+        if (res && res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE_VERSION).then((c) => c.put(req, copy)).catch(() => {});
+        }
+        return res;
+      }).catch(() => new Response('آفلاین — این منبع قبلاً کش نشده است.', {
+        status: 503,
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      }));
     })
   );
 });

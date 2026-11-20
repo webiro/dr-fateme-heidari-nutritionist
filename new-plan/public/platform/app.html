@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DIET TISA | WEBIRO!</title>
+<title>پلتفرم تغذیه‌ساز | دکتر فاطمه حیدری</title>
 <!-- همه‌ی فونت‌ها و کتابخانه‌ها لوکال‌اند (platform/vendor) — کاملاً آفلاین کار می‌کند؛ فقط بخش AI اینترنت می‌خواهد -->
 <link rel="stylesheet" href="vendor/fonts/vazirmatn.css" />
 <link rel="stylesheet" href="vendor/fonts/material-symbols.css" />
@@ -838,70 +838,12 @@
             </div>
           </div>
         </div>
-
-        <div class="panel">
-          <h3><span class="material-symbols-outlined">restaurant_menu</span> وعده‌های برنامه (فعال/غیرفعال)</h3>
-          <p style="font-size:11.5px;color:var(--muted);margin:0 0 10px;">وعده‌هایی که خاموش باشند، نه در مراحل نمایش داده می‌شوند و نه در خروجی نهایی. پیش‌فرض‌ها از پنل مدیریت می‌آیند.</p>
-          <div id="mealsToggles"></div>
-        </div>
-
-        <div class="panel" id="aiPanel">
-          <h3><span class="material-symbols-outlined">smart_toy</span> تنظیمات هوش مصنوعی</h3>
-          <div class="q-label" style="margin-top:2px;"><span class="material-symbols-outlined">hub</span> سرویس‌دهنده را انتخاب کنید</div>
-          <div class="choice-grid" id="providerChoices" style="max-width:460px;">
-            <div class="choice" data-provider="openrouter">
-              <span class="material-symbols-outlined">public</span>
-              <b>OpenRouter</b>
-              <small>صدها مدل بین‌المللی؛ نیاز به پرداخت ارزی دارد.</small>
-            </div>
-            <div class="choice" data-provider="paasta">
-              <span class="material-symbols-outlined">domain</span>
-              <b>پاستا کلاد</b>
-              <small>سرویس ایرانی با پرداخت ریالی؛ میزبان مدل‌های DeepSeek.</small>
-            </div>
-          </div>
-          <div class="grid" style="margin-top:12px;">
-            <div class="field full">
-              <label id="aiKeyLabel">کلید API (فقط در مرورگر شما ذخیره می‌شود)</label>
-              <input id="ai_key" type="password" dir="ltr" placeholder="sk-or-v1-..."/>
-              <div class="excel-status" id="aiKeyHint" style="margin-top:6px;"></div>
-            </div>
-            <div class="field full">
-              <label>نام مدل (از لیست انتخاب کنید یا بنویسید)</label>
-              <input id="ai_model" dir="ltr" list="orModelsList"/>
-              <datalist id="orModelsList"></datalist>
-              <div class="excel-status" id="modelsStatus" style="margin-top:6px;"></div>
-            </div>
-            <div class="field full">
-              <label>مستر پرامپت ساخت رژیم</label>
-              <textarea id="ai_prompt" style="min-height:170px;"></textarea>
-              <div style="font-size:11px;color:var(--muted);margin-top:4px;">ساختار JSON خروجی به‌صورت خودکار و همیشه به انتهای همین پرامپت اضافه می‌شود — نیازی به نوشتن آن نیست. تغییرات اینجا در پنل هم ذخیره می‌شود.</div>
-            </div>
-          </div>
-          <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">
-            <button class="btn btn-ghost btn-sm" onclick="resetAIPrompt()"><span class="material-symbols-outlined">restart_alt</span> پرامپت پیش‌فرض</button>
-            <button class="btn btn-ghost btn-sm" onclick="fetchModels(true)"><span class="material-symbols-outlined">refresh</span> بارگذاری لیست مدل‌ها</button>
-          </div>
-        </div>
       </div>
 
       <!-- Step 1: Client Info -->
       <div class="step" data-step="1">
-        <div class="panel" id="wordImportPanel">
-          <h3><span class="material-symbols-outlined">description</span> ورود رژیم از فایل Word</h3>
-          <p style="font-size:11.5px;color:var(--muted);margin:0 0 10px;">فایل Word (‎.docx‎) رژیم قبلی را انتخاب کنید؛ هوش مصنوعی مشخصات مراجع و همه وعده‌ها را استخراج می‌کند و داخل فرم می‌ریزد. بعد از آن می‌توانید هر آیتم را ویرایش کنید.</p>
-          <div class="word-drop" id="wordDrop">
-            <input type="file" id="wordFile" accept=".docx" style="display:none;"/>
-            <div id="wordDropText"><span class="material-symbols-outlined" style="font-size:30px;color:#1e6fb8;">upload_file</span><br/>فایل Word را اینجا بکشید یا کلیک کنید</div>
-          </div>
-          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-            <button class="btn btn-primary btn-sm" id="wordImportBtn" onclick="importWord()"><span class="material-symbols-outlined">auto_awesome</span> استخراج با هوش مصنوعی</button>
-          </div>
-          <div class="gen-status" id="wordStatus"></div>
-        </div>
-
-        <h2>اطلاعات فردی کلاینت</h2>
-        <p class="hint">مشخصات مراجع و هدف رژیم را وارد کنید.</p>
+        <h2>اطلاعات فردی مراجع</h2>
+        <p class="hint">مشخصات مراجع و هدف رژیم را وارد کنید؛ در مرحله بعد روش نوشتن رژیم را انتخاب می‌کنید.</p>
         <div class="grid">
           <div class="field"><label>نام و نام خانوادگی</label><input id="f_name" placeholder="مثال: حدیث اقلیمی"/></div>
           <div class="field"><label>تاریخ (شمسی)</label><input id="f_date" placeholder="۱۴۰۵/۰۴/۱۴" autocomplete="off"/></div>
@@ -920,14 +862,67 @@
           <div class="field full"><label>سایر اطلاعات</label><textarea id="f_other" placeholder="مثال: تمرین فیتنس"></textarea></div>
         </div>
 
-        <div id="aiGenBox">
-          <button class="gen-btn" id="genBtn" onclick="generateWithAI()"><span class="material-symbols-outlined">auto_awesome</span> ساخت رژیم با هوش مصنوعی</button>
-          <div class="gen-status" id="genStatus">اطلاعات را کامل کنید و دکمه را بزنید؛ همه‌ی وعده‌ها، مکمل‌ها و نکته‌ها به‌صورت پیش‌نویس ساخته می‌شود و بعد می‌توانید تک‌تک را ویرایش کنید.</div>
-        </div>
       </div>
 
       <!-- Step 2: Custom cover page (صفحه اول رژیم) -->
+      <!-- Step 2: روش نوشتن رژیم -->
       <div class="step" data-step="2">
+        <h2>روش نوشتن رژیم</h2>
+        <p class="hint">یکی از سه روش را انتخاب کنید؛ در هر لحظه می‌توانید روش را عوض کنید.</p>
+        <div class="choice-grid" id="modeChoices" style="max-width:560px;">
+          <div class="choice sel" data-mode="manual">
+            <span class="material-symbols-outlined">edit_note</span>
+            <b>رژیم دستی</b>
+            <small>همه وعده‌ها را خودتان می‌نویسید.</small>
+          </div>
+          <div class="choice" data-mode="ai">
+            <span class="material-symbols-outlined">auto_awesome</span>
+            <b>هوش مصنوعی</b>
+            <small>پیش‌نویس کامل با AI؛ بعداً ویرایش می‌کنید.</small>
+          </div>
+          <div class="choice" data-mode="word">
+            <span class="material-symbols-outlined">description</span>
+            <b>ورود از Word</b>
+            <small>فایل Word رژیم قبلی را بدهید تا AI آن را وارد کند.</small>
+          </div>
+        </div>
+
+        <div class="panel" id="modePanelManual" hidden>
+          <h3><span class="material-symbols-outlined">edit_note</span> نوشتن دستی</h3>
+          <p style="font-size:12px;color:var(--muted);margin:0 0 12px;">وعده‌ها را مرحله‌به‌مرحله خودتان پر می‌کنید؛ می‌توانید بین مراحل آزاد جابه‌جا شوید و هر وعده را با سوییچ بالای مرحله، فعال/غیرفعال کنید.</p>
+          <button class="btn btn-primary" onclick="showStep(3)"><span class="material-symbols-outlined">chevron_left</span> شروع نوشتن از صبحانه</button>
+        </div>
+
+        <div class="panel" id="modePanelAi" hidden>
+          <h3><span class="material-symbols-outlined">auto_awesome</span> ساخت با هوش مصنوعی</h3>
+          <p style="font-size:12px;color:var(--muted);margin:0 0 12px;">مدل و کلید API از پنل مدیریت لود شده است
+            <span class="badge badge-muted" id="modeModelChip" dir="ltr" style="margin-inline-start:6px;"></span>.
+            فقط مسترپرامپت را در صورت نیاز ویرایش کنید (ساختار JSON خروجی خودکار اضافه می‌شود).</p>
+          <div class="field full">
+            <textarea id="ai_prompt" style="min-height:180px;"></textarea>
+          </div>
+          <div id="aiGenBox">
+            <button class="gen-btn" id="genBtn" onclick="generateWithAI()"><span class="material-symbols-outlined">auto_awesome</span> ساخت رژیم با هوش مصنوعی</button>
+            <div class="gen-status" id="genStatus">اطلاعات مراجع را در مرحله قبل کامل کنید و دکمه را بزنید؛ همه‌ی وعده‌ها، مکمل‌ها و نکته‌ها پیش‌نویس می‌شوند و بعد تک‌تک ویرایش‌پذیرند.</div>
+          </div>
+        </div>
+
+        <div class="panel" id="modePanelWord" hidden>
+          <h3><span class="material-symbols-outlined">description</span> ورود رژیم از فایل Word</h3>
+          <p style="font-size:11.5px;color:var(--muted);margin:0 0 10px;">فایل Word (‎.docx‎) رژیم قبلی را انتخاب کنید؛ هوش مصنوعی مشخصات مراجع و همه وعده‌ها را استخراج می‌کند و داخل فرم می‌ریزد.</p>
+          <div class="word-drop" id="wordDrop">
+            <input type="file" id="wordFile" accept=".docx" style="display:none;"/>
+            <div id="wordDropText"><span class="material-symbols-outlined" style="font-size:30px;color:#1e6fb8;">upload_file</span><br/>فایل Word را اینجا بکشید یا کلیک کنید</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" id="wordImportBtn" onclick="importWord()"><span class="material-symbols-outlined">auto_awesome</span> استخراج با هوش مصنوعی</button>
+          </div>
+          <div class="gen-status" id="wordStatus"></div>
+        </div>
+      </div>
+
+      <!-- Step 11: صفحه اول (cover) — جابجاشده -->
+      <div class="step" data-step="11">
         <h2>صفحه اول رژیم</h2>
         <p class="hint">صفحه‌ی اول برنامه را خودتان بسازید: متن و عکس دلخواه اضافه کنید، کارت‌های آماده را بگذارید و همه را با درگ‌اند‌دراپ جابجا کنید.</p>
         <label class="cover-toggle">
@@ -976,6 +971,7 @@
       <!-- Step 3: Breakfast -->
       <div class="step" data-step="3">
         <h2>صبحانه</h2>
+        <label class="meal-step-switch"><input type="checkbox" data-meal-step-switch="breakfast"/><span>این وعده در خروجی باشد</span></label>
         <p class="hint">برای هر گزینه چند «چیپس غذایی» بنویسید و Enter بزنید.</p>
         <div class="field full" style="margin-bottom:12px;">
           <label>یادداشت ناشتا (اختیاری)</label>
@@ -988,6 +984,7 @@
       <!-- Step 4: Morning snack -->
       <div class="step" data-step="4">
         <h2>میان‌وعده صبح</h2>
+        <label class="meal-step-switch"><input type="checkbox" data-meal-step-switch="morning"/><span>این وعده در خروجی باشد</span></label>
         <p class="hint">گزینه‌های میان‌وعده صبح.</p>
         <div id="morning_options"></div>
         <button class="add-more" onclick="addOption('morning_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
@@ -996,6 +993,7 @@
       <!-- Step 5: Lunch -->
       <div class="step" data-step="5">
         <h2>ناهار</h2>
+        <label class="meal-step-switch"><input type="checkbox" data-meal-step-switch="lunch"/><span>این وعده در خروجی باشد</span></label>
         <p class="hint">گزینه‌های ناهار.</p>
         <div id="lunch_options"></div>
         <button class="add-more" onclick="addOption('lunch_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
@@ -1004,6 +1002,7 @@
       <!-- Step 6: Afternoon snack -->
       <div class="step" data-step="6">
         <h2>میان‌وعده عصر</h2>
+        <label class="meal-step-switch"><input type="checkbox" data-meal-step-switch="afternoon"/><span>این وعده در خروجی باشد</span></label>
         <p class="hint">گزینه‌های میان‌وعده عصر.</p>
         <div id="afternoon_options"></div>
         <button class="add-more" onclick="addOption('afternoon_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
@@ -1012,6 +1011,7 @@
       <!-- Step 7: Dinner -->
       <div class="step" data-step="7">
         <h2>شام</h2>
+        <label class="meal-step-switch"><input type="checkbox" data-meal-step-switch="dinner"/><span>این وعده در خروجی باشد</span></label>
         <p class="hint">گزینه‌های شام.</p>
         <div id="dinner_options"></div>
         <button class="add-more" onclick="addOption('dinner_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
@@ -1020,6 +1020,7 @@
       <!-- Step 8: Late night -->
       <div class="step" data-step="8">
         <h2>وعده آخر شب</h2>
+        <label class="meal-step-switch"><input type="checkbox" data-meal-step-switch="latenight"/><span>این وعده در خروجی باشد</span></label>
         <p class="hint">گزینه‌های میل قبل از خواب.</p>
         <div id="latenight_options"></div>
         <button class="add-more" onclick="addOption('latenight_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
@@ -1028,6 +1029,7 @@
       <!-- Step 9: Supplements -->
       <div class="step" data-step="9">
         <h2>مکمل‌های مورد نیاز</h2>
+        <label class="meal-step-switch"><input type="checkbox" data-meal-step-switch="supplements"/><span>این بخش در خروجی باشد</span></label>
         <p class="hint">هر مکمل را در یک ردیف وارد کنید.</p>
         <div id="supplements_container"></div>
         <button class="add-more" onclick="addSupplement()"><span class="material-symbols-outlined">add</span> افزودن مکمل</button>
@@ -1042,7 +1044,7 @@
       </div>
 
       <!-- Step 11: Export -->
-      <div class="step" data-step="11">
+      <div class="step" data-step="12">
         <h2>خروجی گرفتن</h2>
         <p class="hint">اول قالب ظاهری برنامه را انتخاب کنید، بعد خروجی بگیرید.</p>
         <div class="q-label"><span class="material-symbols-outlined">wallpaper</span> قالب ظاهری برنامه</div>
@@ -1129,7 +1131,7 @@
    Constants / State
 ============================================================ */
 const STEP_LABELS = [
-  "پلتفرم","مراجع","صفحه اول","صبحانه","میان‌وعده صبح","ناهار","میان‌وعده عصر","شام","آخر شب","مکمل‌ها","توضیحات","خروجی"
+  "پلتفرم و پزشک","مراجع","روش نوشتن","صبحانه","میان‌وعده صبح","ناهار","میان‌وعده عصر","شام","آخر شب","مکمل‌ها","توضیحات","صفحه اول","خروجی"
 ];
 const totalSteps = STEP_LABELS.length;
 let currentStep = 0;
@@ -1257,6 +1259,9 @@ const PS = (() => {
     .meal-toggle-row span.lbl{font-size:13px;font-weight:700;}
     .word-drop{border:2px dashed rgba(30,111,184,.5);border-radius:14px;padding:16px;text-align:center;background:rgba(30,111,184,.05);cursor:pointer;}
     .word-drop.drag{background:rgba(30,111,184,.12);}
+    .meal-step-switch{display:inline-flex;align-items:center;gap:8px;margin:2px 0 14px;padding:7px 14px;border:1px solid rgba(0,0,0,.12);border-radius:999px;background:rgba(255,255,255,.6);cursor:pointer;font-size:12px;font-weight:700;}
+    .meal-step-switch input{width:17px;height:17px;accent-color:var(--accent,#2e7d32);cursor:pointer;}
+    .mode-card{border:1px solid rgba(0,0,0,.08);}
   `;
   document.head.appendChild(st);
 })();
@@ -1511,7 +1516,7 @@ function footer(d){
   <div class="footer">
     <div class="addr">${addr||''}<span class="ig-line">${IG_ICON_SVG}<b dir="ltr">@${DOCTOR_INSTAGRAM}</b></span></div>
     <div class="pagenum">صفحه ${toPersianDigit(pageCounter)}</div>
-    <div class="copyright">ساخته‌شده با ❤️ توسط WEBIRO</div>
+    <div class="copyright">پلتفرم تغذیه‌ساز</div>
   </div>`;
 }
 function optionsHTML(opts){
@@ -2075,6 +2080,7 @@ function saveDraft(){
   const keys = Object.keys(d).sort((a,b)=>d[a].ts-d[b].ts);
   while(keys.length > 30){ delete d[keys.shift()]; }
   if(setDrafts(d)){
+    syncRecord('draft', null, null);
     closeSaveDraft();
     openDrafts();
   }
@@ -2585,28 +2591,69 @@ function coverPageHTML(d){
   </section>`;
 }
 
-/* ---------- وعده‌ها: فعال/غیرفعال ---------- */
-function renderMealToggles(){
-  const wrap = document.getElementById('mealsToggles'); if(!wrap) return;
-  wrap.innerHTML = MEAL_SWITCHES.map(k=>{
-    const on = getMealEnabled(k);
-    return `<div class="meal-toggle-row"><span class="lbl">${MEAL_FA_LABELS[k]}</span>
-      <input type="checkbox" data-meal-switch="${k}" ${on?'checked':''}/></div>`;
-  }).join('');
-  wrap.querySelectorAll('[data-meal-switch]').forEach(cb=>{
+/* ---------- وعده‌ها: سوییچ فعال/غیرفعال داخل هر مرحله ---------- */
+function bindMealStepSwitches(){
+  document.querySelectorAll('[data-meal-step-switch]').forEach(cb=>{
     cb.addEventListener('change', ()=>{
-      const st = getStoredMeals(); st[cb.dataset.mealSwitch] = cb.checked;
+      const st = getStoredMeals(); st[cb.dataset.mealStepSwitch] = cb.checked;
       localStorage.setItem(LS_MEALS, JSON.stringify(st));
       syncToServer({ meals: st });
-      applyMealVisibility(); renderProgress(); renderAll();
+      applyMealVisibility(); renderProgress(); renderPreview('previewArea');
     });
   });
 }
 function applyMealVisibility(){
   Object.entries(MEAL_STEP_INDEX).forEach(([k,idx])=>{
     const el = document.querySelector(`.step[data-step="${idx}"]`);
-    if(el) el.classList.toggle('step-off', !getMealEnabled(k));
+    const on = getMealEnabled(k);
+    if(el){
+      el.classList.toggle('step-off', !on);
+      el.querySelectorAll('input:not([data-meal-step-switch]), textarea, select, button').forEach(x=>{ x.disabled = !on; });
+      const cb = el.querySelector('[data-meal-step-switch]');
+      if(cb) cb.checked = on;
+    }
+    const pr = document.querySelector(`#progressSteps .st:nth-child(${idx+1})`);
+    if(pr) pr.classList.toggle('off', !on);
   });
+}
+
+/* ---------- انتخاب روش نوشتن رژیم ---------- */
+let DIET_MODE = 'manual';
+function bindModeChoices(){
+  const grid = document.getElementById('modeChoices'); if(!grid) return;
+  grid.querySelectorAll('.choice').forEach(c=>{
+    c.addEventListener('click', ()=>chooseMode(c.dataset.mode));
+  });
+  chooseMode('manual', true);
+}
+function chooseMode(mode, silent){
+  DIET_MODE = (mode==='ai'||mode==='word') ? mode : 'manual';
+  document.querySelectorAll('#modeChoices .choice').forEach(c=>c.classList.toggle('sel', c.dataset.mode===DIET_MODE));
+  const panels = { manual:'modePanelManual', ai:'modePanelAi', word:'modePanelWord' };
+  Object.entries(panels).forEach(([k,id])=>{ const el=document.getElementById(id); if(el) el.hidden = (k!==DIET_MODE); });
+  if(!silent) syncToServer({ lastMode: DIET_MODE });
+}
+window.chooseMode = chooseMode;
+
+/* ---------- ثبت سابقه در پنل مدیریت ---------- */
+function syncRecord(type, source, exports){
+  try{
+    const d = collectData();
+    fetch('record.php', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        type: type,
+        source: source || (DIET_MODE==='word' ? 'word' : (DIET_MODE==='ai' ? 'ai' : 'manual')),
+        key: type==='draft' ? (d.name||'') + '|draft' : (d.name||'') + '|' + (d.date||''),
+        patientName: d.name || '—',
+        patientMeta: { age:d.age||'', height:d.height||'', weight:d.weight||'', goal:d.goal||'', date:d.date||'' },
+        template: CURRENT_TEMPLATE,
+        model: getAISettings().model,
+        exports: exports || null,
+        data: serializeForm()
+      })
+    }).catch(()=>{});
+  }catch(e){}
 }
 
 /* ---------- ورود از فایل Word ---------- */
@@ -2672,12 +2719,13 @@ function init(){
   renderMealImagesUI();
   loadCustomTemplates();
   renderTplRow();
-  renderMealToggles();
   applyMealVisibility();
   bindPlatformInputs();
   bindClientInputs();
   bindAIInputs();
   bindProviderChoices();
+  bindModeChoices();
+  bindMealStepSwitches();
   bindCoverBuilder();
   wordBind();
   loadForm();
@@ -2685,7 +2733,7 @@ function init(){
   updateCoverUI();
   updateCoverEmptyState();
   initDatePicker();
-  fetchModels(false);
+  applyMealVisibility();
   renderProgress();
   window.addEventListener('resize', scheduleCoverMini);
   setInterval(saveForm, 5000);
@@ -2729,52 +2777,26 @@ function getAISettings(){
 function saveAISettings(){
   const d = getStoredAI();
   d.provider = 'paasta';
-  if(!PS.ai.key) d.keyPaasta = v('ai_key');
-  if(!PS.ai.model) d.modelPaasta = v('ai_model');
   d.prompt = document.getElementById('ai_prompt').value;
   try{ localStorage.setItem(LS_AI, JSON.stringify(d)); }catch(e){}
   if(d.prompt && d.prompt.trim()) syncToServer({ masterPrompt: d.prompt });
 }
-function setAIProvider(p, silent){
-  if(!AI_PROVIDERS[p]) p='openrouter';
-  CURRENT_PROVIDER = p;
-  document.querySelectorAll('#providerChoices .choice').forEach(c=>c.classList.toggle('sel', c.dataset.provider===p));
-  const P = AI_PROVIDERS[p];
-  const d = getStoredAI();
-  document.getElementById('ai_key').value = (PS.ai.key ? '' : (d.keyPaasta || ''));
-  if(PS.ai.key){ document.getElementById('ai_key').placeholder = 'کلید از پنل مدیریت ذخیره شده است ✓'; }
-  document.getElementById('ai_key').placeholder = P.keyPlaceholder;
-  document.getElementById('ai_model').value = ((p==='paasta' ? d.modelPaasta : d.modelOpenrouter) || P.defaultModel);
-  document.getElementById('aiKeyHint').innerHTML = P.keyHint;
-  const st = document.getElementById('modelsStatus'); if(st) st.innerHTML='';
-  saveAISettings();
-  if(!silent) fetchModels(false);
-}
+function setAIProvider(p, silent){ CURRENT_PROVIDER = 'paasta'; }
 function loadAI(){
   const s = getAISettings();
-  CURRENT_PROVIDER = s.provider;
   document.getElementById('ai_prompt').value = s.prompt;
-  setAIProvider(CURRENT_PROVIDER, true);
+  const chip = document.getElementById('modeModelChip');
+  if(chip) chip.textContent = 'مدل: ' + (PS.ai.model || s.model);
 }
-function bindProviderChoices(){
-  if(PS.ai.key || PS.ai.model || PS.masterPrompt){
-    const orChip = document.querySelector('#providerChoices .choice[data-provider="openrouter"]');
-    if(orChip) orChip.style.display = 'none';
-  }
-  document.querySelectorAll('#providerChoices .choice').forEach(c=>{
-    c.addEventListener('click', ()=>setAIProvider(c.dataset.provider));
-  });
-}
+function bindProviderChoices(){ /* سرویس‌دهنده از پنل مدیریت تعیین می‌شود (پاستا) */ }
 function updateAIPanelVisibility(){ /* روش دستی حذف شده؛ پنل AI همیشه فعال است */ }
 function resetAIPrompt(){
   document.getElementById('ai_prompt').value = DEFAULT_AI_PROMPT;
   saveAISettings();
 }
 function bindAIInputs(){
-  ['ai_key','ai_model','ai_prompt'].forEach(id=>{
-    document.getElementById(id).addEventListener('input', saveAISettings);
-    document.getElementById(id).addEventListener('change', saveAISettings);
-  });
+  const el = document.getElementById('ai_prompt');
+  if(el){ el.addEventListener('input', saveAISettings); el.addEventListener('change', saveAISettings); }
 }
 
 /* ---------- لیست مدل‌ها از سرویس‌دهنده فعال ---------- */
@@ -2862,7 +2884,9 @@ function recordHistory(kind){
   rec.data = serializeForm();
   // حداکثر ۶۰ رکورد
   while(list.length > 60) list.pop();
-  return setHistory(list);
+  setHistory(list);
+  syncRecord('final', null, rec.exports);
+  return list;
 }
 function openHistory(){
   renderHistoryList();

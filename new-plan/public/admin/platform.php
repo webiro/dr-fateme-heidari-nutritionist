@@ -61,6 +61,35 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         flash_set('ok', 'پیش‌فرض وعده‌ها ذخیره شد.');
         redirect('platform.php');
     }
+    if ($action === 'tpl_add') {
+        $key = 'custom_' . time();
+        $colors = [];
+        foreach (['accent', 'accent2', 'gold', 'ink', 'bg'] as $c) {
+            $v = (string) ($_POST['c_' . $c] ?? '');
+            $colors[$c] = preg_match('/^#[0-9a-fA-F]{6}$/', $v) ? strtolower($v) : '#6f8b7a';
+        }
+        $platform['customTemplates'][] = [
+            'key' => $key,
+            'label' => mb_substr(clean_text($_POST['tpl_label'] ?? 'قالب جدید', 40), 0, 40),
+            'dot' => $colors['accent'],
+            'colors' => $colors,
+            'badge' => '🎨',
+        ];
+        SiteData::putGroup('platform', $platform);
+        flash_set('ok', 'قالب جدید اضافه شد؛ در پلتفرم قابل استفاده است.');
+        redirect('platform.php');
+    }
+
+    if ($action === 'tpl_delete') {
+        $key = preg_replace('/[^a-z0-9_]/i', '', (string) ($_POST['tpl_key'] ?? ''));
+        $platform['customTemplates'] = array_values(array_filter(
+            (array) ($platform['customTemplates'] ?? []),
+            static fn($t) => ($t['key'] ?? '') !== $key
+        ));
+        SiteData::putGroup('platform', $platform);
+        flash_set('ok', 'قالب حذف شد.');
+        redirect('platform.php');
+    }
 }
 
 $platform = SiteData::group('platform');
@@ -77,7 +106,57 @@ $mealLabels = [
     'latenight' => 'وعده آخر شب',
     'supplements' => 'مکمل‌ها',
 ];
+$builtinTemplates = [
+    ['classic', 'کلاسیک', '#6f8b7a'], ['teen', 'نوجوان', '#7c5cbf'], ['young', 'جوان', '#e8603c'],
+    ['athlete', 'ورزشکار', '#c0392b'], ['home', 'خانه‌دار', '#c96f4a'], ['royal', 'سلطنتی', '#1f2a44'],
+    ['noir', 'نوآر طلایی', '#c9a227'], ['emerald', 'زمرد', '#d4af37'], ['marble', 'مرمر', '#b0895e'],
+    ['silk', 'حریر', '#b98c2c'], ['violet', 'بنفش لوکس', '#6d4fa1'], ['minimal', 'مینیمال', '#111111'],
+    ['pinstripe', 'شیاری', '#37474f'], ['botanic', 'بوتانیک', '#2e5e4e'], ['rose', 'رزگلد', '#b76e79'],
+    ['ocean', 'آبی اقیانوس', '#1e6fb8'],
+];
+$customTemplates = (array) ($platform['customTemplates'] ?? []);
 ?>
+<div class="card">
+  <div class="card-head">
+    <span class="material-symbols-rounded icon-lead">wallpaper</span>
+    <h2>قالب‌های پلتفرم</h2>
+    <span class="badge"><?= e(fa_digits((string) (count($builtinTemplates) + count($customTemplates)))) ?></span>
+  </div>
+  <p class="card-note">این قالب‌ها در مرحله خروجی پلتفرم قابل انتخاب هستند. قالب جدید اضافه کنید یا قالب‌های سفارشی را حذف کنید.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center">
+    <?php foreach ($builtinTemplates as [$k, $label, $dot]): ?>
+    <span class="badge" style="gap:6px"><span style="width:12px;height:12px;border-radius:50%;background:<?= e($dot) ?>;display:inline-block"></span><?= e($label) ?></span>
+    <?php endforeach; ?>
+    <?php foreach ($customTemplates as $t): ?>
+    <span class="badge badge-ok" style="gap:6px">
+      <span style="width:12px;height:12px;border-radius:50%;background:<?= e($t['dot'] ?? '#888') ?>;display:inline-block"></span><?= e($t['label']) ?>
+    </span>
+    <form method="post" data-confirm="این قالب سفارشی حذف شود؟">
+      <?= Csrf::field() ?><input type="hidden" name="action" value="tpl_delete"><input type="hidden" name="tpl_key" value="<?= e($t['key']) ?>">
+      <button class="icon-btn" type="submit" aria-label="حذف قالب" style="width:28px;height:28px;color:var(--danger)"><span class="material-symbols-rounded" style="font-size:16px">delete</span></button>
+    </form>
+    <?php endforeach; ?>
+  </div>
+  <form method="post">
+    <?= Csrf::field() ?>
+    <input type="hidden" name="action" value="tpl_add">
+    <div class="form-grid">
+      <div class="field">
+        <label for="tpl_label">نام قالب جدید</label>
+        <input class="input" id="tpl_label" name="tpl_label" placeholder="مثال: آبی آرام" required>
+      </div>
+      <div class="field" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+        <?php foreach (['accent' => 'اصلی', 'accent2' => 'مکمل', 'gold' => 'طلایی', 'ink' => 'متن', 'bg' => 'پس‌زمینه'] as $c => $lbl): ?>
+        <label style="text-align:center;font-size:11px;color:var(--muted)"><?= e($lbl) ?><input type="color" name="c_<?= e($c) ?>" value="<?= e(['accent' => '#1e6fb8', 'accent2' => '#5aa9e6', 'gold' => '#c9a227', 'ink' => '#12233a', 'bg' => '#f3f7fc'][$c]) ?>" style="width:44px;height:32px;border:0;background:none;display:block;margin-top:4px"></label>
+        <?php endforeach; ?>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit"><span class="material-symbols-rounded">add</span>افزودن قالب</button>
+    </div>
+  </form>
+</div>
+
 <div class="card">
   <div class="card-head">
     <span class="material-symbols-rounded icon-lead">restaurant_menu</span>
