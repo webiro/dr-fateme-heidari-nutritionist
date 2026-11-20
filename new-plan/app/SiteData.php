@@ -11,6 +11,33 @@ final class SiteData
 {
     private const CACHE_TTL = 900; // page cache seconds (0 = disabled)
 
+    /** The exact SEO article of the previous static site (content.txt). */
+    private static function defaultArticleHtml(): string
+    {
+        $file = __DIR__ . '/article-default.html';
+        return is_file($file) ? (string) file_get_contents($file) : '';
+    }
+
+    /** Default master prompt for the dashboard AI idea generator. */
+    private static function defaultMasterPrompt(): string
+    {
+        return <<<'PROMPT'
+تو دستیار تولید محتوای وب‌سایت «دکتر فاطمه حیدری، متخصص و کارشناس تغذیه در نوشهر» هستی.
+۱۰ موضوع داغ، ترند و جذاب از دنیای تغذیه، رژیم‌درمانی، لاغری، عضله‌سازی و سبک زندگی سالم که این هفته برای مخاطب فارسی‌زبان ایرانی پرطرفدار هستند، پیشنهاد بده.
+موضوعات باید ترکیبی باشند از: اخبار و ترندهای جدید تغذیه، سوالات پرتکرار مخاطبان، باورهای غلط رایج، و نکات کاربردی برای رزرو مشاوره.
+برای هر مورد فقط و فقط JSON معتبر با این ساختار برگردان، بدون هیچ متن اضافه:
+
+[
+  {
+    "title": "تیتر جذاب و کوتاه فارسی",
+    "summary": "توضیح دو تا سه جمله‌ای برای شروع تولید محتوا",
+    "format": "reel یا post یا article",
+    "hashtag": "#هشتگ_پیشنهادی"
+  }
+]
+PROMPT;
+    }
+
     /** Defaults mirror the current static site exactly. */
     public static function defaults(): array
     {
@@ -42,9 +69,15 @@ final class SiteData
             'seo' => [
                 'title' => 'دکتر فاطمه حیدری ‐ متخصص و کارشناس تغذیه در نوشهر',
                 'description' => 'فاطمه حیدری، متخصص و کارشناس تغذیه در نوشهر، برای طراحی برنامه غذایی متناسب با شرایط شما در کنار شماست. Fateme Heidari در مسیر تغذیه سالم و وزن پایدار همراه شماست.',
+                'robots' => 'index,follow',
                 'ogTitle' => 'دکتر فاطمه حیدری ‐ متخصص و کارشناس تغذیه در نوشهر',
                 'ogDescription' => 'دکتر فاطمه حیدری ‐ کارشناس و متخصص تغذیه در شهر نوشهر ‐ دکتر تغذیه فاطمه حیدری نائیج',
                 'ogImage' => 'assets/images/og-image.jpg',
+                'ogSiteName' => 'دکتر فاطمه حیدری | تغذیه و رژیم‌درمانی',
+                'ogImageAlt' => 'دکتر فاطمه حیدری، متخصص تغذیه در نوشهر',
+                'twitterCard' => 'summary_large_image',
+                'ratingValue' => '4.9',
+                'ratingCount' => '271',
             ],
             'headings' => [
                 'heroKicker' => 'Nutrition Studio · Nowshahr',
@@ -105,7 +138,21 @@ final class SiteData
                 ],
             ],
             'article' => [
-                'html' => '<h2>فاطمه حیدری؛ متخصص تغذیه در نوشهر</h2><p>فاطمه حیدری نائیج، متخصص و کارشناس تغذیه در نوشهر، استان مازندران است. در این صفحه می‌توانید با خدمات مشاوره تغذیه، مسیر رزرو وقت و راه‌های ارتباطی آشنا شوید.</p><p lang="en" dir="ltr">Fateme Heidari Naeij offers personalized nutrition guidance in Nowshahr, without generic promises.</p><p>خدمات شامل رژیم کاهش وزن، افزایش وزن، پایداری وزن، تغذیه ورزشی، برنامه شخصی‌سازی‌شده، تغذیه در دیابت، تغذیه در بیماری‌های مزمن، تغذیه حمایتی در سرطان، اصلاح سبک زندگی و مشاوره تخصصی تغذیه است.</p>',
+                'html' => self::defaultArticleHtml(),
+            ],
+            /** ترتیب نمایش سکشن‌ها در صفحه اصلی (هیرو همیشه اول است). */
+            'sectionOrder' => [
+                'intro', 'services', 'faq', 'videos', 'posts',
+                'contact', 'appoint', 'article', 'partners', 'location',
+            ],
+            /** تنظیمات هوش مصنوعی (پاستا کلاد). */
+            'ai' => [
+                'provider' => 'paasta',
+                'endpoint' => 'https://console.paasta.cloud/api/ai/v1/chat/completions',
+                'modelsEndpoint' => 'https://console.paasta.cloud/api/ai/v1/models',
+                'apiKey' => '',
+                'model' => 'deepseek/deepseek-v4-flash',
+                'masterPrompt' => self::defaultMasterPrompt(),
             ],
             'slogans' => [
                 'Small steps. Stronger habits.',
@@ -162,6 +209,19 @@ final class SiteData
             [$name, $json]
         );
         self::clearCache();
+    }
+
+    /** Display order of landing sections, always complete and valid. */
+    public static function sectionOrder(): array
+    {
+        $defaults = ['intro', 'services', 'faq', 'videos', 'posts', 'contact', 'appoint', 'article', 'partners', 'location'];
+        $order = array_values(array_filter(self::group('sectionOrder'), static fn($k) => in_array($k, $defaults, true)));
+        foreach ($defaults as $key) {
+            if (!in_array($key, $order, true)) {
+                $order[] = $key;
+            }
+        }
+        return $order;
     }
 
     /** Full frontend config (site-config JSON equivalent). */

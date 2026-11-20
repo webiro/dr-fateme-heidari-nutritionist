@@ -23,11 +23,103 @@ if (!isset($_GET['nocache'])) {
 $config = SiteData::config();
 $headings = $config['headings'];
 $sections = $config['sections'];
+$sectionOrder = SiteData::sectionOrder();
 $identity = $config['doctor'];
 $seo = $config['seo'];
+$links = $config['links'];
 $location = $config['location'];
 $articleHtml = SiteData::articleHtml();
+// intro paragraph: admin-authored inline HTML (strip every attribute for safety)
+$introParagraphHtml = preg_replace('/<([a-z0-9]+)[^>]*>/i', '<$1>', (string) ($headings['introParagraph'] ?? ''));
 $V = SiteData::version(); // cache-bust version
+
+$domain = (string) $config['domain'];
+$siteUrl = 'https://' . $domain . '/';
+$ogImageUrl = $siteUrl . ltrim((string) ($seo['ogImage'] ?: 'assets/images/og-image.jpg'), '/');
+$sameAs = array_values(array_filter([
+    $links['instagram'] ?? '', $links['telegram'] ?? '', $links['whatsapp'] ?? '',
+    $links['bale'] ?? '', $links['rubika'] ?? '', $links['eitaa'] ?? '', $links['website'] ?? '',
+]));
+$contactPoints = [];
+if (!empty($links['phone'])) {
+    $contactPoints[] = [
+        '@type' => 'ContactPoint',
+        'telephone' => $links['phone'],
+        'contactType' => 'customer support',
+        'availableLanguage' => 'Persian',
+    ];
+}
+if (!empty($links['whatsapp'])) {
+    $contactPoints[] = ['@type' => 'ContactPoint', 'url' => $links['whatsapp'], 'contactType' => 'WhatsApp'];
+}
+if (!empty($links['tisaAssistant'])) {
+    $contactPoints[] = ['@type' => 'ContactPoint', 'url' => $links['tisaAssistant'], 'contactType' => 'AI nutrition assistant', 'availableLanguage' => 'Persian'];
+}
+
+$ldGraph = [
+    [
+        '@type' => 'Physician',
+        '@id' => $siteUrl . '#physician',
+        'name' => 'دکتر ' . $identity['nameFa'],
+        'alternateName' => array_values(array_filter([$identity['nameEn'], 'Dr. ' . $identity['nameEn'], $identity['nameFa'] . ' نائیج'])),
+        'url' => $siteUrl,
+        'description' => $identity['title'] . ' در ' . $identity['city'] . '، ' . $identity['province'] . '، ایران.',
+        'image' => $siteUrl . 'assets/images/doctor.jpg',
+        'identifier' => $identity['medicalCode'],
+        'address' => [
+            '@type' => 'PostalAddress',
+            'addressLocality' => $identity['city'],
+            'addressRegion' => $identity['province'],
+            'addressCountry' => 'IR',
+        ],
+        'areaServed' => [
+            '@type' => 'City',
+            'name' => $identity['city'],
+            'containedInPlace' => ['@type' => 'AdministrativeArea', 'name' => 'استان ' . $identity['province']],
+        ],
+        'availableLanguage' => ['Persian'],
+        'medicalSpecialty' => 'https://schema.org/DietNutrition',
+        'sameAs' => $sameAs,
+    ],
+    [
+        '@type' => 'Person',
+        '@id' => $siteUrl . '#person',
+        'name' => $identity['nameFa'] . ' نائیج',
+        'alternateName' => array_values(array_filter([$identity['nameEn'], $identity['nameFa']])),
+        'jobTitle' => $identity['title'],
+        'description' => $seo['description'],
+        'image' => $siteUrl . 'assets/images/doctor.jpg',
+        'url' => $siteUrl,
+        'identifier' => $identity['medicalCode'],
+        'knowsAbout' => ['تغذیه', 'رژیم غذایی', 'تغذیه ورزشی', 'تغذیه درمانی', 'دکتر تغذیه در نوشهر', 'متخصص تغذیه در نوشهر', 'دکتر فاطمه حیدری'],
+    ],
+    [
+        '@type' => 'WebSite',
+        '@id' => $siteUrl . '#website',
+        'url' => $siteUrl,
+        'name' => 'وب‌سایت دکتر ' . $identity['nameFa'],
+        'inLanguage' => 'fa-IR',
+        'publisher' => ['@id' => $siteUrl . '#person'],
+    ],
+];
+if (!empty($seo['ratingValue']) && !empty($seo['ratingCount'])) {
+    $ldGraph[] = [
+        '@type' => 'Physician',
+        '@id' => $siteUrl . '#physician',
+        'name' => 'دکتر ' . $identity['nameFa'],
+        'url' => $siteUrl,
+        'aggregateRating' => [
+            '@type' => 'AggregateRating',
+            'ratingValue' => (string) $seo['ratingValue'],
+            'bestRating' => '5',
+            'worstRating' => '1',
+            'ratingCount' => (string) $seo['ratingCount'],
+        ],
+    ];
+}
+if ($contactPoints) {
+    $ldGraph[1]['contactPoint'] = $contactPoints;
+}
 
 function json_block(string $id, array $value): string
 {
@@ -35,6 +127,11 @@ function json_block(string $id, array $value): string
     $body = str_replace('</', '<\\/', (string) $body);
     return "  <script type=\"application/json\" id=\"{$id}\">\n{$body}\n  </script>";
 }
+
+$ldJson = json_encode(
+    ['@context' => 'https://schema.org', '@graph' => $ldGraph],
+    JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
+);
 
 ob_start();
 ?>
@@ -46,18 +143,27 @@ ob_start();
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= e($seo['title']) ?></title>
   <meta name="description" content="<?= e($seo['description']) ?>">
-  <meta name="robots" content="index,follow">
-  <link rel="canonical" href="https://<?= e($config['domain']) ?>/">
+  <meta name="robots" content="<?= e($seo['robots'] ?: 'index,follow') ?>">
+  <link rel="canonical" href="<?= e($siteUrl) ?>">
+  <meta name="author" content="<?= e($identity['nameFa']) ?>">
+
+  <!-- Open Graph (Facebook / Telegram / WhatsApp / LinkedIn) -->
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="<?= e($seo['ogSiteName']) ?>">
   <meta property="og:title" content="<?= e($seo['ogTitle']) ?>">
   <meta property="og:description" content="<?= e($seo['ogDescription']) ?>">
-  <meta property="og:image" content="assets/images/og-image.jpg">
-  <meta property="og:url" content="https://<?= e($config['domain']) ?>/">
+  <meta property="og:image" content="<?= e($ogImageUrl) ?>">
+  <meta property="og:image:alt" content="<?= e($seo['ogImageAlt']) ?>">
+  <meta property="og:url" content="<?= e($siteUrl) ?>">
   <meta property="og:locale" content="fa_IR">
-  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="<?= e($seo['twitterCard'] ?: 'summary_large_image') ?>">
   <meta name="twitter:title" content="<?= e($seo['ogTitle']) ?>">
   <meta name="twitter:description" content="<?= e($seo['description']) ?>">
-  <meta name="twitter:image" content="assets/images/og-image.jpg">
+  <meta name="twitter:image" content="<?= e($ogImageUrl) ?>">
+  <meta name="twitter:image:alt" content="<?= e($seo['ogImageAlt']) ?>">
+
   <link rel="icon" href="assets/images/logo.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/vendor/fonts/site-fonts.css?v=<?= e($V) ?>">
   <link rel="stylesheet" href="assets/vendor/owl/owl.carousel.min.css">
@@ -65,111 +171,8 @@ ob_start();
   <link rel="stylesheet" href="assets/app.css?v=<?= e($V) ?>" id="app-css">
 
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "فاطمه حیدری نائیج",
-    "alternateName": ["فاطمه حیدری", "Fateme Heidari", "Fateme Heidari Naeij", "Dr Fateme Heidari"],
-    "jobTitle": "متخصص و کارشناس تغذیه",
-    "description": "متخصص و کارشناس تغذیه در نوشهر، استان مازندران. مشاوره تغذیه و طراحی برنامه غذایی متناسب با شرایط فرد.",
-    "image": "assets/images/doctor.jpg",
-    "url": "/",
-    "identifier": "<?= e($identity['medicalCode']) ?>",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "نوشهر",
-      "addressRegion": "مازندران",
-      "addressCountry": "IR"
-    },
-    "knowsAbout": ["تغذیه", "رژیم غذایی", "تغذیه ورزشی", "تغذیه درمانی","دکتر تغذیه در نوشهر","متخصص تغذیه در نوشهر","دکتر فاطمه حیدری"]
-  }
+<?= $ldJson ?>
   </script>
-
-  <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Physician",
-      "@id": "https://<?= e($config['domain']) ?>/#physician",
-      "name": "دکتر فاطمه حیدری",
-      "alternateName": [
-        "Fateme Heidari",
-        "Dr. Fateme Heidari",
-        "دکتر فاطمه حیدری نائیج"
-      ],
-      "url": "https://<?= e($config['domain']) ?>/",
-      "description": "دکتر فاطمه حیدری، متخصص تغذیه و رژیم‌درمانی در نوشهر، استان مازندران، ایران.",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "نوشهر",
-        "addressRegion": "مازندران",
-        "addressCountry": "IR"
-      },
-      "areaServed": {
-        "@type": "City",
-        "name": "نوشهر",
-        "containedInPlace": {
-          "@type": "AdministrativeArea",
-          "name": "استان مازندران"
-        }
-      },
-      "availableLanguage": [
-        "Persian"
-      ],
-      "medicalSpecialty": "https://schema.org/DietNutrition",
-      "sameAs": [
-        "<?= e($config['links']['instagram']) ?>",
-        "<?= e($config['links']['telegram']) ?>"
-      ]
-    }
-  ]
-}
-</script>
-  <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Person",
-      "@id": "https://<?= e($config['domain']) ?>/#person",
-      "name": "دکتر فاطمه حیدری",
-      "alternateName": "Fateme Heidari",
-      "url": "https://<?= e($config['domain']) ?>/",
-      "sameAs": [
-        "<?= e($config['links']['instagram']) ?>",
-        "<?= e($config['links']['telegram']) ?>"
-      ],
-      "mainEntityOfPage": {
-        "@id": "https://<?= e($config['domain']) ?>/#website"
-      },
-      "contactPoint": [
-        {
-          "@type": "ContactPoint",
-          "telephone": "<?= e($config['links']['phone']) ?>",
-          "contactType": "customer support",
-          "availableLanguage": "Persian"
-        },
-        {
-          "@type": "ContactPoint",
-          "url": "<?= e($config['links']['whatsapp']) ?>",
-          "contactType": "WhatsApp"
-        }
-      ]
-    },
-    {
-      "@type": "WebSite",
-      "@id": "https://<?= e($config['domain']) ?>/#website",
-      "url": "https://<?= e($config['domain']) ?>/",
-      "name": "وب‌سایت دکتر فاطمه حیدری",
-      "inLanguage": "fa-IR",
-      "publisher": {
-        "@id": "https://<?= e($config['domain']) ?>/#person"
-      }
-    }
-  ]
-}
-</script>
 </head>
 
 <body class="theme-v1">
@@ -232,194 +235,17 @@ ob_start();
   </div>
 
   <main id="main">
-    <section class="hero" id="hero">
-      <div class="hero-bg" aria-hidden="true">
-        <span class="blob blob-a"></span>
-        <span class="blob blob-b"></span>
-        <span class="blob blob-c"></span>
-      </div>
-      <div class="wrap hero-grid">
-        <div class="hero-copy">
-          <div class="kicker"><i></i> <?= e($headings['heroKicker']) ?></div>
-          <h1>دکتر <?= e($identity['nameFa']) ?></h1>
-          <p class="hero-role"><?= e($identity['title']) ?></p>
-          <div class="hero-meta">
-            <span class="chip"><span class="material-symbols-rounded" style="font-size:16px">badge</span> کد نظام پزشکی:
-              <?= e($identity['medicalCode']) ?></span>
-            <span class="chip"><span class="material-symbols-rounded" style="font-size:16px">location_on</span>
-              <?= e($identity['city']) ?>، <?= e($identity['province']) ?></span>
-          </div>
-          <p class="hero-lead"><?= e($identity['intro']) ?></p>
-          <div class="hero-cta">
-            <a class="btn btn-primary" href="#appoint">
-              <span class="material-symbols-rounded">event_available</span>
-              <?= e($headings['appointmentCta']) ?>
-            </a>
-            <a class="btn btn-ghost" href="#services">مشاوره تغذیه</a>
-            <a class="btn btn-line" data-link="medical" href="#" rel="noopener" target="_blank">مشاهده صفحه نظام
-              پزشکی</a>
-          </div>
-        </div>
-        <div class="portrait-stage">
-          <svg class="deco-apple" viewBox="0 0 64 64" aria-hidden="true">
-            <path d="M32 14c2-6 8-8 12-8-1 6-6 10-12 8z" fill="#f5b7c1" />
-            <path d="M20 28c0-8 6-14 12-14s8 4 10 4 12-2 12 12-8 24-22 24S20 36 20 28z" fill="none" stroke="#b0c4de"
-              stroke-width="1.6" />
-          </svg>
-          <div class="portrait-frame">
-            <img src="assets/images/dr-fateme-heidari.jpeg" alt="پرتره <?= e($identity['nameFa']) ?>" width="784" height="784" fetchpriority="high" decoding="async">
-            <div class="portrait-glass"></div>
-          </div>
-          <div class="badge-med"><?= e($identity['medicalCode']) ?></div>
-          <aside class="float-card">
-            <small>مشاوره تغذیه</small>
-            <strong><?= e($identity['city']) ?>، <?= e($identity['province']) ?></strong>
-          </aside>
-        </div>
-      </div>
-    </section>
-
-    <section class="intro" id="intro">
-      <div class="wrap intro-layout">
-        <h2><?= e($headings['intro']) ?></h2>
-        <div>
-          <p><?= e($headings['introParagraph']) ?></p>
-          <div class="intro-pills">
-            <?php foreach (array_filter(explode('|', (string) $headings['introPills'])) as $pill): ?>
-            <span><?= e(trim($pill)) ?></span>
-            <?php endforeach; ?>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="services" id="services">
-      <div class="wrap">
-        <div class="section-head">
-          <h2><?= e($headings['services']) ?></h2>
-          <p><?= e($headings['servicesSub']) ?></p>
-        </div>
-        <div class="orb-wrap" aria-hidden="true">
-          <div class="orb-fallback"></div>
-          <canvas id="nutrition-orb"></canvas>
-        </div>
-        <div class="masonry" id="services-grid"></div>
-      </div>
-    </section>
-
-    <section class="faq" id="faq">
-      <div class="wrap">
-        <div class="section-head">
-          <h2><?= e($headings['faq']) ?></h2>
-        </div>
-        <div class="faq-list" id="faq-list"></div>
-      </div>
-    </section>
-
-    <section class="videos" id="videos">
-      <div class="wrap">
-        <div class="section-head">
-          <h2><?= e($headings['videos']) ?></h2>
-        </div>
-        <div class="owl-carousel" id="video-carousel"></div>
-        <div id="videos-empty" class="empty-state"><?= e($headings['videosEmpty']) ?></div>
-      </div>
-    </section>
-
-    <section class="posts" id="posts">
-      <div class="wrap">
-        <div class="section-head">
-          <h2><?= e($headings['posts']) ?></h2>
-        </div>
-        <div class="posts-grid" id="posts-grid"></div>
-        <div id="posts-empty" class="empty-state"><?= e($headings['postsEmpty']) ?></div>
-      </div>
-    </section>
-
-    <section class="contact" id="contact">
-      <div class="wrap">
-        <div class="section-head">
-          <h2><?= e($headings['contact']) ?></h2>
-        </div>
-        <div class="contact-grid" id="contact-grid"></div>
-      </div>
-    </section>
-
-    <section class="appoint" id="appoint">
-      <div class="wrap form-shell">
-        <div>
-          <h2><?= e($headings['appoint']) ?></h2>
-          <p class="form-note"><?= e($headings['formNote']) ?></p>
-        </div>
-        <form class="form-card" id="appointment-form" novalidate>
-          <div class="fields">
-            <div class="field full">
-              <label for="name">نام و نام خانوادگی</label>
-              <input id="name" name="name" required autocomplete="name">
-            </div>
-            <div class="field">
-              <label for="age">سن</label>
-              <input id="age" name="age" type="decimal" min="1" max="120" required>
-            </div>
-            <div class="field">
-              <label for="height">قد</label>
-              <input id="height" name="height" inputmode="decimal" required placeholder="سانتی‌متر">
-            </div>
-            <div class="field full">
-              <label for="goal">هدف مشاوره</label>
-              <select id="goal" name="goal" required>
-                <option value="">انتخاب کنید</option>
-                <option value="افزایش وزن">افزایش وزن</option>
-                <option value="کاهش وزن">کاهش وزن</option>
-                <option value="پایداری وزن">پایداری وزن</option>
-              </select>
-            </div>
-            <div class="field full">
-              <label for="phone">شماره تماس</label>
-              <input id="phone" name="phone" type="tel" required autocomplete="tel" dir="ltr">
-            </div>
-            <div class="field full">
-              <label for="message">پیام</label>
-              <textarea id="message" name="message" placeholder="اگر نکته‌ای هست، همین‌جا بنویسید."></textarea>
-            </div>
-            <!-- Honeypot: hidden from humans; bots that fill it get rejected. -->
-            <div class="field hp-field" aria-hidden="true">
-              <label for="website_url">وب‌سایت</label>
-              <input id="website_url" name="website_url" type="text" tabindex="-1" autocomplete="off">
-            </div>
-          </div>
-          <button class="btn btn-primary" type="submit" style="margin-top:18px;width:100%">ارسال درخواست</button>
-          <div class="form-msg" id="form-msg" role="status"></div>
-        </form>
-      </div>
-    </section>
-
-    <section class="seo-article" id="article">
-      <div class="wrap">
-        <article id="seo-article" data-inline-article="1">
-          <?= $articleHtml /* trusted HTML, edited only inside the admin panel */ ?>
-        </article>
-        <button class="seo-toggle" id="seo-toggle" type="button">نمایش بیشتر</button>
-      </div>
-    </section>
-
-    <section class="partners hidden" id="partners">
-      <div class="wrap section-head">
-        <h2>مجموعه‌هایی که با آن‌ها همکاری داشته‌ایم</h2>
-      </div>
-      <div class="marquee" id="marquee-track"></div>
-    </section>
-
-    <section class="location" id="location">
-      <div class="wrap location-shell">
-        <div>
-          <h2 id="location-title"><?= e($location['title']) ?></h2>
-          <p class="location-address" id="location-address"><?= e($location['address']) ?></p>
-        </div>
-        <div class="location-actions" id="location-actions"></div>
-        <div class="map-frame" id="map-frame"></div>
-      </div>
-    </section>
+    <?php
+    // Hero is always first; the rest follow the admin-configured order.
+    require __DIR__ . '/partials/sections/hero.php';
+    foreach ($sectionOrder as $sectionKey) {
+        $toggleKey = $sectionKey === 'appoint' ? 'appointment' : $sectionKey;
+        if (empty($sections[$toggleKey])) {
+            continue;
+        }
+        require __DIR__ . '/partials/sections/' . $sectionKey . '.php';
+    }
+    ?>
   </main>
 
   <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-label="گالری پست">

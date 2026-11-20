@@ -85,18 +85,49 @@
     }
   });
 
-  /* ---------- Icon picker ---------- */
+  /* ---------- Icon picker (searchable) ---------- */
   document.querySelectorAll("[data-icon-picker]").forEach(function (picker) {
     var input = picker.querySelector("input[type=hidden]");
-    picker.querySelectorAll(".icon-opt").forEach(function (opt) {
-      opt.addEventListener("click", function () {
-        input.value = opt.dataset.icon || "";
-        picker.querySelectorAll(".icon-opt").forEach(function (o) {
-          o.classList.toggle("is-selected", o === opt);
-        });
-        var preview = document.querySelector("[data-icon-preview]");
-        if (preview) preview.textContent = input.value || "nutrition";
+    var search = picker.querySelector(".icon-search");
+    var count = picker.querySelector(".icon-count");
+    var opts = Array.from(picker.querySelectorAll(".icon-opt"));
+
+    function select(opt) {
+      input.value = opt.dataset.icon || "";
+      opts.forEach(function (o) { o.classList.toggle("is-selected", o === opt); });
+      var preview = document.querySelector("[data-icon-preview]");
+      if (preview) preview.textContent = input.value || "nutrition";
+    }
+    opts.forEach(function (opt) {
+      opt.addEventListener("click", function () { select(opt); });
+    });
+
+    function filter() {
+      if (!search) return;
+      var q = search.value.trim().toLowerCase();
+      var visible = 0;
+      opts.forEach(function (o) {
+        var hit = !q || (o.dataset.icon || "").indexOf(q) !== -1;
+        o.hidden = !hit;
+        if (hit) visible++;
       });
+      if (count) count.textContent = visible + " آیکون";
+    }
+    if (search) search.addEventListener("input", filter);
+    filter();
+  });
+
+  /* ---------- Section preview: click a row → scroll the live iframe ---------- */
+  document.querySelectorAll("[data-section-row]").forEach(function (row) {
+    row.addEventListener("click", function (e) {
+      if (e.target.closest("a, button, label, input, form")) return;
+      document.querySelectorAll("[data-section-row]").forEach(function (r) {
+        r.classList.toggle("is-current", r === row);
+      });
+      var frame = document.querySelector("[data-preview-frame]");
+      if (frame && row.dataset.sectionId) {
+        frame.src = "../index.php#" + row.dataset.sectionId;
+      }
     });
   });
 
@@ -105,8 +136,16 @@
     btn.addEventListener("click", function () {
       var form = btn.closest("form");
       if (!form) return;
-      form.querySelector("input[name=move_id]") && (form.querySelector("input[name=move_id]").value = btn.dataset.moveId || "");
-      form.querySelector("input[name=direction]") && (form.querySelector("input[name=direction]").value = btn.dataset.move || "");
+      // data-move-id → input[name=move_id], data-move-key → input[name=key]
+      var mapping = { moveId: "move_id", moveKey: "key" };
+      Object.keys(mapping).forEach(function (dk) {
+        if (btn.dataset[dk] !== undefined) {
+          var input = form.querySelector('input[name="' + mapping[dk] + '"]');
+          if (input) input.value = btn.dataset[dk];
+        }
+      });
+      var dir = form.querySelector("input[name=direction]");
+      if (dir) dir.value = btn.dataset.move || "";
       form.submit();
     });
   });

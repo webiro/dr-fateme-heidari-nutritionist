@@ -23,18 +23,40 @@ try {
 } catch (Throwable $e) {
     $unreadCount = 0;
 }
+$aiKeyMissing = false;
+try {
+    $aiKeyMissing = (string) SiteData::group('ai')['apiKey'] === '';
+} catch (Throwable $e) {
+    $aiKeyMissing = false;
+}
 
+/** key => [href, label, icon] */
 $navItems = [
     'dashboard' => ['dashboard.php', 'پیشخوان', 'dashboard'],
     'messages' => ['messages.php', 'درخواست‌های مشاوره', 'mark_email_unread'],
-    'texts' => ['texts.php', 'متن‌ها و عنوان‌ها', 'format_h1'],
+    'texts' => ['texts.php', 'متن‌ها و معرفی', 'format_h1'],
+    'sections' => ['sections.php', 'ترتیب سکشن‌ها', 'view_agenda'],
     'services' => ['services.php', 'خدمات', 'medical_information'],
     'faq' => ['faq.php', 'سوالات متداول', 'quiz'],
     'menu' => ['menu.php', 'منوی سایت', 'menu_open'],
     'posts' => ['posts.php', 'پست‌های اسلایدی', 'photo_library'],
     'reels' => ['reels.php', 'ریلزها', 'movie'],
-    'settings' => ['settings.php', 'اطلاعات و تنظیمات', 'tune'],
+    'seo' => ['seo.php', 'متاتگ‌ها و سوشال', 'query_stats'],
+    'seo_content' => ['seo_content.php', 'محتوای سئو', 'article'],
+    'settings' => ['settings.php', 'اطلاعات و تماس', 'person_circle'],
+    'location' => ['location.php', 'آدرس مطب', 'location_on'],
+    'ai' => ['ai.php', 'تنظیمات هوشمند', 'neurology'],
+    'ai_ideas' => ['ai_ideas.php', 'آرشیو ایده‌ها', 'bulb'],
     'account' => ['account.php', 'حساب کاربری', 'person'],
+];
+
+$navGroups = [
+    ['label' => '', 'keys' => ['dashboard', 'messages']],
+    ['label' => 'محتوای صفحه اصلی', 'keys' => ['texts', 'sections', 'services', 'faq', 'menu']],
+    ['label' => 'رسانه‌ها', 'keys' => ['posts', 'reels']],
+    ['label' => 'سئو و ارتباطات', 'keys' => ['seo', 'seo_content', 'settings', 'location']],
+    ['label' => 'دستیار هوشمند', 'keys' => ['ai', 'ai_ideas']],
+    ['label' => '', 'keys' => ['account']],
 ];
 ?>
 <!DOCTYPE html>
@@ -60,14 +82,23 @@ $navItems = [
       </div>
     </div>
     <nav class="sidebar-nav">
-      <?php foreach ($navItems as $key => [$href, $label, $icon]): ?>
-      <a class="side-link<?= $active === $key ? ' is-active' : '' ?>" href="<?= e($href) ?>">
-        <span class="material-symbols-rounded"><?= $icon ?></span>
-        <span><?= e($label) ?></span>
-        <?php if ($key === 'messages' && $unreadCount > 0): ?>
-        <span class="side-badge"><?= e(fa_digits((string) $unreadCount)) ?></span>
+      <?php foreach ($navGroups as $group): ?>
+        <?php if ($group['label']): ?>
+        <div class="nav-group-label"><?= e($group['label']) ?></div>
         <?php endif; ?>
-      </a>
+        <div class="nav-group">
+          <?php foreach ($group['keys'] as $key): [$href, $label, $icon] = $navItems[$key]; ?>
+          <a class="side-link<?= $active === $key ? ' is-active' : '' ?>" href="<?= e($href) ?>">
+            <span class="material-symbols-rounded"><?= $icon ?></span>
+            <span><?= e($label) ?></span>
+            <?php if ($key === 'messages' && $unreadCount > 0): ?>
+            <span class="side-badge"><?= e(fa_digits((string) $unreadCount)) ?></span>
+            <?php elseif ($key === 'ai' && $aiKeyMissing): ?>
+            <span class="side-dot" title="کلید API هوش مصنوعی تنظیم نشده"></span>
+            <?php endif; ?>
+          </a>
+          <?php endforeach; ?>
+        </div>
       <?php endforeach; ?>
     </nav>
     <div class="sidebar-foot">

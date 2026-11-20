@@ -38,7 +38,7 @@ if ($alreadyInstalled) {
     require_once __DIR__ . '/../app/seed.php';
 
     // settings groups from defaults
-    foreach (['identity', 'links', 'seo', 'headings', 'location', 'sections', 'colors', 'article', 'slogans', 'media'] as $group) {
+    foreach (['identity', 'links', 'seo', 'headings', 'location', 'sections', 'sectionOrder', 'colors', 'article', 'slogans', 'media', 'ai'] as $group) {
         SiteData::putGroup($group, SiteData::group($group));
     }
     $messages[] = 'تنظیمات پیش‌فرض ثبت شد.';

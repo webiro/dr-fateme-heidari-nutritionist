@@ -199,7 +199,7 @@ function applyTexts() {
   const introH2 = $("#intro h2");
   if (introH2 && T.intro) introH2.textContent = T.intro;
   const introP = $("#intro p");
-  if (introP && T.introParagraph) introP.textContent = T.introParagraph;
+  if (introP && T.introParagraph) introP.innerHTML = T.introParagraph; // admin-authored, sanitized server-side
   if (T.introPills !== undefined) {
     const pills = $(".intro-pills");
     if (pills) {

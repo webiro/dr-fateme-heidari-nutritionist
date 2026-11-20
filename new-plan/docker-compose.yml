@@ -9,6 +9,7 @@ services:
       - ./public:/var/www/html/public
       - ./app:/var/www/html/app
       - ./config.env:/var/www/html/config.env
+      - ./storage:/var/www/html/storage
     depends_on:
       db:
         condition: service_healthy

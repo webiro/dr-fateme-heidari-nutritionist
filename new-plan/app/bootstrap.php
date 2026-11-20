@@ -23,6 +23,7 @@ require_once __DIR__ . '/Csrf.php';
 require_once __DIR__ . '/Auth.php';
 require_once __DIR__ . '/Uploader.php';
 require_once __DIR__ . '/SiteData.php';
+require_once __DIR__ . '/AiService.php';
 
 /** Hardened session cookie (called before session_start()). */
 function start_secure_session(): void

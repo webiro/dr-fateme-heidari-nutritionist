@@ -93,3 +93,25 @@ CREATE TABLE IF NOT EXISTS fh_login_attempts (
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   KEY idx_user_time (username, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS fh_ai_batches (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  model VARCHAR(120) NULL,
+  prompt_sha CHAR(16) NULL,
+  items_count INT NOT NULL DEFAULT 0,
+  raw_response MEDIUMTEXT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS fh_ai_ideas (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  batch_id INT UNSIGNED NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  summary TEXT NULL,
+  format VARCHAR(30) NULL,
+  hashtag VARCHAR(191) NULL,
+  is_saved TINYINT(1) NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY idx_batch (batch_id),
+  CONSTRAINT fk_idea_batch FOREIGN KEY (batch_id) REFERENCES fh_ai_batches (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

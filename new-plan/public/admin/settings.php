@@ -1,10 +1,11 @@
 <?php
-/** Site identity, links, location, SEO article and slogans. */
+/** Site identity + contact links & social channels. */
 $active = 'settings';
-$pageTitle = 'اطلاعات و تنظیمات';
+$pageTitle = 'اطلاعات و تماس';
 require __DIR__ . '/partials/layout_start.php';
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    Csrf::check();
     $action = $_POST['action'] ?? '';
 
     if ($action === 'identity') {
@@ -37,56 +38,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         flash_set('ok', 'راه‌های ارتباطی ذخیره شد.');
         redirect('settings.php');
     }
-
-    if ($action === 'location') {
-        $lat = (float) str_replace(',', '.', (string) ($_POST['lat'] ?? 0));
-        $lng = (float) str_replace(',', '.', (string) ($_POST['lng'] ?? 0));
-        $location = [
-            'enabled' => isset($_POST['enabled']),
-            'title' => clean_text($_POST['title'] ?? 'آدرس مطب', 100),
-            'address' => clean_text($_POST['address'] ?? '', 300),
-            'lat' => $lat ?: 0,
-            'lng' => $lng ?: 0,
-        ];
-        SiteData::putGroup('location', $location);
-        flash_set('ok', 'آدرس مطب ذخیره شد.');
-        redirect('settings.php');
-    }
-
-    if ($action === 'article') {
-        $html = trim((string) ($_POST['html'] ?? ''));
-        // allow a safe subset of content tags (admin-authored SEO copy)
-        $allowed = '<h2><h3><h4><p><ul><ol><li><strong><b><em><i><br><a><span><b>';
-        $html = strip_tags($html, $allowed);
-        if (preg_match_all('#<a\b[^>]*>#i', $html, $matches)) {
-            foreach ($matches[0] as $tag) {
-                if (preg_match('#\son\w+\s*=#i', $tag) || !preg_match('#href="https?://[^"]*"#i', $tag)) {
-                    $html = str_replace($tag, '', $html);
-                }
-            }
-        }
-        SiteData::putGroup('article', ['html' => $html]);
-        flash_set('ok', 'متن سئو ذخیره شد.');
-        redirect('settings.php');
-    }
-
-    if ($action === 'slogans') {
-        $slogans = array_values(array_filter(array_map('trim', explode("\n", (string) ($_POST['slogans'] ?? '')))));
-        SiteData::putGroup('slogans', $slogans);
-        flash_set('ok', 'شعارهای انگلیسی ذخیره شد.');
-        redirect('settings.php');
-    }
 }
 
 $identity = SiteData::group('identity');
 $links = SiteData::group('links');
-$location = SiteData::group('location');
-$article = SiteData::group('article');
-$slogans = SiteData::group('slogans');
 ?>
 <div class="card">
-  <div class="card-head"><span class="material-symbols-rounded icon-lead">person</span><h2>اطلاعات اصلی</h2></div>
-  <p class="card-note">این اطلاعات در عنوان‌ها، بخش هیرو، فوتر و کارت QR سایت استفاده می‌شود.</p>
+  <div class="card-head"><span class="material-symbols-rounded icon-lead">person_circle</span><h2>اطلاعات اصلی</h2></div>
+  <p class="card-note">این اطلاعات در عنوان‌ها، بخش هیرو، فوتر، کارت QR و دیتای ساختاریافته گوگل (JSON-LD) استفاده می‌شود.</p>
   <form method="post" data-dirty>
     <?= Csrf::field() ?>
     <input type="hidden" name="action" value="identity">
@@ -121,7 +80,7 @@ $slogans = SiteData::group('slogans');
       </div>
       <div class="field full">
         <label for="intro">متن معرفی بخش هیرو</label>
-        <textarea class="textarea" id="intro" name="intro"><?= e($identity['intro']) ?></textarea>
+        <textarea class="textarea" id="intro" name="intro" style="min-height:90px"><?= e($identity['intro']) ?></textarea>
       </div>
       <div class="field full">
         <label for="footer_text">متن فوتر</label>
@@ -136,7 +95,7 @@ $slogans = SiteData::group('slogans');
 
 <div class="card">
   <div class="card-head"><span class="material-symbols-rounded icon-lead">share</span><h2>راه‌های ارتباطی و شبکه‌های اجتماعی</h2></div>
-  <p class="card-note">هر راه ارتباطی که پر شود در بخش «ارتباط با من» و کارت QR نمایش داده می‌شود؛ خالی بماند، حذف می‌شود.</p>
+  <p class="card-note">هر راه ارتباطی که پر شود در بخش «ارتباط با من»، کارت QR و دیتای ساختاریافته گوگل نمایش داده می‌شود؛ خالی بماند، حذف می‌شود.</p>
   <form method="post" data-dirty>
     <?= Csrf::field() ?>
     <input type="hidden" name="action" value="links">
@@ -184,73 +143,6 @@ $slogans = SiteData::group('slogans');
     </div>
     <div class="form-actions">
       <button class="btn btn-primary" type="submit"><span class="material-symbols-rounded">save</span>ذخیره راه‌های ارتباطی</button>
-    </div>
-  </form>
-</div>
-
-<div class="card">
-  <div class="card-head"><span class="material-symbols-rounded icon-lead">location_on</span><h2>آدرس مطب و نقشه</h2></div>
-  <form method="post" data-dirty>
-    <?= Csrf::field() ?>
-    <input type="hidden" name="action" value="location">
-    <div class="field">
-      <label class="switch">
-        <input type="checkbox" name="enabled" <?= !empty($location['enabled']) ? 'checked' : '' ?>>
-        <span class="track"></span>
-        <span class="switch-label">نمایش بخش آدرس در سایت</span>
-      </label>
-    </div>
-    <div class="form-grid">
-      <div class="field">
-        <label for="loc_title">عنوان بخش</label>
-        <input class="input" id="loc_title" name="title" value="<?= e($location['title']) ?>">
-      </div>
-      <div class="field">
-        <label for="loc_address">آدرس کامل</label>
-        <input class="input" id="loc_address" name="address" value="<?= e($location['address']) ?>">
-      </div>
-      <div class="field">
-        <label for="lat">عرض جغرافیایی (lat)</label>
-        <input class="input" dir="ltr" style="text-align:left" id="lat" name="lat" value="<?= e((string) $location['lat']) ?>">
-      </div>
-      <div class="field">
-        <label for="lng">طول جغرافیایی (lng)</label>
-        <input class="input" dir="ltr" style="text-align:left" id="lng" name="lng" value="<?= e((string) $location['lng']) ?>">
-      </div>
-    </div>
-    <p class="card-note">مختصات را از گوگل‌مپ بگیرید: روی محل مطب راست‌کلیک → عدد دوگانه مثل <b dir="ltr">36.6508, 51.4962</b>. با این اطلاعات دکمه‌های مسیریابی (گوگل، Waze، نشان) و نقشه ساخته می‌شود.</p>
-    <div class="form-actions">
-      <button class="btn btn-primary" type="submit"><span class="material-symbols-rounded">save</span>ذخیره آدرس</button>
-    </div>
-  </form>
-</div>
-
-<div class="card">
-  <div class="card-head"><span class="material-symbols-rounded icon-lead">article</span><h2>متن سئوی پایین صفحه</h2></div>
-  <p class="card-note">HTML ساده مجاز است: h2، h3، p، ul/li، strong، a. در سایت با دکمه «نمایش بیشتر» باز می‌شود.</p>
-  <form method="post" data-dirty>
-    <?= Csrf::field() ?>
-    <input type="hidden" name="action" value="article">
-    <div class="field">
-      <textarea class="textarea" name="html" style="min-height:220px;font-size:13px" dir="auto"><?= e($article['html']) ?></textarea>
-    </div>
-    <div class="form-actions">
-      <button class="btn btn-primary" type="submit"><span class="material-symbols-rounded">save</span>ذخیره متن سئو</button>
-    </div>
-  </form>
-</div>
-
-<div class="card">
-  <div class="card-head"><span class="material-symbols-rounded icon-lead">format_quote</span><h2>شعارهای انگلیسی فوتر</h2></div>
-  <p class="card-note">هر خط یک شعار؛ در هر بازدید یکی به‌صورت تصادفی تایپ می‌شود.</p>
-  <form method="post" data-dirty>
-    <?= Csrf::field() ?>
-    <input type="hidden" name="action" value="slogans">
-    <div class="field">
-      <textarea class="textarea" dir="ltr" style="text-align:left" name="slogans"><?= e(implode("\n", $slogans)) ?></textarea>
-    </div>
-    <div class="form-actions">
-      <button class="btn btn-primary" type="submit"><span class="material-symbols-rounded">save</span>ذخیره شعارها</button>
     </div>
   </form>
 </div>
