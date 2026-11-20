@@ -69,7 +69,7 @@
   }
 
   /* ================= Wizard shell ================= */
-  .wizard{max-width:920px;margin:24px auto;padding:0 16px;}
+  .wizard{width:100%;max-width:100%;margin:24px 0;padding:0 22px;box-sizing:border-box;}
   .wizard-card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 6px 24px rgba(0,0,0,.04);overflow:hidden;}
   .wizard-header{padding:22px 26px 14px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,#fff, #f7f5ef);}
   .wizard-header .top-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;}
@@ -242,11 +242,16 @@
 
   @page{ size:A4 portrait; margin:0; }
   @media print{
-    html,body{background:#fff;}
+    html,body{background:#fff;margin:0;padding:0;}
     body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
     .wizard, .modal-backdrop{display:none !important;}
-    #previewArea{padding:0;background:#fff;}
-    .page{margin:0;box-shadow:none;width:210mm;min-height:297mm;height:auto;}
+    #previewArea{padding:0;margin:0;background:#fff;}
+    .page{
+      margin:0 !important;box-shadow:none;border-radius:0;
+      width:210mm;height:297mm;min-height:297mm;max-height:297mm;
+      overflow:hidden;page-break-after:always;break-after:page;break-inside:avoid;
+    }
+    .page:last-child{page-break-after:auto;break-after:auto;}
   }
 
   .datepicker-plot-area{font-family:'Vazirmatn',sans-serif !important;}
@@ -794,54 +799,8 @@
     <div class="wizard-body" id="wizardBody">
 
       <!-- Step 0: Platform settings (persistent) -->
+<!-- Step 0: Patient info -->
       <div class="step active" data-step="0">
-        <h2>اطلاعات اصلی پلتفرم</h2>
-        <p class="hint">این اطلاعات ثابت است و برای همیشه در مرورگر شما ذخیره می‌شود. تا زمانی که خودتان ادیت نکنید تغییر نمی‌کند.</p>
-        <div class="grid">
-          <div class="field"><label>نام رژیم درمانگر</label><input id="p_clinician" placeholder="مثال: فاطمه حیدری"/></div>
-          <div class="field"><label>شماره نظام پزشکی</label><input id="p_lic" placeholder="۱۱۴۴۲"/></div>
-          <div class="field full"><label>اسم مجموعه</label><input id="p_brand" placeholder="مثال: استودیو ورزشی آواتار"/></div>
-          <div class="field full"><label>آدرس</label><input id="p_addr" placeholder="سلمانشهر، خیابان باهنر، مجموعه ورزشی اوتار"/></div>
-          <div class="field"><label>شماره تماس</label><input id="p_phone" dir="ltr" placeholder="09306968649"/></div>
-        </div>
-
-        <div class="panel">
-          <h3><span class="material-symbols-outlined">image</span> لوگو</h3>
-          <div class="logo-row">
-            <div class="logo-preview" id="logoPreview"><span id="logoLetter">A</span></div>
-            <div style="display:flex;flex-direction:column;gap:6px;">
-              <input type="file" id="p_logo_file" accept="image/*" style="font-size:12px;"/>
-              <div style="display:flex;gap:6px;">
-                <button class="btn btn-danger btn-sm" onclick="clearLogo()"><span class="material-symbols-outlined">delete</span> حذف لوگو</button>
-                <span style="font-size:11px;color:var(--muted);align-self:center;">اگر خالی باشد، از حالت پیش‌فرض استفاده می‌شود.</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="panel">
-          <h3><span class="material-symbols-outlined">restaurant</span> تصاویر وعده‌ها (اختیاری)</h3>
-          <p style="font-size:11.5px;color:var(--muted);margin:0 0 10px;">در صورت آپلود، از تصویر شما استفاده می‌شود؛ در غیر این صورت تصویر پیش‌فرض نمایش داده می‌شود.</p>
-          <div class="meal-imgs-grid" id="mealImgsGrid"></div>
-        </div>
-
-        <div class="panel">
-          <h3><span class="material-symbols-outlined">palette</span> تنظیمات رنگ صفحه</h3>
-          <div class="colors-row">
-            <div class="color-item"><input type="color" id="c_accent" value="#6f8b7a"/><span>اصلی</span></div>
-            <div class="color-item"><input type="color" id="c_accent2" value="#8aa89a"/><span>مکمل</span></div>
-            <div class="color-item"><input type="color" id="c_gold" value="#b08a4a"/><span>طلایی</span></div>
-            <div class="color-item"><input type="color" id="c_ink" value="#1f2a2e"/><span>متن</span></div>
-            <div class="color-item"><input type="color" id="c_bg" value="#fafaf7"/><span>پس‌زمینه</span></div>
-            <div class="color-item" style="justify-content:flex-end;">
-              <button class="btn btn-ghost btn-sm" onclick="resetColors()"><span class="material-symbols-outlined">restart_alt</span> بازگردانی</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 1: Client Info -->
-      <div class="step" data-step="1">
         <h2>اطلاعات فردی مراجع</h2>
         <p class="hint">مشخصات مراجع و هدف رژیم را وارد کنید؛ در مرحله بعد روش نوشتن رژیم را انتخاب می‌کنید.</p>
         <div class="grid">
@@ -866,7 +825,7 @@
 
       <!-- Step 2: Custom cover page (صفحه اول رژیم) -->
       <!-- Step 2: روش نوشتن رژیم -->
-      <div class="step" data-step="2">
+      <div class="step" data-step="1">
         <h2>روش نوشتن رژیم</h2>
         <p class="hint">یکی از سه روش را انتخاب کنید؛ در هر لحظه می‌توانید روش را عوض کنید.</p>
         <div class="choice-grid" id="modeChoices" style="max-width:560px;">
@@ -890,7 +849,7 @@
         <div class="panel" id="modePanelManual" hidden>
           <h3><span class="material-symbols-outlined">edit_note</span> نوشتن دستی</h3>
           <p style="font-size:12px;color:var(--muted);margin:0 0 12px;">وعده‌ها را مرحله‌به‌مرحله خودتان پر می‌کنید؛ می‌توانید بین مراحل آزاد جابه‌جا شوید و هر وعده را با سوییچ بالای مرحله، فعال/غیرفعال کنید.</p>
-          <button class="btn btn-primary" onclick="showStep(3)"><span class="material-symbols-outlined">chevron_left</span> شروع نوشتن از صبحانه</button>
+          <button class="btn btn-primary" onclick="showStep(2)"><span class="material-symbols-outlined">chevron_left</span> شروع نوشتن از صبحانه</button>
         </div>
 
         <div class="panel" id="modePanelAi" hidden>
@@ -922,7 +881,125 @@
       </div>
 
       <!-- Step 11: صفحه اول (cover) — جابجاشده -->
-      <div class="step" data-step="11">
+
+      <div class="step" data-step="2">
+        <div class="meal-head">
+          <h2>صبحانه</h2>
+          <label class="meal-switch" title="نمایش این وعده در خروجی">
+            <input type="checkbox" data-meal-step-switch="breakfast"/>
+            <span class="ms-track"></span>
+            <span class="ms-txt">در خروجی</span>
+          </label>
+        </div>
+        <p class="hint">برای هر گزینه چند «چیپس غذایی» بنویسید و Enter بزنید.</p>
+        <div class="field full" style="margin-bottom:12px;">
+          <label>یادداشت ناشتا (اختیاری)</label>
+          <textarea id="f_fasting" placeholder="مثال: ۱ شات زردچوبه + فلفل سیاه + لیموترش ..."></textarea>
+        </div>
+        <div id="breakfast_options"></div>
+        <button class="add-more" onclick="addOption('breakfast_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
+      </div>
+
+      <!-- Step 4: Morning snack -->
+      <div class="step" data-step="3">
+        <div class="meal-head">
+          <h2>میان‌وعده صبح</h2>
+          <label class="meal-switch" title="نمایش این وعده در خروجی">
+            <input type="checkbox" data-meal-step-switch="morning"/>
+            <span class="ms-track"></span>
+            <span class="ms-txt">در خروجی</span>
+          </label>
+        </div>
+        <p class="hint">گزینه‌های میان‌وعده صبح.</p>
+        <div id="morning_options"></div>
+        <button class="add-more" onclick="addOption('morning_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
+      </div>
+
+      <!-- Step 5: Lunch -->
+      <div class="step" data-step="4">
+        <div class="meal-head">
+          <h2>ناهار</h2>
+          <label class="meal-switch" title="نمایش این وعده در خروجی">
+            <input type="checkbox" data-meal-step-switch="lunch"/>
+            <span class="ms-track"></span>
+            <span class="ms-txt">در خروجی</span>
+          </label>
+        </div>
+        <p class="hint">گزینه‌های ناهار.</p>
+        <div id="lunch_options"></div>
+        <button class="add-more" onclick="addOption('lunch_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
+      </div>
+
+      <!-- Step 6: Afternoon snack -->
+      <div class="step" data-step="5">
+        <div class="meal-head">
+          <h2>میان‌وعده عصر</h2>
+          <label class="meal-switch" title="نمایش این وعده در خروجی">
+            <input type="checkbox" data-meal-step-switch="afternoon"/>
+            <span class="ms-track"></span>
+            <span class="ms-txt">در خروجی</span>
+          </label>
+        </div>
+        <p class="hint">گزینه‌های میان‌وعده عصر.</p>
+        <div id="afternoon_options"></div>
+        <button class="add-more" onclick="addOption('afternoon_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
+      </div>
+
+      <!-- Step 7: Dinner -->
+      <div class="step" data-step="6">
+        <div class="meal-head">
+          <h2>شام</h2>
+          <label class="meal-switch" title="نمایش این وعده در خروجی">
+            <input type="checkbox" data-meal-step-switch="dinner"/>
+            <span class="ms-track"></span>
+            <span class="ms-txt">در خروجی</span>
+          </label>
+        </div>
+        <p class="hint">گزینه‌های شام.</p>
+        <div id="dinner_options"></div>
+        <button class="add-more" onclick="addOption('dinner_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
+      </div>
+
+      <!-- Step 8: Late night -->
+      <div class="step" data-step="7">
+        <div class="meal-head">
+          <h2>وعده آخر شب</h2>
+          <label class="meal-switch" title="نمایش این وعده در خروجی">
+            <input type="checkbox" data-meal-step-switch="latenight"/>
+            <span class="ms-track"></span>
+            <span class="ms-txt">در خروجی</span>
+          </label>
+        </div>
+        <p class="hint">گزینه‌های میل قبل از خواب.</p>
+        <div id="latenight_options"></div>
+        <button class="add-more" onclick="addOption('latenight_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
+      </div>
+
+      <!-- Step 9: Supplements -->
+      <div class="step" data-step="8">
+        <div class="meal-head">
+          <h2>مکمل‌های مورد نیاز</h2>
+          <label class="meal-switch" title="نمایش این وعده در خروجی">
+            <input type="checkbox" data-meal-step-switch="supplements"/>
+            <span class="ms-track"></span>
+            <span class="ms-txt">در خروجی</span>
+          </label>
+        </div>
+        <p class="hint">هر مکمل را در یک ردیف وارد کنید.</p>
+        <div id="supplements_container"></div>
+        <button class="add-more" onclick="addSupplement()"><span class="material-symbols-outlined">add</span> افزودن مکمل</button>
+      </div>
+
+      <!-- Step 10: Notes -->
+      <div class="step" data-step="9">
+        <h2>توضیحات و نکات</h2>
+        <p class="hint">نکات نوع «هشدار» با رنگ متفاوت نمایش داده می‌شوند.</p>
+        <div id="notes_container"></div>
+        <button class="add-more" onclick="addNote()"><span class="material-symbols-outlined">add</span> افزودن نکته</button>
+      </div>
+
+      <!-- Step 11: Export -->
+            <div class="step" data-step="10">
         <h2>صفحه اول رژیم</h2>
         <p class="hint">صفحه‌ی اول برنامه را خودتان بسازید: متن و عکس دلخواه اضافه کنید، کارت‌های آماده را بگذارید و همه را با درگ‌اند‌دراپ جابجا کنید.</p>
         <label class="cover-toggle">
@@ -968,83 +1045,7 @@
         </div>
       </div>
 
-      <!-- Step 3: Breakfast -->
-      <div class="step" data-step="3">
-        <h2>صبحانه</h2>
-        <label class="meal-step-switch"><input type="checkbox" data-meal-step-switch="breakfast"/><span>این وعده در خروجی باشد</span></label>
-        <p class="hint">برای هر گزینه چند «چیپس غذایی» بنویسید و Enter بزنید.</p>
-        <div class="field full" style="margin-bottom:12px;">
-          <label>یادداشت ناشتا (اختیاری)</label>
-          <textarea id="f_fasting" placeholder="مثال: ۱ شات زردچوبه + فلفل سیاه + لیموترش ..."></textarea>
-        </div>
-        <div id="breakfast_options"></div>
-        <button class="add-more" onclick="addOption('breakfast_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
-      </div>
-
-      <!-- Step 4: Morning snack -->
-      <div class="step" data-step="4">
-        <h2>میان‌وعده صبح</h2>
-        <label class="meal-step-switch"><input type="checkbox" data-meal-step-switch="morning"/><span>این وعده در خروجی باشد</span></label>
-        <p class="hint">گزینه‌های میان‌وعده صبح.</p>
-        <div id="morning_options"></div>
-        <button class="add-more" onclick="addOption('morning_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
-      </div>
-
-      <!-- Step 5: Lunch -->
-      <div class="step" data-step="5">
-        <h2>ناهار</h2>
-        <label class="meal-step-switch"><input type="checkbox" data-meal-step-switch="lunch"/><span>این وعده در خروجی باشد</span></label>
-        <p class="hint">گزینه‌های ناهار.</p>
-        <div id="lunch_options"></div>
-        <button class="add-more" onclick="addOption('lunch_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
-      </div>
-
-      <!-- Step 6: Afternoon snack -->
-      <div class="step" data-step="6">
-        <h2>میان‌وعده عصر</h2>
-        <label class="meal-step-switch"><input type="checkbox" data-meal-step-switch="afternoon"/><span>این وعده در خروجی باشد</span></label>
-        <p class="hint">گزینه‌های میان‌وعده عصر.</p>
-        <div id="afternoon_options"></div>
-        <button class="add-more" onclick="addOption('afternoon_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
-      </div>
-
-      <!-- Step 7: Dinner -->
-      <div class="step" data-step="7">
-        <h2>شام</h2>
-        <label class="meal-step-switch"><input type="checkbox" data-meal-step-switch="dinner"/><span>این وعده در خروجی باشد</span></label>
-        <p class="hint">گزینه‌های شام.</p>
-        <div id="dinner_options"></div>
-        <button class="add-more" onclick="addOption('dinner_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
-      </div>
-
-      <!-- Step 8: Late night -->
-      <div class="step" data-step="8">
-        <h2>وعده آخر شب</h2>
-        <label class="meal-step-switch"><input type="checkbox" data-meal-step-switch="latenight"/><span>این وعده در خروجی باشد</span></label>
-        <p class="hint">گزینه‌های میل قبل از خواب.</p>
-        <div id="latenight_options"></div>
-        <button class="add-more" onclick="addOption('latenight_options')"><span class="material-symbols-outlined">add</span> افزودن گزینه جدید</button>
-      </div>
-
-      <!-- Step 9: Supplements -->
-      <div class="step" data-step="9">
-        <h2>مکمل‌های مورد نیاز</h2>
-        <label class="meal-step-switch"><input type="checkbox" data-meal-step-switch="supplements"/><span>این بخش در خروجی باشد</span></label>
-        <p class="hint">هر مکمل را در یک ردیف وارد کنید.</p>
-        <div id="supplements_container"></div>
-        <button class="add-more" onclick="addSupplement()"><span class="material-symbols-outlined">add</span> افزودن مکمل</button>
-      </div>
-
-      <!-- Step 10: Notes -->
-      <div class="step" data-step="10">
-        <h2>توضیحات و نکات</h2>
-        <p class="hint">نکات نوع «هشدار» با رنگ متفاوت نمایش داده می‌شوند.</p>
-        <div id="notes_container"></div>
-        <button class="add-more" onclick="addNote()"><span class="material-symbols-outlined">add</span> افزودن نکته</button>
-      </div>
-
-      <!-- Step 11: Export -->
-      <div class="step" data-step="12">
+<div class="step" data-step="11">
         <h2>خروجی گرفتن</h2>
         <p class="hint">اول قالب ظاهری برنامه را انتخاب کنید، بعد خروجی بگیرید.</p>
         <div class="q-label"><span class="material-symbols-outlined">wallpaper</span> قالب ظاهری برنامه</div>
@@ -1131,7 +1132,7 @@
    Constants / State
 ============================================================ */
 const STEP_LABELS = [
-  "پلتفرم و پزشک","مراجع","روش نوشتن","صبحانه","میان‌وعده صبح","ناهار","میان‌وعده عصر","شام","آخر شب","مکمل‌ها","توضیحات","صفحه اول","خروجی"
+  "مراجع","روش نوشتن","صبحانه","میان‌وعده صبح","ناهار","میان‌وعده عصر","شام","آخر شب","مکمل‌ها","توضیحات","صفحه اول","خروجی"
 ];
 const totalSteps = STEP_LABELS.length;
 let currentStep = 0;
@@ -1241,6 +1242,9 @@ const PS = (() => {
   return {
     platform: p.platform || {},
     meals: p.meals || {},
+    logo: p.logo || '',
+    mealImages: p.mealImages || {},
+    colors: p.colors || {},
     masterPrompt: p.masterPrompt || '',
     customTemplates: Array.isArray(p.customTemplates) ? p.customTemplates : [],
     ai: p.ai || {}
@@ -1259,8 +1263,17 @@ const PS = (() => {
     .meal-toggle-row span.lbl{font-size:13px;font-weight:700;}
     .word-drop{border:2px dashed rgba(30,111,184,.5);border-radius:14px;padding:16px;text-align:center;background:rgba(30,111,184,.05);cursor:pointer;}
     .word-drop.drag{background:rgba(30,111,184,.12);}
-    .meal-step-switch{display:inline-flex;align-items:center;gap:8px;margin:2px 0 14px;padding:7px 14px;border:1px solid rgba(0,0,0,.12);border-radius:999px;background:rgba(255,255,255,.6);cursor:pointer;font-size:12px;font-weight:700;}
-    .meal-step-switch input{width:17px;height:17px;accent-color:var(--accent,#2e7d32);cursor:pointer;}
+    .meal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+    .meal-head h2{margin:0;}
+    .meal-switch{display:inline-flex;align-items:center;gap:8px;cursor:pointer;user-select:none;}
+    .meal-switch input{position:absolute;opacity:0;width:0;height:0;}
+    .ms-track{width:46px;height:25px;border-radius:999px;background:rgba(0,0,0,.22);position:relative;transition:background .2s;flex:0 0 auto;}
+    .ms-track::after{content:'';position:absolute;top:3px;inset-inline-start:3px;width:19px;height:19px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.35);transition:transform .2s;}
+    .meal-switch input:checked + .ms-track{background:var(--accent,#2e7d32);}
+    .meal-switch input:checked + .ms-track::after{transform:translateX(-21px);}
+    .ms-txt{font-size:12px;font-weight:700;color:var(--muted,#666);}
+    .chip .txt{cursor:text;}
+    .chip .chip-edit{border:0;background:transparent;font:inherit;color:inherit;outline:1.5px dashed var(--accent,#2e7d32);border-radius:6px;padding:1px 6px;min-width:110px;max-width:320px;direction:rtl;text-align:right;}
     .mode-card{border:1px solid rgba(0,0,0,.08);}
   `;
   document.head.appendChild(st);
@@ -1269,7 +1282,7 @@ const LS_MEALS = 'dw_meals_v1';
 const LS_TPL_CUSTOM_SYNC = 'dw_tpl_sync_v1';
 const MEAL_SWITCHES = ['fasting','breakfast','morning','lunch','afternoon','dinner','latenight','supplements'];
 const MEAL_FA_LABELS = { fasting:'ناشتا', breakfast:'صبحانه', morning:'میان‌وعده صبح', lunch:'ناهار', afternoon:'میان‌وعده عصر', dinner:'شام', latenight:'وعده آخر شب', supplements:'مکمل‌ها' };
-const MEAL_STEP_INDEX = { breakfast:3, morning:4, lunch:5, afternoon:6, dinner:7, latenight:8, supplements:9 };
+const MEAL_STEP_INDEX = { breakfast:2, morning:3, lunch:4, afternoon:5, dinner:6, latenight:7, supplements:8 };
 function getStoredMeals(){ try{ return JSON.parse(localStorage.getItem(LS_MEALS)||'{}')||{}; }catch(e){ return {}; } }
 function getMealEnabled(k){ const st=getStoredMeals(); if(st[k]!==undefined) return !!st[k]; return PS.meals[k]!==false; }
 function getEnabledMeals(){ return MEAL_SWITCHES.filter(k=>getMealEnabled(k)); }
@@ -1367,9 +1380,42 @@ function addChipTo(block, text){
   const chips = block.querySelector('.chips');
   const chip = document.createElement('span');
   chip.className='chip';
-  chip.innerHTML = `<span class="txt"></span><span class="rm" title="حذف"><span class="material-symbols-outlined">close</span></span>`;
-  chip.querySelector('.txt').textContent = text;
-  chip.querySelector('.rm').onclick = ()=>{chip.remove();scheduleSave();};
+  const txt = document.createElement('span');
+  txt.className='txt';
+  txt.textContent = text;
+  txt.title = 'برای ویرایش کلیک کنید';
+  txt.style.cursor = 'text';
+  txt.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    if(txt.querySelector('input')) return;
+    const cur = txt.textContent;
+    txt.textContent = '';
+    const inp = document.createElement('input');
+    inp.className='chip-edit';
+    inp.value = cur;
+    txt.appendChild(inp);
+    inp.focus();
+    inp.select();
+    let done = false;
+    const finish = (save)=>{
+      if(done) return; done = true;
+      const nv = inp.value.trim();
+      txt.textContent = (save && nv) ? nv : cur;
+      scheduleSave();
+    };
+    inp.addEventListener('keydown', (ev)=>{
+      if(ev.key==='Enter'){ ev.preventDefault(); inp.blur(); }
+      else if(ev.key==='Escape'){ inp.value = cur; finish(false); }
+    });
+    inp.addEventListener('blur', ()=>finish(true));
+  });
+  const rm = document.createElement('span');
+  rm.className='rm';
+  rm.title='حذف';
+  rm.innerHTML = `<span class="material-symbols-outlined">close</span>`;
+  rm.onclick = ()=>{chip.remove();scheduleSave();};
+  chip.appendChild(txt);
+  chip.appendChild(rm);
   chips.appendChild(chip);
 }
 function chipAdd(el){
@@ -1455,13 +1501,13 @@ function collectNotes(){
 }
 function collectData(){
   return {
-    clinician: v('p_clinician')||'—',
-    lic: v('p_lic')||'',
-    brand: v('p_brand')||'',
-    addr: v('p_addr')||'',
-    phone: v('p_phone')||'',
-    instagram: DOCTOR_INSTAGRAM,
-    logo: localStorage.getItem(LS_LOGO)||'',
+    clinician: PS.platform.clinician || '—',
+    lic: PS.platform.lic || '',
+    brand: PS.platform.brand || '',
+    addr: PS.platform.addr || '',
+    phone: PS.platform.phone || '',
+    instagram: PS.platform.instagram || DOCTOR_INSTAGRAM,
+    logo: PS.logo || PS.platform.logo || '',
     name: v('f_name')||'—',
     date: v('f_date')||todayJalali(),
     age: v('f_age')||'—',
@@ -1551,6 +1597,7 @@ const MEAL_LABELS = {
 };
 function getMealImg(key){
   try {
+    if(PS.mealImages && PS.mealImages[key]) return PS.mealImages[key];
     return localStorage.getItem(LS_MEAL_IMG_PREFIX + key) || MEAL_IMAGE_DEFAULTS[key] || '';
   } catch(e){
     return MEAL_IMAGE_DEFAULTS[key] || '';
@@ -1862,68 +1909,12 @@ ${pages}
 /* ============================================================
    Platform settings (persistent, no expiry)
 ============================================================ */
-function savePlatform(){
-  const data = {
-    clinician:v('p_clinician'), lic:v('p_lic'),
-    brand:v('p_brand'), addr:v('p_addr'),
-    phone:v('p_phone')
-  };
-  localStorage.setItem(LS_PLATFORM, JSON.stringify(data));
-  updateLogoLetter();
-}
-function loadPlatform(){
-  let d;
-  try{
-    const raw = localStorage.getItem(LS_PLATFORM);
-    d = raw ? JSON.parse(raw) : null;
-  }catch(e){ d = null; }
-  if(!d){
-    // First run: seed defaults and persist them
-    d = { ...DEFAULT_PLATFORM };
-  }
-  // مقادیر پنل مدیریت به‌عنوان پیش‌فرض؛ اگر دکتر در پلتفرم چیزی نوشته باشد همان می‌ماند
-  Object.keys(PS.platform).forEach(k=>{ if(d[k]===undefined || d[k]===null || d[k]==='') d[k] = PS.platform[k]; });
-  localStorage.setItem(LS_PLATFORM, JSON.stringify(d));
-  const set = (id,val)=>{ const el=document.getElementById(id); if(el && val!=null) el.value = val; };
-  set('p_clinician', d.clinician);
-  set('p_lic', d.lic);
-  set('p_brand', d.brand);
-  set('p_addr', d.addr);
-  set('p_phone', d.phone);
-}
+function savePlatform(){ /* اطلاعات از پنل مدیریت می‌آید */ }
+function updateLogoLetter(){ /* لوگو از پنل مدیریت */ }
+function loadPlatform(){ /* اطلاعات پلتفرم و پزشک از پنل مدیریت تزریق می‌شود */ }
 
-/* Logo */
-function updateLogoLetter(){
-  const brand = v('p_brand')||v('p_clinician')||'D';
-  const el = document.getElementById('logoLetter');
-  if(el) el.textContent = brand.trim().charAt(0)||'D';
-}
-function applyLogoPreview(){
-  const preview = document.getElementById('logoPreview');
-  const data = localStorage.getItem(LS_LOGO);
-  if(data){
-    preview.innerHTML = `<img src="${data}" alt="لوگو"/>`;
-  } else {
-    preview.innerHTML = `<span id="logoLetter">${(v('p_brand')||v('p_clinician')||'D').trim().charAt(0)||'D'}</span>`;
-  }
-}
-function clearLogo(){
-  localStorage.removeItem(LS_LOGO);
-  document.getElementById('p_logo_file').value='';
-  applyLogoPreview();
-}
-document.addEventListener('change', function(e){
-  if(e.target && e.target.id==='p_logo_file'){
-    const f = e.target.files && e.target.files[0];
-    if(!f) return;
-    const reader = new FileReader();
-    reader.onload = ()=>{
-      localStorage.setItem(LS_LOGO, reader.result);
-      applyLogoPreview();
-    };
-    reader.readAsDataURL(f);
-  }
-});
+/* Logo — از پنل مدیریت */
+function clearLogo(){ /* لوگو از پنل مدیریت */ }
 
 /* Colors */
 function applyColors(c){
@@ -1950,29 +1941,10 @@ function readColorInputs(){
     bg: v('c_bg')
   };
 }
-function saveColors(){
-  const c = readColorInputs();
-  localStorage.setItem(LS_COLORS, JSON.stringify(c));
-  applyColors(c);
-}
+function saveColors(){ /* رنگ‌ها از پنل مدیریت / قالب‌ها */ }
 function loadColors(){
-  try{
-    const raw = localStorage.getItem(LS_COLORS);
-    const c = raw?JSON.parse(raw):DEFAULT_COLORS;
-    document.getElementById('c_accent').value  = c.accent;
-    document.getElementById('c_accent2').value = c.accent2;
-    document.getElementById('c_gold').value    = c.gold;
-    document.getElementById('c_ink').value     = c.ink;
-    document.getElementById('c_bg').value      = c.bg;
-    applyColors(c);
-  }catch(e){ applyColors(DEFAULT_COLORS); }
-}
-function resetColors(){
-  Object.entries(DEFAULT_COLORS).forEach(([k,val])=>{
-    const map = {accent:'c_accent',accent2:'c_accent2',gold:'c_gold',ink:'c_ink',bg:'c_bg'};
-    document.getElementById(map[k]).value = val;
-  });
-  saveColors();
+  const c = (PS.colors && PS.colors.accent) ? PS.colors : DEFAULT_COLORS;
+  applyColors(c);
 }
 
 /* ============================================================
@@ -2136,14 +2108,7 @@ function resetForm(){
 /* ============================================================
    Init
 ============================================================ */
-function bindPlatformInputs(){
-  ['p_clinician','p_lic','p_brand','p_addr','p_phone'].forEach(id=>{
-    document.getElementById(id).addEventListener('input', ()=>{ savePlatform(); applyLogoPreview(); });
-  });
-  ['c_accent','c_accent2','c_gold','c_ink','c_bg'].forEach(id=>{
-    document.getElementById(id).addEventListener('input', saveColors);
-  });
-}
+function bindPlatformInputs(){ /* تنظیمات از پنل مدیریت */ }
 function bindClientInputs(){
   ['f_name','f_date','f_age','f_height','f_weight','f_goal','f_disease','f_other','f_fasting']
     .forEach(id=>{
@@ -2192,21 +2157,9 @@ function maybeHideLoading(){
 /* ============================================================
    Meal images (per-section uploads)
 ============================================================ */
-function renderMealImagesUI(){
-  const grid = document.getElementById('mealImgsGrid');
-  if(!grid) return;
-  grid.innerHTML = MEAL_KEYS.map(k=>`
-    <div class="meal-img-item" data-key="${k}">
-      <div class="meal-img-thumb"><img src="${getMealImg(k)}" alt=""/></div>
-      <div class="col">
-        <span class="nm">${MEAL_LABELS[k]}</span>
-        <input type="file" accept="image/*" class="meal-img-file" data-key="${k}"/>
-        <div class="row">
-          <button class="btn btn-ghost btn-sm" onclick="clearMealImg('${k}')"><span class="material-symbols-outlined">restart_alt</span> پیش‌فرض</button>
-        </div>
-      </div>
-    </div>`).join('');
-}
+function renderMealImagesUI(){ /* تصاویر وعده‌ها از پنل مدیریت */ }
+function refreshMealThumb(k){ /* تصاویر وعده‌ها از پنل مدیریت */ }
+function clearMealImg(k){ /* تصاویر وعده‌ها از پنل مدیریت */ }
 function refreshMealThumb(k){
   const item = document.querySelector(`.meal-img-item[data-key="${k}"] .meal-img-thumb img`);
   if(item) item.src = getMealImg(k);
@@ -2702,7 +2655,7 @@ async function importWord(){
     if(!data.ok) throw new Error(data.error || 'خطای ناشناخته');
     populateWordPlan(data.plan || {});
     st.className='gen-status ok'; st.textContent='داده‌ها با موفقیت وارد شد ✓ حالا مرحله‌به‌مرحله بازبینی کنید.';
-    showStep(3);
+    showStep(2);
   }catch(err){
     st.className='gen-status err'; st.textContent='خطا: ' + (err && err.message ? err.message : 'نامشخص');
   }finally{
@@ -2712,15 +2665,11 @@ async function importWord(){
 
 function init(){
   loadColors();
-  loadPlatform();
   loadAI();
   loadTemplate();
-  applyLogoPreview();
-  renderMealImagesUI();
   loadCustomTemplates();
   renderTplRow();
   applyMealVisibility();
-  bindPlatformInputs();
   bindClientInputs();
   bindAIInputs();
   bindProviderChoices();
@@ -3086,7 +3035,7 @@ async function generateWithAI(){
     populateFromAI(plan);
     setGenStatus('ok','رژیم ساخته شد! حالا مرحله‌به‌مرحله بازبینی کنید و هر آیتم را که خواستید تغییر دهید.');
     saveForm();
-    showStep(3); // شروع بازبینی از صبحانه
+    showStep(2); // شروع بازبینی از صبحانه
   }catch(err){
     console.error(err);
     setGenStatus('err','خطا در ساخت رژیم: '+(err && err.message ? err.message : 'نامشخص'));
@@ -3199,13 +3148,7 @@ function applyTemplate(key, silent){
   CURRENT_TEMPLATE = key;
   localStorage.setItem(LS_TEMPLATE, key);
   document.body.dataset.template = key;
-  const c = TEMPLATES[key].colors;
-  document.getElementById('c_accent').value=c.accent;
-  document.getElementById('c_accent2').value=c.accent2;
-  document.getElementById('c_gold').value=c.gold;
-  document.getElementById('c_ink').value=c.ink;
-  document.getElementById('c_bg').value=c.bg;
-  saveColors();
+  applyColors(TEMPLATES[key].colors);
   renderTplRow();
   if(!silent && currentStep===totalSteps-1) renderPreview('previewArea');
 }

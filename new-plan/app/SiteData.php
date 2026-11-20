@@ -182,6 +182,9 @@ PROMPT;
                     'latenight' => true,
                     'supplements' => true,
                 ],
+                'logo' => '',
+                'mealImages' => [],
+                'colors' => [],
                 'customTemplates' => [],
             ],
             'slogans' => [

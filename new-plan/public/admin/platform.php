@@ -61,6 +61,88 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         flash_set('ok', 'پیش‌فرض وعده‌ها ذخیره شد.');
         redirect('platform.php');
     }
+    if ($action === 'logo') {
+        try {
+            if (!empty($_FILES['logo_file']['name'])) {
+                $path = Uploader::store($_FILES['logo_file'], 'image');
+                if (!empty($platform['logo']) && str_starts_with($platform['logo'], 'uploads/')) {
+                    Uploader::delete($platform['logo']);
+                }
+                $platform['logo'] = $path;
+                SiteData::putGroup('platform', $platform);
+                flash_set('ok', 'لوگو ذخیره شد.');
+            } else {
+                flash_set('err', 'فایلی انتخاب نشده است.');
+            }
+        } catch (RuntimeException $e) {
+            flash_set('err', $e->getMessage());
+        }
+        redirect('platform.php');
+    }
+
+    if ($action === 'logo_reset') {
+        if (!empty($platform['logo']) && str_starts_with($platform['logo'], 'uploads/')) {
+            Uploader::delete($platform['logo']);
+        }
+        $platform['logo'] = '';
+        SiteData::putGroup('platform', $platform);
+        flash_set('ok', 'لوگو حذف شد؛ حرف اول نام مجموعه استفاده می‌شود.');
+        redirect('platform.php');
+    }
+
+    if ($action === 'mealimg') {
+        $key = preg_replace('/[^a-z]/', '', (string) ($_POST['mkey'] ?? ''));
+        $allowedKeys = ['breakfast', 'morning', 'lunch', 'afternoon', 'dinner', 'latenight', 'supplement'];
+        if (!in_array($key, $allowedKeys, true)) {
+            flash_set('err', 'کلید وعده نامعتبر است.');
+            redirect('platform.php');
+        }
+        try {
+            if (!empty($_FILES['mimg']['name'])) {
+                $path = Uploader::store($_FILES['mimg'], 'image');
+                $old = $platform['mealImages'][$key] ?? '';
+                if ($old && str_starts_with($old, 'uploads/')) {
+                    Uploader::delete($old);
+                }
+                $platform['mealImages'][$key] = $path;
+                SiteData::putGroup('platform', $platform);
+                flash_set('ok', 'تصویر وعده ذخیره شد.');
+            } else {
+                flash_set('err', 'فایلی انتخاب نشده است.');
+            }
+        } catch (RuntimeException $e) {
+            flash_set('err', $e->getMessage());
+        }
+        redirect('platform.php');
+    }
+
+    if ($action === 'mealimg_reset') {
+        $key = preg_replace('/[^a-z]/', '', (string) ($_POST['mkey'] ?? ''));
+        $allowedKeys = ['breakfast', 'morning', 'lunch', 'afternoon', 'dinner', 'latenight', 'supplement'];
+        if (in_array($key, $allowedKeys, true)) {
+            $old = $platform['mealImages'][$key] ?? '';
+            if ($old && str_starts_with($old, 'uploads/')) {
+                Uploader::delete($old);
+            }
+            unset($platform['mealImages'][$key]);
+            SiteData::putGroup('platform', $platform);
+            flash_set('ok', 'تصویر به پیش‌فرض برگشت.');
+        }
+        redirect('platform.php');
+    }
+
+    if ($action === 'colors') {
+        $colors = [];
+        foreach (['accent', 'accent2', 'gold', 'ink', 'bg'] as $c) {
+            $v = (string) ($_POST['col_' . $c] ?? '');
+            $colors[$c] = preg_match('/^#[0-9a-fA-F]{6}$/', $v) ? strtolower($v) : '#6f8b7a';
+        }
+        $platform['colors'] = $colors;
+        SiteData::putGroup('platform', $platform);
+        flash_set('ok', 'رنگ‌های پیش‌فرض پلتفرم ذخیره شد.');
+        redirect('platform.php');
+    }
+
     if ($action === 'tpl_add') {
         $key = 'custom_' . time();
         $colors = [];
@@ -106,6 +188,82 @@ $mealLabels = [
     'latenight' => 'وعده آخر شب',
     'supplements' => 'مکمل‌ها',
 ];
+$mealImgKeys = [
+    'breakfast' => 'صبحانه', 'morning' => 'میان‌وعده صبح', 'lunch' => 'ناهار',
+    'afternoon' => 'میان‌وعده عصر', 'dinner' => 'شام', 'latenight' => 'وعده آخر شب',
+    'supplement' => 'مکمل‌ها',
+];
+$colors = (array) ($platform['colors'] ?? []);
+$logoHref = !empty($platform['logo']) ? '../' . $platform['logo'] : '';
+?>
+<div class="card">
+  <div class="card-head"><span class="material-symbols-rounded icon-lead">image</span><h2>لوگوی سربرگ رژیم</h2></div>
+  <p class="card-note">در سربرگ برنامه غذایی خروجی نمایش داده می‌شود. اگر خالی باشد، حرف اول نام مجموعه استفاده می‌شود.</p>
+  <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+    <?php if ($logoHref): ?>
+    <img src="<?= e($logoHref) ?>" alt="لوگو" style="width:72px;height:72px;object-fit:contain;border-radius:14px;border:1px solid var(--border);background:#fff;padding:6px">
+    <?php else: ?>
+    <span style="width:72px;height:72px;display:grid;place-items:center;border:1px dashed var(--border);border-radius:14px;font-size:22px;font-weight:800;color:var(--muted)"><?= e(mb_substr($platform['brand'] ?: $platform['clinician'] ?: 'D', 0, 1)) ?></span>
+    <?php endif; ?>
+    <form method="post" enctype="multipart/form-data" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <?= Csrf::field() ?>
+      <input type="hidden" name="action" value="logo">
+      <input class="input" type="file" name="logo_file" accept="image/*" style="max-width:260px">
+      <button class="btn btn-primary btn-sm" type="submit"><span class="material-symbols-rounded" style="font-size:17px">upload</span>آپلود</button>
+    </form>
+    <?php if ($logoHref): ?>
+    <form method="post">
+      <?= Csrf::field() ?><input type="hidden" name="action" value="logo_reset">
+      <button class="btn btn-danger btn-sm" type="submit"><span class="material-symbols-rounded" style="font-size:17px">delete</span>حذف لوگو</button>
+    </form>
+    <?php endif; ?>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head"><span class="material-symbols-rounded icon-lead">restaurant</span><h2>تصاویر وعده‌ها</h2></div>
+  <p class="card-note">این تصاویر کنار عنوان هر وعده در خروجی چاپ می‌شوند. هر تصویر را آپلود کنید؛ بازنشانی به تصویر پیش‌فرض برمی‌گردد.</p>
+  <?php foreach ($mealImgKeys as $mkey => $mlabel): $mimg = $platform['mealImages'][$mkey] ?? ''; ?>
+  <div class="row-item" style="margin-bottom:10px;align-items:center">
+    <?php if ($mimg): ?><img class="thumb" src="../<?= e($mimg) ?>" alt=""><?php else: ?>
+    <span class="thumb" style="display:grid;place-items:center"><span class="material-symbols-rounded" style="color:var(--muted)">image</span></span>
+    <?php endif; ?>
+    <div class="row-body"><h3><?= e($mlabel) ?></h3><p><?= $mimg ? 'تصویر اختصاصی ✓' : 'پیش‌فرض پلتفرم' ?></p></div>
+    <form method="post" enctype="multipart/form-data" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <?= Csrf::field() ?>
+      <input type="hidden" name="action" value="mealimg">
+      <input type="hidden" name="mkey" value="<?= e($mkey) ?>">
+      <input class="input" type="file" name="mimg" accept="image/*" style="max-width:220px">
+      <button class="btn btn-ghost btn-sm" type="submit">آپلود</button>
+    </form>
+    <?php if ($mimg): ?>
+    <form method="post">
+      <?= Csrf::field() ?><input type="hidden" name="action" value="mealimg_reset"><input type="hidden" name="mkey" value="<?= e($mkey) ?>">
+      <button class="icon-btn" type="submit" aria-label="بازنشانی"><span class="material-symbols-rounded" style="font-size:19px">restart_alt</span></button>
+    </form>
+    <?php endif; ?>
+  </div>
+  <?php endforeach; ?>
+</div>
+
+<div class="card">
+  <div class="card-head"><span class="material-symbols-rounded icon-lead">palette</span><h2>رنگ‌های پیش‌فرض صفحه رژیم</h2></div>
+  <p class="card-note">پالت پایه پلتفرم؛ انتخاب قالب در مرحله خروجی، رنگ‌ها را نهایی می‌کند.</p>
+  <form method="post">
+    <?= Csrf::field() ?>
+    <input type="hidden" name="action" value="colors">
+    <div class="form-grid">
+      <div class="field" style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;grid-column:1/-1">
+        <?php foreach (['accent' => 'اصلی', 'accent2' => 'مکمل', 'gold' => 'طلایی', 'ink' => 'متن', 'bg' => 'پس‌زمینه'] as $c => $lbl): ?>
+        <label style="text-align:center;font-size:12px;color:var(--muted)"><?= e($lbl) ?><input type="color" name="col_<?= e($c) ?>" value="<?= e($colors[$c] ?? ['accent' => '#6f8b7a', 'accent2' => '#8aa89a', 'gold' => '#b08a4a', 'ink' => '#1f2a2e', 'bg' => '#fafaf7'][$c]) ?>" style="width:52px;height:36px;border:0;background:none;display:block;margin-top:4px"></label>
+        <?php endforeach; ?>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit"><span class="material-symbols-rounded">save</span>ذخیره رنگ‌ها</button>
+    </div>
+  </form>
+</div>
 $builtinTemplates = [
     ['classic', 'کلاسیک', '#6f8b7a'], ['teen', 'نوجوان', '#7c5cbf'], ['young', 'جوان', '#e8603c'],
     ['athlete', 'ورزشکار', '#c0392b'], ['home', 'خانه‌دار', '#c96f4a'], ['royal', 'سلطنتی', '#1f2a44'],

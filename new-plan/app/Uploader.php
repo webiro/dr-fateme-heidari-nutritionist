@@ -11,8 +11,8 @@ final class Uploader
     /** kind => [allowed extensions, allowed mime prefixes, max bytes] */
     private const RULES = [
         'image' => [
-            'ext'  => ['jpg', 'jpeg', 'png', 'webp', 'gif'],
-            'mime' => ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+            'ext'  => ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'],
+            'mime' => ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'],
             'max'  => 15 * 1024 * 1024, // 15 MB
         ],
         'video' => [
@@ -81,6 +81,15 @@ final class Uploader
             throw new RuntimeException('ذخیره فایل ناموفق بود.');
         }
         @chmod($target, 0644);
+
+        // SVGs are admin-uploaded but still get sanitized (they can carry inline JS)
+        if ($ext === 'svg') {
+            $svg = (string) @file_get_contents($target);
+            $svg = preg_replace('#<script[\s\S]*?</script>#i', '', (string) $svg);
+            $svg = preg_replace('#\son\w+\s*=\s*(["\'])[^"\']*\1#i', '', (string) $svg);
+            $svg = preg_replace('#javascript\s*:#i', '', (string) $svg);
+            @file_put_contents($target, (string) $svg);
+        }
 
         return 'uploads/' . $kind . '/' . $name;
     }

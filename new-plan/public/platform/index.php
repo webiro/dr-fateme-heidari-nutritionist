@@ -34,6 +34,9 @@ $settings = [
         'instagram' => (string) $platform['instagram'],
     ],
     'meals' => $platform['meals'],
+    'logo' => (string) ($platform['logo'] ?? ''),
+    'mealImages' => (array) ($platform['mealImages'] ?? []),
+    'colors' => (array) ($platform['colors'] ?? []),
     'masterPrompt' => (string) $platform['masterPrompt'],
     'customTemplates' => array_values((array) ($platform['customTemplates'] ?? [])),
     'ai' => [
