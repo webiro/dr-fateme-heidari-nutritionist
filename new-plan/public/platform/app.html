@@ -2663,7 +2663,7 @@ async function importWord(){
   }
 }
 
-function init(){
+async function init(){
   loadColors();
   loadAI();
   loadTemplate();
@@ -2678,7 +2678,8 @@ function init(){
   bindCoverBuilder();
   wordBind();
   loadForm();
-  seedDefaults();
+  const recordLoaded = await loadRecordFromUrl();
+  if(!recordLoaded) seedDefaults();
   updateCoverUI();
   updateCoverEmptyState();
   initDatePicker();
@@ -3233,7 +3234,7 @@ function recordToast(msg, ok){
 }
 async function loadRecordFromUrl(){
   const rid = parseInt(new URLSearchParams(location.search).get('record'), 10);
-  if(!rid) return;
+  if(!rid) return false;
   try{
     const res = await fetch('load-record.php?id=' + rid, { headers:{'Accept':'application/json'} });
     const out = await res.json();
@@ -3245,6 +3246,7 @@ async function loadRecordFromUrl(){
       renderPreview('previewArea');
       showStep(2);
       recordToast('رکورد «' + ((out.data.client && out.data.client.name) || '—') + '» بارگذاری شد ✓', true);
+      return true;
     }else{
       recordToast('بارگذاری رکورد ناموفق بود.', false);
     }
@@ -3253,6 +3255,7 @@ async function loadRecordFromUrl(){
   }finally{
     history.replaceState(null, '', location.pathname);
   }
+  return false;
 }
 
 window.addEventListener('load', init);
