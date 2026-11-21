@@ -3223,6 +3223,38 @@ function autoSuggestTemplate(){
   function setLabel(t){ if(label) label.textContent=t; }
 })();
 
+/* ---------- بازکردن رکورد ذخیره‌شده از پنل (?record=ID) ---------- */
+function recordToast(msg, ok){
+  const el = document.createElement('div');
+  el.textContent = msg;
+  el.style.cssText = 'position:fixed;bottom:18px;left:18px;z-index:5000;color:#fff;padding:10px 16px;border-radius:12px;font-size:12.5px;box-shadow:0 10px 30px rgba(0,0,0,.25);direction:rtl;max-width:320px;line-height:1.9;background:' + (ok ? '#3e6b52' : '#8a4a2e');
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 3200);
+}
+async function loadRecordFromUrl(){
+  const rid = parseInt(new URLSearchParams(location.search).get('record'), 10);
+  if(!rid) return;
+  try{
+    const res = await fetch('load-record.php?id=' + rid, { headers:{'Accept':'application/json'} });
+    const out = await res.json();
+    if(out && out.ok && out.data){
+      applyFormData(out.data);
+      saveForm();
+      applyMealVisibility();
+      renderProgress();
+      renderPreview('previewArea');
+      showStep(2);
+      recordToast('رکورد «' + ((out.data.client && out.data.client.name) || '—') + '» بارگذاری شد ✓', true);
+    }else{
+      recordToast('بارگذاری رکورد ناموفق بود.', false);
+    }
+  }catch(e){
+    recordToast('خطا در بارگذاری رکورد.', false);
+  }finally{
+    history.replaceState(null, '', location.pathname);
+  }
+}
+
 window.addEventListener('load', init);
 
 /* ============================================================

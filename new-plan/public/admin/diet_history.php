@@ -96,6 +96,7 @@ foreach ($items as $it) {
           <td class="cell-muted"><?= $ex ? e(implode(' / ', array_map(fn($k, $v) => fa_digits((string) $v) . ' ' . strtoupper($k), array_keys($ex), $ex))) : '—' ?></td>
           <td class="cell-muted"><?= e(jalali_datetime($it['updated_at'] ?: $it['created_at'])) ?></td>
           <td class="cell-actions">
+            <a class="icon-btn" href="../platform/index.php?record=<?= (int) $it['id'] ?>" target="_blank" rel="noopener" title="بازکردن در پلتفرم و خروجی‌گرفتن"><span class="material-symbols-rounded" style="font-size:19px">open_in_new</span></a>
             <details style="display:inline-block">
               <summary class="icon-btn" style="list-style:none;cursor:pointer" aria-label="جزئیات"><span class="material-symbols-rounded" style="font-size:19px">visibility</span></summary>
               <div style="position:absolute;z-index:60;max-width:420px;max-height:300px;overflow:auto;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;box-shadow:var(--shadow);font-size:11.5px;line-height:1.9;white-space:pre-wrap;direction:ltr;text-align:left"><?= e(mb_substr(json_encode(json_decode((string) $it['data'], true), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?: (string) $it['data'], 0, 4000)) ?></div>
