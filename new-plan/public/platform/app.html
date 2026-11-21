@@ -179,7 +179,7 @@
   .hdr .brand{display:flex;align-items:center;gap:12px;}
   .hdr .mark{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;box-shadow:0 3px 10px rgba(111,139,122,.35);overflow:hidden;}
   .hdr .mark img{width:100%;height:100%;object-fit:cover;}
-  .hdr h1{font-size:15px;margin:0;font-weight:700;letter-spacing:.2px;}
+  .hdr h1{font-size:15px;margin:0;font-weight:700;}
   .hdr .sub{font-size:11px;color:var(--muted);margin-top:2px;}
   .hdr .meta{text-align:left;font-size:10.5px;color:var(--muted);line-height:1.6;}
   .hdr .meta b{color:var(--ink);font-weight:600;}
@@ -190,6 +190,20 @@
   .cover-title p{color:var(--muted);font-size:14px;margin:0;}
 
   .patient{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:18px 22px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px 22px;margin:12mm 0 0;}
+
+  /* نامه تقدیمی */
+  .intro-page{display:flex;flex-direction:column;justify-content:center;background:
+    radial-gradient(circle at 15% 12%, rgba(201,162,39,.10) 0%, rgba(255,255,255,0) 34%),
+    radial-gradient(circle at 85% 88%, rgba(111,139,122,.08) 0%, rgba(255,255,255,0) 38%),
+    #fff;}
+  .intro-inner{max-width:158mm;margin:0 auto;padding:10mm 0;text-align:center;}
+  .intro-eyebrow{font-size:12px;color:var(--muted);font-weight:600;}
+  .intro-ornament{color:var(--gold);font-size:18px;margin:8px 0 26px;}
+  .intro-text{font-size:14px;line-height:2.6;color:var(--ink);margin:0 0 18px;}
+  .intro-sig{margin-top:34px;display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .intro-sig .sig-line{width:64mm;height:1px;background:linear-gradient(90deg, transparent, var(--gold), transparent);}
+  .intro-sig .sig-name{font-size:15px;font-weight:800;color:var(--ink);margin-top:10px;}
+  .intro-sig .sig-role{font-size:11.5px;color:var(--muted);}
   .patient .row{display:flex;flex-direction:column;font-size:12px;}
   .patient .row span{color:var(--muted);font-size:10.5px;margin-bottom:2px;}
   .patient .row b{font-size:13px;font-weight:600;}
@@ -198,7 +212,7 @@
   .clinician{margin-top:10mm;text-align:center;padding:16px;border:1px dashed var(--line);border-radius:12px;background:#fff;}
   .clinician .name{font-weight:700;font-size:15px;}
   .clinician .role{color:var(--muted);font-size:11.5px;margin-top:2px;}
-  .clinician .lic{margin-top:6px;font-size:11px;color:var(--gold);letter-spacing:1px;}
+  .clinician .lic{margin-top:6px;font-size:11px;color:var(--gold);}
 
   .section-title{display:flex;align-items:center;gap:12px;margin:6px 0 12px;padding:10px 14px;background:var(--accent-soft);border-right:4px solid var(--accent);border-radius:10px;}
   .section-title .ico{flex:0 0 52px;height:52px;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.05);}
@@ -1645,12 +1659,33 @@ function defaultCoverHTML(d){
       ${footer(d)}
     </section>`;
 }
+/* ---------- صفحه نامه تقدیمی (قبل از جلد) ---------- */
+function introPageHTML(d){
+  const sig = (d.clinician && d.clinician !== '—') ? d.clinician : '';
+  return `<section class="page intro-page">
+    <div class="intro-inner">
+      <div class="intro-eyebrow">پیام رژیم درمانگر</div>
+      <div class="intro-ornament">✦</div>
+      <p class="intro-text">عزیزم، خوشحالم که برای رسیدن به سلامتی و تناسب اندامت قدم برداشتی 🌱</p>
+      <p class="intro-text">این برنامه با هدف کاهش وزن اصولی، حفظ توده عضلانی و تأمین پروتئین و مواد مغذی مورد نیاز بدنت تنظیم شده است. سعی کن وعده‌ها را با آرامش، تنوع و طبق مقادیر مشخص‌شده مصرف کنی و در کنار تغذیه مناسب، آب کافی و فعالیت بدنی منظم را فراموش نکنی.</p>
+      <p class="intro-text">یادت باشه هدف ما فقط کم کردن عدد وزن نیست؛ بلکه ساختن بدنی سالم‌تر، قوی‌تر و پرانرژی‌تره ❤️</p>
+      <div class="intro-sig">
+        <div class="sig-line"></div>
+        ${sig ? `<div class="sig-name">${esc(sig)}</div><div class="sig-role">رژیم درمانگر</div>` : ''}
+      </div>
+    </div>
+    ${footer(d)}
+  </section>`;
+}
 function renderPreview(targetId){
   resetPages();
   const d = collectData();
   const area = document.getElementById(targetId||'previewArea');
   if(!area) return;
   const pages = [];
+
+  // نامه تقدیمی: همیشه اولین صفحه
+  pages.push(introPageHTML(d));
 
   // جلد + صفحه سفارشی (طبق موقعیت انتخابی: قبل یا بعد از جلد)
   const customCover = coverPageHTML(d);
@@ -1663,9 +1698,9 @@ function renderPreview(targetId){
   const fastingBox = `<div class="fasting" style="background:#fffdf6;border:1px solid #efe5c8;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12.5px;"><b style="color:var(--gold);">ناشتا:</b> ${esc(d.fasting)}</div>`;
   {
     const parts = [];
-    if(getMealEnabled('breakfast')){ parts.push(sectionTitle('صبحانه','Breakfast','breakfast')); parts.push(optionsHTML(d.breakfast)); }
+    if(getMealEnabled('breakfast') && d.breakfast.length){ parts.push(sectionTitle('صبحانه','Breakfast','breakfast')); parts.push(optionsHTML(d.breakfast)); }
     if(getMealEnabled('fasting') && d.fasting){ parts.push(fastingBox); }
-    if(getMealEnabled('morning')){ parts.push(`<div style="margin-top:16px;">${sectionTitle('میان‌وعده صبح','Morning Snack','morning')}</div>`); parts.push(optionsHTML(d.morning)); }
+    if(getMealEnabled('morning') && d.morning.length){ parts.push(`<div style="margin-top:16px;">${sectionTitle('میان‌وعده صبح','Morning Snack','morning')}</div>`); parts.push(optionsHTML(d.morning)); }
     if(parts.length){
       pages.push(`
         <section class="page">
@@ -1679,8 +1714,8 @@ function renderPreview(targetId){
   // Page 3: Lunch + Afternoon snack
   {
     const parts = [];
-    if(getMealEnabled('lunch')){ parts.push(sectionTitle('ناهار','Lunch','lunch')); parts.push(optionsHTML(d.lunch)); }
-    if(getMealEnabled('afternoon')){ parts.push(`<div style="margin-top:16px;">${sectionTitle('میان‌وعده عصر','Afternoon Snack','afternoon')}</div>`); parts.push(optionsHTML(d.afternoon)); }
+    if(getMealEnabled('lunch') && d.lunch.length){ parts.push(sectionTitle('ناهار','Lunch','lunch')); parts.push(optionsHTML(d.lunch)); }
+    if(getMealEnabled('afternoon') && d.afternoon.length){ parts.push(`<div style="margin-top:16px;">${sectionTitle('میان‌وعده عصر','Afternoon Snack','afternoon')}</div>`); parts.push(optionsHTML(d.afternoon)); }
     if(parts.length){
       pages.push(`
         <section class="page">
@@ -1694,8 +1729,8 @@ function renderPreview(targetId){
   // Page 4: Dinner + Late night
   {
     const parts = [];
-    if(getMealEnabled('dinner')){ parts.push(sectionTitle('شام','Dinner','dinner')); parts.push(optionsHTML(d.dinner)); }
-    if(getMealEnabled('latenight')){ parts.push(`<div style="margin-top:16px;">${sectionTitle('وعده آخر شب','Late Night','latenight')}</div>`); parts.push(optionsHTML(d.latenight)); }
+    if(getMealEnabled('dinner') && d.dinner.length){ parts.push(sectionTitle('شام','Dinner','dinner')); parts.push(optionsHTML(d.dinner)); }
+    if(getMealEnabled('latenight') && d.latenight.length){ parts.push(`<div style="margin-top:16px;">${sectionTitle('وعده آخر شب','Late Night','latenight')}</div>`); parts.push(optionsHTML(d.latenight)); }
     if(parts.length){
       pages.push(`
         <section class="page">
@@ -1707,7 +1742,7 @@ function renderPreview(targetId){
   }
 
   // Page 5: Supplements
-  if(getMealEnabled('supplements')){
+  if(getMealEnabled('supplements') && d.supplements.length){
     pages.push(`
       <section class="page">
         ${hdr(d, `${esc(d.name)}<br/><b>بخش:</b> مکمل‌ها`)}
@@ -3224,6 +3259,19 @@ function autoSuggestTemplate(){
   function setLabel(t){ if(label) label.textContent=t; }
 })();
 
+/* ---------- وعده‌های خالی رکورد، خودکار غیرفعال می‌شوند ---------- */
+function autoDisableEmptyMeals(){
+  const st = getStoredMeals();
+  ['breakfast','morning','lunch','afternoon','dinner','latenight'].forEach(k=>{
+    const c = document.getElementById(k + '_options');
+    if(c && !c.children.length) st[k] = false;
+  });
+  const supp = document.getElementById('supplements_container');
+  const hasSupp = supp && [...supp.querySelectorAll('.supp-input')].some(i=>i.value.trim());
+  if(!hasSupp) st['supplements'] = false;
+  localStorage.setItem(LS_MEALS, JSON.stringify(st));
+}
+
 /* ---------- بازکردن رکورد ذخیره‌شده از پنل (?record=ID) ---------- */
 function recordToast(msg, ok){
   const el = document.createElement('div');
@@ -3241,6 +3289,7 @@ async function loadRecordFromUrl(){
     if(out && out.ok && out.data){
       applyFormData(out.data);
       saveForm();
+      autoDisableEmptyMeals();
       applyMealVisibility();
       renderProgress();
       renderPreview('previewArea');
