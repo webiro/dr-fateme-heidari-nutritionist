@@ -1611,8 +1611,11 @@ const MEAL_LABELS = {
 };
 function getMealImg(key){
   try {
-    if(PS.mealImages && PS.mealImages[key]) return PS.mealImages[key];
-    return localStorage.getItem(LS_MEAL_IMG_PREFIX + key) || MEAL_IMAGE_DEFAULTS[key] || '';
+    const raw = (PS.mealImages && PS.mealImages[key])
+      || localStorage.getItem(LS_MEAL_IMG_PREFIX + key)
+      || MEAL_IMAGE_DEFAULTS[key] || '';
+    // مسیرهای uploads/ نسبت به ریشه سایت هستند؛ از داخل /platform/ با ../
+    return raw.startsWith('uploads/') ? '../' + raw : raw;
   } catch(e){
     return MEAL_IMAGE_DEFAULTS[key] || '';
   }
@@ -1664,7 +1667,6 @@ function introPageHTML(d){
   const sig = (d.clinician && d.clinician !== '—') ? d.clinician : '';
   return `<section class="page intro-page">
     <div class="intro-inner">
-      <div class="intro-eyebrow">پیام رژیم درمانگر</div>
       <div class="intro-ornament">✦</div>
       <p class="intro-text">عزیزم، خوشحالم که برای رسیدن به سلامتی و تناسب اندامت قدم برداشتی 🌱</p>
       <p class="intro-text">این برنامه با هدف کاهش وزن اصولی، حفظ توده عضلانی و تأمین پروتئین و مواد مغذی مورد نیاز بدنت تنظیم شده است. سعی کن وعده‌ها را با آرامش، تنوع و طبق مقادیر مشخص‌شده مصرف کنی و در کنار تغذیه مناسب، آب کافی و فعالیت بدنی منظم را فراموش نکنی.</p>
