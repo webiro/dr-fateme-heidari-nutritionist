@@ -45,6 +45,15 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         redirect('platform.php');
     }
 
+    if ($action === 'client_delete') {
+        $id = (int) ($_POST['id'] ?? 0);
+        if ($id) {
+            Database::q('DELETE FROM fh_diet_records WHERE id = ?', [$id]);
+            flash_set('ok', 'رکورد مراجع حذف شد.');
+        }
+        redirect('platform.php');
+    }
+
     if ($action === 'reset_prompt') {
         $defaults = SiteData::defaults();
         $platform['masterPrompt'] = $defaults['platform']['masterPrompt'];
@@ -264,6 +273,7 @@ $logoHref = !empty($platform['logo']) ? '../' . $platform['logo'] : '';
     </div>
   </form>
 </div>
+<?php
 $builtinTemplates = [
     ['classic', 'کلاسیک', '#6f8b7a'], ['teen', 'نوجوان', '#7c5cbf'], ['young', 'جوان', '#e8603c'],
     ['athlete', 'ورزشکار', '#c0392b'], ['home', 'خانه‌دار', '#c96f4a'], ['royal', 'سلطنتی', '#1f2a44'],
@@ -326,6 +336,67 @@ $customTemplates = (array) ($platform['customTemplates'] ?? []);
     </a>
   </div>
   <p class="card-note">پلتفرم فقط با همین لاگین پنل باز می‌شود. تنظیمات زیر، مقادیر پیش‌فرض و رفتار پلتفرم را تعیین می‌کنند.</p>
+</div>
+
+<?php
+/* ---------- لیست مراجعین: هر خروجی/پیش‌نویس پلتفرم اینجا ثبت می‌شود ---------- */
+$clients = Database::all('SELECT * FROM fh_diet_records ORDER BY COALESCE(updated_at, created_at) DESC LIMIT 300');
+$sourceLabels = ['manual' => 'دستی', 'ai' => 'هوش مصنوعی', 'word' => 'ورود از Word'];
+$typeLabels = ['final' => 'رژیم نهایی', 'draft' => 'پیش‌نویس'];
+?>
+<div class="card">
+  <div class="card-head">
+    <span class="material-symbols-rounded icon-lead">groups</span>
+    <h2>مراجعین پلتفرم</h2>
+    <span class="badge"><?= e(fa_digits((string) count($clients))) ?></span>
+  </div>
+  <p class="card-note">هر بار برای یک مراجع خروجی یا پیش‌نویس ذخیره شود، همین‌جا ثبت می‌شود. با «بازکردن در پلتفرم» می‌توانید رژیم را ویرایش کنید و دوباره خروجی بگیرید؛ خروجی جدید همان رکورد را به‌روزرسانی می‌کند.</p>
+  <?php if (!$clients): ?>
+  <div class="empty"><span class="material-symbols-rounded">group_off</span>هنوز مراجعی ثبت نشده است. با اولین خروجی از پلتفرم، این لیست پر می‌شود.</div>
+  <?php else: ?>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>مراجع</th>
+          <th>مشخصات</th>
+          <th>نوع</th>
+          <th>روش</th>
+          <th>قالب</th>
+          <th>آخرین به‌روزرسانی</th>
+          <th>عملیات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach ($clients as $c): $cm = json_decode((string) $c['patient_meta'], true) ?: []; ?>
+        <tr>
+          <td class="cell-title"><?= e($c['patient_name'] ?: '—') ?></td>
+          <td class="cell-muted"><?= e(fa_digits((string) ($cm['age'] ?? ''))) ?> ساله · <?= e(fa_digits((string) ($cm['height'] ?? ''))) ?> سانتی‌متر · <?= e(fa_digits((string) ($cm['weight'] ?? ''))) ?> کیلوگرم · <?= e($cm['goal'] ?? '') ?><?= !empty($cm['date']) ? ' · ' . e(fa_digits((string) $cm['date'])) : '' ?></td>
+          <td><span class="badge <?= $c['type'] === 'final' ? 'badge-ok' : 'badge-warn' ?>"><?= e($typeLabels[$c['type']] ?? $c['type']) ?></span></td>
+          <td class="cell-muted"><?= $c['source'] ? e($sourceLabels[$c['source']] ?? $c['source']) : '—' ?></td>
+          <td class="cell-muted"><?= e($c['template'] ?: '—') ?></td>
+          <td class="cell-muted"><?= e(jalali_datetime($c['updated_at'] ?: $c['created_at'])) ?></td>
+          <td class="cell-actions">
+            <a class="icon-btn" href="../platform/index.php?record=<?= (int) $c['id'] ?>" target="_blank" rel="noopener" title="بازکردن در پلتفرم (ویرایش و خروجی)"><span class="material-symbols-rounded" style="font-size:19px">edit_document</span></a>
+            <details style="display:inline-block">
+              <summary class="icon-btn" style="list-style:none;cursor:pointer" aria-label="جزئیات"><span class="material-symbols-rounded" style="font-size:19px">visibility</span></summary>
+              <div style="position:absolute;z-index:60;max-width:420px;max-height:300px;overflow:auto;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;box-shadow:var(--shadow);font-size:11.5px;line-height:1.9;white-space:pre-wrap;direction:ltr;text-align:left"><?= e(mb_substr(json_encode(json_decode((string) $c['data'], true), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?: (string) $c['data'], 0, 4000)) ?></div>
+            </details>
+            <form method="post" data-confirm="این مراجع و رژیمش حذف شود؟">
+              <?= Csrf::field() ?>
+              <input type="hidden" name="action" value="client_delete">
+              <input type="hidden" name="id" value="<?= (int) $c['id'] ?>">
+              <button class="icon-btn" type="submit" aria-label="حذف" style="color:var(--danger)">
+                <span class="material-symbols-rounded" style="font-size:19px">delete</span>
+              </button>
+            </form>
+          </td>
+        </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+  </div>
+  <?php endif; ?>
 </div>
 
 <form method="post" data-dirty>
